@@ -1,62 +1,27 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import KnowledgeCard from "@/components/KnowledgeCard";
-import { Sparkles, LogIn } from "lucide-react";
-import confetti from "canvas-confetti";
-
-function TrackedCard({ card, onRead, isBookmarked, isRead, onBookmark }) {
-  const ref = useRef(null);
-  const fired = useRef(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.intersectionRatio >= 0.5 && !fired.current) {
-          fired.current = true;
-          onRead(card.id, card.source_id);
-          observer.disconnect();
-        }
-      },
-      { threshold: [0, 0.5, 1] }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [card.id, onRead]);
-
-  return (
-    <div ref={ref}>
-      <KnowledgeCard
-        card={card}
-        isBookmarked={isBookmarked}
-        onBookmark={onBookmark}
-        isRead={isRead}
-      />
-    </div>
-  );
-}
+import FeaturedSource from "@/components/FeaturedSource";
+import SourceCarousel from "@/components/SourceCarousel";
+import StreakBadge from "@/components/StreakBadge";
+import WeeklyGrowthStats from "@/components/WeeklyGrowthStats";
+import TopicSelector from "@/components/TopicSelector";
+import { User, Sparkles, LogIn, Settings, X } from "lucide-react";
 
 export default function Home() {
-  const { user, isAuthenticated, isLoadingAuth } = useAuth();
+  const { user, isAuthenticated, isLoadingAuth, checkUserAuth } = useAuth();
   const navigate = useNavigate();
-  const [cards, setCards] = useState([]);
+  const [sources, setSources] = useState([]);
+  const [progress, setProgress] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(6);
-  const [readCardIds, setReadCardIds] = useState(new Set());
-  const [bookmarkedCardIds, setBookmarkedCardIds] = useState(new Set());
-  const [progressMap, setProgressMap] = useState({});
-  const sentinelRef = useRef(null);
+  const [showGoals, setShowGoals] = useState(false);
+  const [editTopics, setEditTopics] = useState([]);
+  const [savingTopics, setSavingTopics] = useState(false);
 
   useEffect(() => {
-    if (!isLoadingAuth && isAuthenticated && user) {
-      const topics = user.topics;
-      if (!topics || topics.length === 0) {
-        navigate("/onboarding");
-        return;
-      }
+    if (!isLoadingAuth && isAuthenticated && user && (!user.topics || user.topics.length === 0)) {
+      navigate("/onboarding");
     }
   }, [isLoadingAuth, isAuthenticated, user, navigate]);
 
@@ -67,233 +32,139 @@ export default function Home() {
 
   const loadData = async () => {
     try {
-      setLoading(true);
-      const allCards = await base44.entities.Card.list("-created_date", 300);
-      let filtered = allCards;
-      if (isAuthenticated && user?.topics?.length > 0) {
-        filtered = allCards.filter((c) => user.topics.includes(c.topic));
-      }
-      filtered = [...filtered].sort(() => Math.random() - 0.5);
-      setCards(filtered);
-
+      const src = await base44.entities.ContentSource.filter({ status: "published" }, "-created_date", 200);
+      setSources(src);
       if (isAuthenticated && user) {
-        const progress = await base44.entities.UserProgress.filter(
-          { created_by_id: user.id },
-          "-updated_date",
-          300
-        );
-        const pMap = {};
-        const readIds = new Set();
-        const bookmarkIds = new Set();
-        progress.forEach((p) => {
-          pMap[p.source_id] = p;
-          (p.read_card_ids || []).forEach((id) => readIds.add(id));
-          (p.bookmarked_card_ids || []).forEach((id) => bookmarkIds.add(id));
-        });
-        setProgressMap(pMap);
-        setReadCardIds(readIds);
-        setBookmarkedCardIds(bookmarkIds);
+        const prog = await base44.entities.UserProgress.filter({ created_by_id: user.id }, "-updated_date", 300);
+        setProgress(prog);
       }
-    } catch (err) {
-      console.error("Failed to load feed:", err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   };
 
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && visibleCount < cards.length) {
-          setVisibleCount((prev) => Math.min(prev + 4, cards.length));
-        }
-      },
-      { rootMargin: "300px" }
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [cards.length, visibleCount]);
+  const userTopics = user?.topics || [];
+  const completedIds = new Set(progress.filter((p) => p.completed).map((p) => p.source_id));
+  const totalRead = progress.reduce((sum, p) => sum + (p.read_card_ids?.length || 0), 0);
+  const totalInsights = progress.filter(p => (p.read_card_ids?.length || 0) > 0).length;
 
-  const markAsRead = useCallback(
-    async (cardId, sourceId) => {
-      setReadCardIds((prev) => {
-        if (prev.has(cardId)) return prev;
-        const next = new Set(prev);
-        next.add(cardId);
-        return next;
-      });
+  const topicSources = useMemo(() => {
+    const map = {};
+    userTopics.forEach((topic) => {
+      map[topic] = sources.filter((s) => s.topic === topic);
+    });
+    return map;
+  }, [sources, userTopics]);
 
-      if (!isAuthenticated || !user) return;
+  const featured = useMemo(() => {
+    return sources.find((s) => userTopics.includes(s.topic) && !completedIds.has(s.id)) || sources[0];
+  }, [sources, userTopics, completedIds]);
 
-      const existing = progressMap[sourceId];
-      const sourceCards = cards.filter((c) => c.source_id === sourceId);
-      const card = cards.find((c) => c.id === cardId);
+  const otherSources = useMemo(() => {
+    return sources.filter((s) => !userTopics.includes(s.topic));
+  }, [sources, userTopics]);
 
-      try {
-        const currentReadIds = existing?.read_card_ids || [];
-        const newReadIds = [...new Set([...currentReadIds, cardId])];
-        const isComplete = newReadIds.length >= sourceCards.length;
-
-        if (existing) {
-          const wasCompleted = existing.completed;
-          const updated = await base44.entities.UserProgress.update(existing.id, {
-            read_card_ids: newReadIds,
-            completed: isComplete,
-          });
-          setProgressMap((prev) => ({ ...prev, [sourceId]: updated }));
-          if (isComplete && !wasCompleted) {
-            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-          }
-        } else if (card) {
-          const created = await base44.entities.UserProgress.create({
-            source_id: sourceId,
-            source_title: card.source_title,
-            source_type: card.source_type,
-            topic: card.topic,
-            total_cards: sourceCards.length,
-            read_card_ids: newReadIds,
-            completed: isComplete,
-          });
-          setProgressMap((prev) => ({ ...prev, [sourceId]: created }));
-          if (isComplete) {
-            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-          }
-        }
-      } catch (err) {
-        console.error("Failed to track progress:", err);
-      }
-    },
-    [cards, progressMap, isAuthenticated, user]
-  );
-
-  const toggleBookmark = useCallback(
-    async (cardId) => {
-      const card = cards.find((c) => c.id === cardId);
-      if (!card) return;
-      const wasBookmarked = bookmarkedCardIds.has(cardId);
-
-      setBookmarkedCardIds((prev) => {
-        const next = new Set(prev);
-        if (wasBookmarked) next.delete(cardId);
-        else next.add(cardId);
-        return next;
-      });
-
-      if (!isAuthenticated || !user) return;
-
-      const existing = progressMap[card.source_id];
-      const sourceCards = cards.filter((c) => c.source_id === card.source_id);
-
-      try {
-        if (existing) {
-          const bookmarked = new Set(existing.bookmarked_card_ids || []);
-          if (wasBookmarked) bookmarked.delete(cardId);
-          else bookmarked.add(cardId);
-          const updated = await base44.entities.UserProgress.update(existing.id, {
-            bookmarked_card_ids: [...bookmarked],
-          });
-          setProgressMap((prev) => ({ ...prev, [card.source_id]: updated }));
-        } else {
-          const created = await base44.entities.UserProgress.create({
-            source_id: card.source_id,
-            source_title: card.source_title,
-            source_type: card.source_type,
-            topic: card.topic,
-            total_cards: sourceCards.length,
-            read_card_ids: [],
-            bookmarked_card_ids: wasBookmarked ? [] : [cardId],
-            completed: false,
-          });
-          setProgressMap((prev) => ({ ...prev, [card.source_id]: created }));
-        }
-      } catch (err) {
-        setBookmarkedCardIds((prev) => {
-          const next = new Set(prev);
-          if (wasBookmarked) next.add(cardId);
-          else next.delete(cardId);
-          return next;
-        });
-      }
-    },
-    [cards, progressMap, bookmarkedCardIds, isAuthenticated, user]
-  );
-
-  const visibleCards = cards.slice(0, visibleCount);
+  const saveGoals = async () => {
+    if (editTopics.length < 3) return;
+    setSavingTopics(true);
+    await base44.auth.updateMe({ topics: editTopics });
+    await checkUserAuth();
+    setShowGoals(false);
+    setSavingTopics(false);
+  };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-[#FF6B35]" />
-      </div>
-    );
+    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-[#FF6B35]" /></div>;
   }
 
   return (
     <div>
-      <header className="mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
-              {isAuthenticated ? "Ready to learn?" : "Knowi"}
-            </h1>
-            <p className="mt-0.5 text-sm text-neutral-400">
-              {isAuthenticated
-                ? "Your daily dose of knowledge"
-                : "Bite-sized knowledge, one card at a time"}
-            </p>
-          </div>
-          {!isAuthenticated && (
-            <button
-              onClick={() => base44.auth.redirectToLogin(window.location.href)}
-              className="flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-neutral-700"
-            >
-              <LogIn size={14} />
-              Sign in
+      {/* Header */}
+      <header className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-bold tracking-tight text-neutral-900">Knowi</h1>
+        <div className="flex items-center gap-3">
+          {isAuthenticated && <StreakBadge count={user?.streak_count || 0} />}
+          {isAuthenticated ? (
+            <Link to="/profile" className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100">
+              <User size={16} className="text-neutral-500" />
+            </Link>
+          ) : (
+            <button onClick={() => base44.auth.redirectToLogin(window.location.href)}
+              className="flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-2 text-xs font-semibold text-white">
+              <LogIn size={14} /> Sign in
             </button>
           )}
         </div>
       </header>
 
+      {/* Not signed in banner */}
       {!isAuthenticated && (
         <div className="mb-5 flex items-center gap-3 rounded-xl border border-[#FF6B35]/20 bg-[#FF6B35]/5 px-4 py-3">
           <Sparkles size={18} className="shrink-0 text-[#FF6B35]" />
-          <p className="text-sm text-neutral-600">
-            Sign in to personalize your feed and track your progress
-          </p>
+          <p className="text-sm text-neutral-600">Sign in to personalize your feed and track progress</p>
         </div>
       )}
 
-      {visibleCards.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-neutral-100">
-            <Sparkles size={28} className="text-neutral-300" />
-          </div>
-          <h3 className="text-base font-semibold text-neutral-900">No cards yet</h3>
-          <p className="mt-1 text-sm text-neutral-400">
-            {isAuthenticated
-              ? "Try selecting more topics in your profile"
-              : "Check back soon for new content"}
-          </p>
+      {/* Featured source */}
+      {featured && <FeaturedSource source={featured} />}
+
+      {/* Weekly growth */}
+      {isAuthenticated && totalRead > 0 && (
+        <div className="mb-6">
+          <WeeklyGrowthStats keyPoints={totalRead} minutes={Math.round(totalRead * 1.5)} insights={totalInsights} />
         </div>
-      ) : (
-        <div className="space-y-4">
-          {visibleCards.map((card) => (
-            <TrackedCard
-              key={card.id}
-              card={card}
-              isBookmarked={bookmarkedCardIds.has(card.id)}
-              isRead={readCardIds.has(card.id)}
-              onRead={markAsRead}
-              onBookmark={toggleBookmark}
-            />
-          ))}
-          {visibleCount < cards.length && (
-            <div ref={sentinelRef} className="flex justify-center py-4">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-neutral-200 border-t-[#FF6B35]" />
+      )}
+
+      {/* Topic carousels */}
+      {userTopics.map((topic) => (
+        topicSources[topic]?.length > 0 && (
+          <SourceCarousel
+            key={topic}
+            title={`More to ${topic.toLowerCase()}`}
+            subtitle="You might like these summaries for this goal"
+            sources={topicSources[topic]}
+          />
+        )
+      ))}
+
+      {/* Other sources */}
+      {otherSources.length > 0 && (
+        <SourceCarousel title="Discover more" subtitle="Explore other topics" sources={otherSources} />
+      )}
+
+      {/* Manage recommendations */}
+      {isAuthenticated && (
+        <div className="mt-2 mb-8 rounded-2xl border border-neutral-200 bg-white p-5">
+          <h3 className="text-sm font-bold text-neutral-900 mb-1">Manage recommendations</h3>
+          <p className="text-xs text-neutral-400 mb-3">Adjust your goals to get new recommendations</p>
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {userTopics.map((t) => (
+              <span key={t} className="rounded-lg bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700">{t}</span>
+            ))}
+          </div>
+          <button
+            onClick={() => { setEditTopics(userTopics); setShowGoals(true); }}
+            className="w-full rounded-xl border border-neutral-200 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+          >
+            Manage
+          </button>
+        </div>
+      )}
+
+      {/* Goals modal */}
+      {showGoals && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40">
+          <div className="w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-white p-6 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-neutral-900">Update recommendations?</h3>
+              <button onClick={() => setShowGoals(false)}><X size={20} className="text-neutral-400" /></button>
             </div>
-          )}
+            <p className="text-sm text-neutral-400 mb-5">Your content will refresh to match your updated goals</p>
+            <TopicSelector selected={editTopics} onToggle={(t) => setEditTopics((prev) => prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t])} minRequired={3} />
+            <button onClick={saveGoals} disabled={editTopics.length < 3 || savingTopics}
+              className="mt-5 w-full rounded-xl bg-[#FF6B35] py-3 text-sm font-semibold text-white disabled:bg-neutral-200 disabled:text-neutral-400">
+              {savingTopics ? "Saving..." : "Continue"}
+            </button>
+          </div>
         </div>
       )}
     </div>

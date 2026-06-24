@@ -9,11 +9,14 @@ import ScrollToTop from './components/ScrollToTop';
 import AppLayout from './components/AppLayout';
 import Home from './pages/Home';
 import Onboarding from './pages/Onboarding';
-import Bookmarks from './pages/Bookmarks';
 import Progress from './pages/Progress';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminAddContent from './pages/AdminAddContent';
+import SourceDetail from './pages/SourceDetail';
+import Search from './pages/Search';
+import Shorts from './pages/Shorts';
+import Library from './pages/Library';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -44,10 +47,14 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route element={<AppLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/bookmarks" element={<Bookmarks />} />
+        <Route path="/shorts" element={<Shorts />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/library" element={<Library />} />
+        <Route path="/bookmarks" element={<Library />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
+      <Route path="/source/:id" element={<SourceDetail />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/add" element={<AdminAddContent />} />

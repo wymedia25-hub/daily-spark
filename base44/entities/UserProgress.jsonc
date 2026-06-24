@@ -48,6 +48,18 @@
       "type": "boolean",
       "default": false,
       "description": "Whether the user has read all cards from this source"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Star rating 1-5"
+    },
+    "feedback_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Feedback tags for the rating"
     }
   },
   "required": [
