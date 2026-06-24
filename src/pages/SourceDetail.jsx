@@ -85,7 +85,6 @@ export default function SourceDetail() {
       } else {
         await base44.auth.updateMe({ today_date: today, today_cards_read: todayCards });
       }
-      checkUserAuth();
       if (isComplete) {
         confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
         setTimeout(() => setShowRating(true), 1000);
