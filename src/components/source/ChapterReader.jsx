@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { X, List, Play, Pause, ChevronRight } from "lucide-react";
+import { useState, useRef } from "react";
+import { X, List, ChevronRight } from "lucide-react";
 
 const FONT_SIZES = [
   { label: "S", body: "16px", title: "22px" },
@@ -7,63 +7,43 @@ const FONT_SIZES = [
   { label: "L", body: "20px", title: "26px" },
 ];
 
-export default function ChapterReader({ card, source, cardIndex, totalCards, onNext, onBack, mode, onToggleMode }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+export default function ChapterReader({ card, source, cardIndex, totalCards, onNext, onBack }) {
   const [fontIdx, setFontIdx] = useState(1);
-
-  useEffect(() => {
-    if (mode === "listen" && card) {
-      window.speechSynthesis.cancel();
-      const text = `${card.headline}. ${card.body}`;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.95;
-      utterance.onend = () => setIsPlaying(false);
-      window.speechSynthesis.speak(utterance);
-      setIsPlaying(true);
-    } else {
-      window.speechSynthesis.cancel();
-      setIsPlaying(false);
-    }
-  }, [card?.id, mode]);
-
-  useEffect(() => {
-    return () => { window.speechSynthesis.cancel(); };
-  }, []);
-
-  const toggleAudio = () => {
-    if (isPlaying) {
-      window.speechSynthesis.cancel();
-      setIsPlaying(false);
-    } else {
-      const text = `${card.headline}. ${card.body}`;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.95;
-      utterance.onend = () => setIsPlaying(false);
-      window.speechSynthesis.speak(utterance);
-      setIsPlaying(true);
-    }
-  };
+  const touchStartX = useRef(null);
 
   if (!card) return null;
 
   const font = FONT_SIZES[fontIdx];
 
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const endX = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - endX;
+    if (diff > 60) {
+      onNext();
+    } else if (diff < -60) {
+      onBack();
+    }
+    touchStartX.current = null;
+  };
+
   return (
-    <div className="min-h-screen bg-[#FDFBF8] pb-28">
+    <div
+      className="min-h-screen bg-[#FDFBF8] pb-28"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Header */}
       <header className="sticky top-0 z-10 bg-[#FDFBF8]/95 backdrop-blur-lg">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-3">
           <button onClick={onBack} className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-neutral-100">
             <X size={20} className="text-neutral-800" />
           </button>
-          <div className="flex rounded-full bg-neutral-200 p-0.5">
-            <button onClick={() => onToggleMode("read")} className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${mode === "read" ? "bg-neutral-900 text-white" : "text-neutral-500"}`}>
-              Read
-            </button>
-            <button onClick={() => onToggleMode("listen")} className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${mode === "listen" ? "bg-neutral-900 text-white" : "text-neutral-500"}`}>
-              Listen
-            </button>
-          </div>
+          <span className="text-xs font-medium text-neutral-400">{cardIndex + 1} of {totalCards}</span>
           <div className="flex items-center gap-1">
             <button onClick={onBack} className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-neutral-100">
               <List size={18} className="text-neutral-700" />
@@ -85,24 +65,10 @@ export default function ChapterReader({ card, source, cardIndex, totalCards, onN
         </div>
       </div>
 
-      {/* Bottom bar: mini player + page nav */}
+      {/* Bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-neutral-200 bg-white">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-5 py-3">
-          {source?.cover_image ? (
-            <img src={source.cover_image} alt="" className="h-10 w-10 rounded-lg object-cover" />
-          ) : (
-            <div className="h-10 w-10 rounded-lg bg-neutral-800" />
-          )}
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-medium text-neutral-900">{card.headline}</p>
-            <p className="truncate text-[11px] text-neutral-400">{source?.title}</p>
-          </div>
-          <button onClick={toggleAudio} className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF6B35] text-white">
-            {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
-          </button>
-        </div>
-        <div className="mx-auto flex max-w-2xl items-center justify-between px-5 pb-3">
-          <span className="text-xs font-medium text-neutral-500">{cardIndex + 1} of {totalCards}</span>
+        <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-3">
+          <span className="text-xs font-medium text-neutral-400">Swipe to continue</span>
           <button onClick={onNext} className="flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-200 text-neutral-800 transition-colors hover:bg-neutral-300">
             <ChevronRight size={18} />
           </button>

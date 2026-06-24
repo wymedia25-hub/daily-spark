@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Share2, Bookmark, ListChecks, Clock, Zap, Check, ChevronRight, ArrowUpRight, BookOpen, Headphones } from "lucide-react";
+import { X, Share2, Bookmark, ListChecks, Clock, Zap, Check, ChevronRight, ArrowUpRight, BookOpen } from "lucide-react";
 import TopicPill from "@/components/TopicPill";
 
-export default function SourceOverview({ source, cards, readCardIds, onRead, onListen, onSelectCard }) {
+export default function SourceOverview({ source, cards, readCardIds, onRead, onSelectCard }) {
   const navigate = useNavigate();
   const [bookmarked, setBookmarked] = useState(false);
 
@@ -140,12 +140,9 @@ export default function SourceOverview({ source, cards, readCardIds, onRead, onL
 
       {/* Sticky footer */}
       <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-neutral-200 bg-[#FDFBF8]/95 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-2xl gap-3 px-5 py-4">
-          <button onClick={onRead} className="flex flex-[2] items-center justify-center gap-2 rounded-xl bg-neutral-200 py-3.5 text-sm font-semibold text-neutral-800 transition-colors hover:bg-neutral-300">
+        <div className="mx-auto flex max-w-2xl px-5 py-4">
+          <button onClick={onRead} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#FF6B35] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#e85a28]">
             <BookOpen size={16} /> Read
-          </button>
-          <button onClick={onListen} className="flex flex-[3] items-center justify-center gap-2 rounded-xl bg-[#FF6B35] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#e85a28]">
-            <Headphones size={16} /> Listen
           </button>
         </div>
       </div>

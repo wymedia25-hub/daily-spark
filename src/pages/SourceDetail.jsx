@@ -19,7 +19,6 @@ export default function SourceDetail() {
   const [readCardIds, setReadCardIds] = useState(new Set());
   const [progress, setProgress] = useState(null);
   const [showRating, setShowRating] = useState(false);
-  const [mode, setMode] = useState("read");
 
   useEffect(() => {
     loadData();
@@ -96,23 +95,12 @@ export default function SourceDetail() {
     const firstUnread = cards.findIndex((c) => !readCardIds.has(c.id));
     const idx = firstUnread >= 0 ? firstUnread : 0;
     setActiveIdx(idx);
-    setMode("read");
-    setView("reading");
-    if (cards[idx]) markRead(cards[idx]);
-  };
-
-  const startListening = () => {
-    const firstUnread = cards.findIndex((c) => !readCardIds.has(c.id));
-    const idx = firstUnread >= 0 ? firstUnread : 0;
-    setActiveIdx(idx);
-    setMode("listen");
     setView("reading");
     if (cards[idx]) markRead(cards[idx]);
   };
 
   const openCard = (idx) => {
     setActiveIdx(idx);
-    setMode("read");
     setView("reading");
     if (cards[idx]) markRead(cards[idx]);
   };
@@ -155,7 +143,6 @@ export default function SourceDetail() {
         cards={cards}
         readCardIds={readCardIds}
         onRead={startReading}
-        onListen={startListening}
         onSelectCard={openCard}
       />
     );
@@ -170,8 +157,6 @@ export default function SourceDetail() {
         totalCards={cards.length}
         onNext={nextCard}
         onBack={() => setView("overview")}
-        mode={mode}
-        onToggleMode={setMode}
       />
       {showRating && (
         <RatingModal source={source} onSubmit={submitRating} onClose={() => setShowRating(false)} />
