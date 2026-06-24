@@ -15,7 +15,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminAddContent from './pages/AdminAddContent';
 import SourceDetail from './pages/SourceDetail';
 import Search from './pages/Search';
-import Shorts from './pages/Shorts';
 import Library from './pages/Library';
 // Add page imports here
 
@@ -47,7 +46,6 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route element={<AppLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/shorts" element={<Shorts />} />
         <Route path="/search" element={<Search />} />
         <Route path="/library" element={<Library />} />
         <Route path="/bookmarks" element={<Library />} />
