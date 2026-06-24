@@ -50,10 +50,15 @@ export default function ChapterReader({ card, cardIndex, totalCards, onNext, onP
           {isPlaying ? <Pause size={16} /> : <Play size={16} />}
           {isPlaying ? "Pause" : "Listen"}
         </button>
-        <button className="flex items-center gap-2 rounded-xl border border-neutral-200 px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
+        <button onClick={() => { if (navigator.share) navigator.share({ title: card.headline, text: card.body.substring(0, 200) }); }}
+          className="flex items-center gap-2 rounded-xl border border-neutral-200 px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
           <Share2 size={16} /> Share
         </button>
-        <button className="flex items-center gap-2 rounded-xl border border-neutral-200 px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
+        <button onClick={() => {
+            const sel = window.getSelection()?.toString();
+            if (sel) navigator.clipboard?.writeText(sel);
+          }}
+          className="flex items-center gap-2 rounded-xl border border-neutral-200 px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
           <Highlighter size={16} /> Highlight
         </button>
       </div>

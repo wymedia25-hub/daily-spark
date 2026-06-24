@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { CheckCircle2, Share2, Plus } from "lucide-react";
+import { CheckCircle2, Share2, Plus, Check } from "lucide-react";
 
 export default function ContentsView({ cards, readCardIds, onSelectCard }) {
   const [tab, setTab] = useState("keypoints");
+  const [remembered, setRemembered] = useState(new Set());
 
   return (
     <div>
@@ -64,11 +65,16 @@ export default function ContentsView({ cards, readCardIds, onSelectCard }) {
               <div className="mt-2 flex items-center justify-between">
                 <span className="text-xs text-neutral-400">From key point {idx + 1}</span>
                 <div className="flex gap-2">
-                  <button className="flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-600 hover:bg-neutral-50">
+                  <button onClick={() => { if (navigator.share) navigator.share({ title: card.headline, text: card.body.substring(0, 200) }); }}
+                    className="flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-600 hover:bg-neutral-50">
                     <Share2 size={12} /> Share
                   </button>
-                  <button className="flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-600 hover:bg-neutral-50">
-                    <Plus size={12} /> Remember
+                  <button
+                    onClick={() => setRemembered(prev => { const n = new Set(prev); if (n.has(card.id)) n.delete(card.id); else n.add(card.id); return n; })}
+                    className={`flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors ${
+                      remembered.has(card.id) ? "border-emerald-200 bg-emerald-50 text-emerald-600" : "border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+                    }`}>
+                    {remembered.has(card.id) ? <><Check size={12} /> Remembered</> : <><Plus size={12} /> Remember</>}
                   </button>
                 </div>
               </div>

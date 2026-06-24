@@ -7,7 +7,24 @@ import SourceCarousel from "@/components/SourceCarousel";
 import StreakBadge from "@/components/StreakBadge";
 import WeeklyGrowthStats from "@/components/WeeklyGrowthStats";
 import TopicSelector from "@/components/TopicSelector";
-import { User, Sparkles, LogIn, Settings, X } from "lucide-react";
+import { User, Sparkles, LogIn, X } from "lucide-react";
+import DailyMissions from "@/components/DailyMissions";
+import CollectionCard from "@/components/CollectionCard";
+import InviteFriends from "@/components/InviteFriends";
+import { TOPIC_COLORS } from "@/lib/topics";
+
+const COLLECTION_THEMES = {
+  "Psychology": { title: "Master Your Mind", subtitle: "Understand human behavior" },
+  "Business": { title: "Think Like a CEO", subtitle: "Plan, Achieve, Succeed" },
+  "Self-Help": { title: "Unlock Your Potential", subtitle: "Transform your daily habits" },
+  "Science": { title: "How The World Works", subtitle: "Science-backed insights" },
+  "History": { title: "Lessons From The Past", subtitle: "Timeless wisdom & stories" },
+  "Philosophy": { title: "Deep Thinking", subtitle: "Big questions, clear answers" },
+  "Finance": { title: "Build Your Wealth", subtitle: "Smart money strategies" },
+  "Productivity": { title: "Get More Done", subtitle: "Work smarter, not harder" },
+  "Health": { title: "Live Better", subtitle: "Mind, body & wellness" },
+  "Technology": { title: "The Future Is Now", subtitle: "Innovation & the digital age" },
+};
 
 export default function Home() {
   const { user, isAuthenticated, isLoadingAuth, checkUserAuth } = useAuth();
@@ -114,6 +131,36 @@ export default function Home() {
         </div>
       )}
 
+      {/* Daily missions */}
+      {isAuthenticated && (
+        <div className="mb-6">
+          <DailyMissions todayCardsRead={user?.today_date === new Date().toISOString().split("T")[0] ? (user?.today_cards_read || 0) : 0} />
+        </div>
+      )}
+
+      {/* Collections made for you */}
+      {isAuthenticated && userTopics.length > 0 && (
+        <section className="mb-6">
+          <h2 className="text-lg font-bold tracking-tight text-neutral-900 mb-3">Collections made for you</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            {userTopics.slice(0, 4).map((topic) => {
+              const theme = COLLECTION_THEMES[topic];
+              if (!theme) return null;
+              const color = TOPIC_COLORS[topic] || "#6B7280";
+              return (
+                <CollectionCard
+                  key={topic}
+                  title={theme.title}
+                  subtitle={theme.subtitle}
+                  color={color}
+                  onClick={() => navigate(`/search?q=${encodeURIComponent(topic)}`)}
+                />
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {/* Topic carousels */}
       {userTopics.map((topic) => (
         topicSources[topic]?.length > 0 && (
@@ -130,6 +177,9 @@ export default function Home() {
       {otherSources.length > 0 && (
         <SourceCarousel title="Discover more" subtitle="Explore other topics" sources={otherSources} />
       )}
+
+      {/* Invite friends */}
+      {isAuthenticated && <InviteFriends />}
 
       {/* Manage recommendations */}
       {isAuthenticated && (

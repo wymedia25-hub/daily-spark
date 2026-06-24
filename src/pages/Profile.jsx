@@ -111,7 +111,7 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="mt-5 grid grid-cols-3 gap-3">
           <div className="rounded-xl bg-neutral-50 p-3 text-center">
             <p className="text-xl font-bold text-neutral-900">{stats.completed}</p>
             <p className="text-xs text-neutral-400">Completed</p>
@@ -119,6 +119,10 @@ export default function Profile() {
           <div className="rounded-xl bg-neutral-50 p-3 text-center">
             <p className="text-xl font-bold text-neutral-900">{stats.read}</p>
             <p className="text-xs text-neutral-400">Cards read</p>
+          </div>
+          <div className="rounded-xl bg-orange-50 p-3 text-center">
+            <p className="text-xl font-bold text-[#FF6B35]">{user?.streak_count || 0}🔥</p>
+            <p className="text-xs text-neutral-400">Streak</p>
           </div>
         </div>
       </div>
@@ -186,6 +190,26 @@ export default function Profile() {
             <Check size={14} /> Topics updated
           </p>
         )}
+      </div>
+
+      {/* Invite friends */}
+      <div className="mt-5 rounded-2xl border border-neutral-200 bg-white p-5">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-sm font-semibold text-neutral-900">Grow together</h2>
+            <p className="mt-1 text-xs text-neutral-400">Share Knowi with your friends</p>
+          </div>
+        </div>
+        <button
+          onClick={() => {
+            const url = window.location.origin;
+            if (navigator.share) navigator.share({ title: "Join Knowi", text: "Learn something new every day!", url });
+            else navigator.clipboard.writeText(url);
+          }}
+          className="mt-3 w-full rounded-xl bg-[#FF6B35] py-2.5 text-sm font-semibold text-white"
+        >
+          Invite friends
+        </button>
       </div>
 
       {/* Admin link */}

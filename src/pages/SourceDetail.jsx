@@ -79,14 +79,18 @@ export default function SourceDetail() {
         });
         setProgress(created);
       }
-      // Update streak
+      // Update streak and daily tracking
       const today = new Date().toISOString().split("T")[0];
-      if (user.last_active_date !== today) {
+      const isNewDay = user.last_active_date !== today;
+      const todayCards = isNewDay ? 1 : (user.today_cards_read || 0) + 1;
+      if (isNewDay) {
         const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
         const streak = user.last_active_date === yesterday ? (user.streak_count || 0) + 1 : 1;
-        await base44.auth.updateMe({ streak_count: streak, last_active_date: today });
-        checkUserAuth();
+        await base44.auth.updateMe({ streak_count: streak, last_active_date: today, today_date: today, today_cards_read: todayCards });
+      } else {
+        await base44.auth.updateMe({ today_date: today, today_cards_read: todayCards });
       }
+      checkUserAuth();
       if (isComplete) {
         confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
         setTimeout(() => setShowRating(true), 1000);

@@ -13,7 +13,7 @@ const TYPES = [
 export default function Search() {
   const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(new URLSearchParams(window.location.search).get("q") || "");
   const [typeFilter, setTypeFilter] = useState("all");
 
   useEffect(() => {
