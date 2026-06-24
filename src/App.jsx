@@ -6,6 +6,14 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
+import AppLayout from './components/AppLayout';
+import Home from './pages/Home';
+import Onboarding from './pages/Onboarding';
+import Bookmarks from './pages/Bookmarks';
+import Progress from './pages/Progress';
+import Profile from './pages/Profile';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminAddContent from './pages/AdminAddContent';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -34,7 +42,15 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      {/* Add your page Route elements here */}
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/bookmarks" element={<Bookmarks />} />
+        <Route path="/progress" element={<Progress />} />
+        <Route path="/profile" element={<Profile />} />
+      </Route>
+      <Route path="/onboarding" element={<Onboarding />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/add" element={<AdminAddContent />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

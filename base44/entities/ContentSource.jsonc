@@ -1,0 +1,58 @@
+{
+  "title": "ContentSource",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the book, article, or podcast"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author, creator, or publisher"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "book",
+        "article",
+        "podcast"
+      ],
+      "description": "Content type"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Primary topic category"
+    },
+    "cover_image": {
+      "type": "string",
+      "description": "Cover image URL"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Original source URL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "draft"
+    },
+    "summary": {
+      "type": "string",
+      "description": "1-2 sentence overview of the source"
+    },
+    "total_cards": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of summary cards"
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "topic"
+  ],
+  "name": "ContentSource"
+}

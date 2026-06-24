@@ -1,0 +1,57 @@
+{
+  "title": "UserProgress",
+  "type": "object",
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "description": "Reference to the ContentSource"
+    },
+    "source_title": {
+      "type": "string",
+      "description": "Denormalized source title"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "book",
+        "article",
+        "podcast"
+      ],
+      "description": "Denormalized source type"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Denormalized topic"
+    },
+    "total_cards": {
+      "type": "number",
+      "default": 0,
+      "description": "Total cards in this source"
+    },
+    "read_card_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of cards the user has read"
+    },
+    "bookmarked_card_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of cards the user has bookmarked"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has read all cards from this source"
+    }
+  },
+  "required": [
+    "source_id"
+  ],
+  "name": "UserProgress"
+}

@@ -1,0 +1,52 @@
+{
+  "title": "Card",
+  "type": "object",
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "description": "Reference to the ContentSource"
+    },
+    "source_title": {
+      "type": "string",
+      "description": "Denormalized source title"
+    },
+    "source_author": {
+      "type": "string",
+      "description": "Denormalized source author"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "book",
+        "article",
+        "podcast"
+      ],
+      "description": "Denormalized source type"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Denormalized topic for filtering"
+    },
+    "card_number": {
+      "type": "number",
+      "description": "Position within the source (1-based)"
+    },
+    "headline": {
+      "type": "string",
+      "description": "Punchy insight headline (max 12 words)"
+    },
+    "body": {
+      "type": "string",
+      "description": "2-4 sentence explanation of the insight"
+    }
+  },
+  "required": [
+    "source_id",
+    "source_title",
+    "headline",
+    "body",
+    "topic",
+    "source_type"
+  ],
+  "name": "Card"
+}
