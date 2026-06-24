@@ -5,13 +5,24 @@ import { useAuth } from "@/lib/AuthContext";
 import FeaturedSource from "@/components/FeaturedSource";
 import SourceCarousel from "@/components/SourceCarousel";
 import StreakBadge from "@/components/StreakBadge";
-import WeeklyGrowthStats from "@/components/WeeklyGrowthStats";
+import CategoryStrip from "@/components/CategoryStrip";
 import TopicSelector from "@/components/TopicSelector";
-import { User, Sparkles, LogIn, X } from "lucide-react";
-import DailyMissions from "@/components/DailyMissions";
 import CollectionCard from "@/components/CollectionCard";
-import InviteFriends from "@/components/InviteFriends";
+import { User, Sparkles, LogIn, X, Flame, BookOpen } from "lucide-react";
 import { TOPIC_COLORS } from "@/lib/topics";
+
+const TOPIC_GOALS = {
+  "Psychology": "reach happiness",
+  "Business": "have a successful career",
+  "Science": "boost intelligence",
+  "History": "learn from the past",
+  "Technology": "boost intelligence",
+  "Philosophy": "think deeper",
+  "Health": "reach happiness",
+  "Productivity": "get more done",
+  "Finance": "build your wealth",
+  "Arts & Culture": "spark creativity",
+};
 
 const COLLECTION_THEMES = {
   "Psychology": { title: "Master Your Mind", subtitle: "Understand human behavior" },
@@ -61,8 +72,6 @@ export default function Home() {
 
   const userTopics = user?.topics || [];
   const completedIds = new Set(progress.filter((p) => p.completed).map((p) => p.source_id));
-  const totalRead = progress.reduce((sum, p) => sum + (p.read_card_ids?.length || 0), 0);
-  const totalInsights = progress.filter(p => (p.read_card_ids?.length || 0) > 0).length;
 
   const topicSources = useMemo(() => {
     const map = {};
@@ -75,6 +84,11 @@ export default function Home() {
   const featured = useMemo(() => {
     return sources.find((s) => userTopics.includes(s.topic) && !completedIds.has(s.id)) || sources[0];
   }, [sources, userTopics, completedIds]);
+
+  const recommended = useMemo(() => {
+    const readTopics = new Set(progress.map(p => p.topic).filter(Boolean));
+    return sources.filter(s => readTopics.has(s.topic) && !completedIds.has(s.id) && !userTopics.includes(s.topic)).slice(0, 10);
+  }, [sources, progress, completedIds, userTopics]);
 
   const otherSources = useMemo(() => {
     return sources.filter((s) => !userTopics.includes(s.topic));
@@ -121,21 +135,34 @@ export default function Home() {
         </div>
       )}
 
-      {/* Featured source */}
+      {/* Free daily read */}
       {featured && <FeaturedSource source={featured} />}
 
-      {/* Weekly growth */}
-      {isAuthenticated && totalRead > 0 && (
-        <div className="mb-6">
-          <WeeklyGrowthStats keyPoints={totalRead} minutes={Math.round(totalRead * 1.5)} insights={totalInsights} />
-        </div>
+      {/* Categories you're interested in */}
+      {isAuthenticated && userTopics.length > 0 && (
+        <CategoryStrip topics={userTopics} onTopicClick={(t) => navigate(`/search?q=${encodeURIComponent(t)}`)} />
       )}
 
-      {/* Daily missions */}
-      {isAuthenticated && (
-        <div className="mb-6">
-          <DailyMissions todayCardsRead={user?.today_date === new Date().toISOString().split("T")[0] ? (user?.today_cards_read || 0) : 0} />
-        </div>
+      {/* You might also like */}
+      {recommended.length > 0 && (
+        <SourceCarousel title="You might also like" subtitle="Summaries based on your activity" sources={recommended} />
+      )}
+
+      {/* Topic carousels — More to [goal] */}
+      {userTopics.map((topic) => (
+        topicSources[topic]?.length > 0 && (
+          <SourceCarousel
+            key={topic}
+            title={`More to ${TOPIC_GOALS[topic] || topic.toLowerCase()}`}
+            subtitle="You might like these summaries for this goal"
+            sources={topicSources[topic]}
+          />
+        )
+      ))}
+
+      {/* Discover more */}
+      {otherSources.length > 0 && (
+        <SourceCarousel title="Discover more" subtitle="Explore other topics" sources={otherSources} />
       )}
 
       {/* Collections made for you */}
@@ -161,31 +188,11 @@ export default function Home() {
         </section>
       )}
 
-      {/* Topic carousels */}
-      {userTopics.map((topic) => (
-        topicSources[topic]?.length > 0 && (
-          <SourceCarousel
-            key={topic}
-            title={`More to ${topic.toLowerCase()}`}
-            subtitle="You might like these summaries for this goal"
-            sources={topicSources[topic]}
-          />
-        )
-      ))}
-
-      {/* Other sources */}
-      {otherSources.length > 0 && (
-        <SourceCarousel title="Discover more" subtitle="Explore other topics" sources={otherSources} />
-      )}
-
-      {/* Invite friends */}
-      {isAuthenticated && <InviteFriends />}
-
       {/* Manage recommendations */}
       {isAuthenticated && (
         <div className="mt-2 mb-8 rounded-2xl border border-neutral-200 bg-white p-5">
           <h3 className="text-sm font-bold text-neutral-900 mb-1">Manage recommendations</h3>
-          <p className="text-xs text-neutral-400 mb-3">Adjust your goals to get new recommendations</p>
+          <p className="text-xs text-neutral-400 mb-3">To get new recommendations, you need to adjust your goals</p>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {userTopics.map((t) => (
               <span key={t} className="rounded-lg bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700">{t}</span>
