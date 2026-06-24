@@ -65,7 +65,10 @@ export default function ContentsView({ cards, readCardIds, onSelectCard }) {
               <div className="mt-2 flex items-center justify-between">
                 <span className="text-xs text-neutral-400">From key point {idx + 1}</span>
                 <div className="flex gap-2">
-                  <button onClick={() => { if (navigator.share) navigator.share({ title: card.headline, text: card.body.substring(0, 200) }); }}
+                  <button onClick={async () => {
+                      try { if (navigator.share) await navigator.share({ title: card.headline, text: card.body.substring(0, 200) }); }
+                      catch (e) { try { await navigator.clipboard.writeText(`${card.headline} - ${card.body.substring(0, 200)}`); } catch {} }
+                    }}
                     className="flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-600 hover:bg-neutral-50">
                     <Share2 size={12} /> Share
                   </button>

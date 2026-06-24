@@ -12,9 +12,15 @@ export default function SourceOverview({ source, cards, readCardIds, onRead, onL
   const insights = Math.max(1, cards.length - 1);
   const youllLearn = cards.slice(0, 5).map((c) => c.headline);
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({ title: source.title, text: source.summary || "", url: window.location.href });
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: source.title, text: source.summary || "", url: window.location.href });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+      }
+    } catch (e) {
+      try { await navigator.clipboard.writeText(window.location.href); } catch {}
     }
   };
 
