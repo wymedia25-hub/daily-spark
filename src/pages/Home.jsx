@@ -77,7 +77,15 @@ export default function Home() {
       ]);
       setAllQuotes(quotes);
       setAllTopics(topics);
-      buildFeed(quotes, topics, p, null);
+      const params = new URLSearchParams(window.location.search);
+      const topicParam = params.get("topic");
+      if (topicParam) {
+        setSelectedTopic(topicParam);
+        buildFeed(quotes, topics, p, topicParam);
+        window.history.replaceState({}, "", "/");
+      } else {
+        buildFeed(quotes, topics, p, null);
+      }
     } catch (err) {
       console.error(err);
     } finally {
