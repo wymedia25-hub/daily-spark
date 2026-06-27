@@ -1,0 +1,55 @@
+{
+  "title": "Quote",
+  "type": "object",
+  "name": "Quote",
+  "properties": {
+    "text": {
+      "type": "string",
+      "description": "Quote text (1-3 sentences)"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author attribution (optional)"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Topic name this quote belongs to"
+    },
+    "background_image_url": {
+      "type": "string",
+      "description": "Background image URL for the quote"
+    },
+    "set_number": {
+      "type": "number",
+      "default": 1,
+      "description": "Groups quotes into sets of 5"
+    },
+    "is_premium": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this quote is premium-only"
+    }
+  },
+  "required": [
+    "text",
+    "topic"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

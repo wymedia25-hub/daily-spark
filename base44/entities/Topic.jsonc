@@ -1,0 +1,50 @@
+{
+  "title": "Topic",
+  "type": "object",
+  "name": "Topic",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Topic name (e.g. Positive Thinking, Self-Love, Hustle, Self-Esteem, Social Anxiety, Healing, Strength, Short Quotes)"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon identifier for the topic"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of the topic"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order for sorting"
+    },
+    "is_premium": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this topic is premium-only"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

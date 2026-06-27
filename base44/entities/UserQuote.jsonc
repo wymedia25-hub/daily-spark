@@ -1,0 +1,14 @@
+{
+  "title": "UserQuote",
+  "type": "object",
+  "name": "UserQuote",
+  "properties": {
+    "text": {
+      "type": "string",
+      "description": "User-submitted quote text"
+    }
+  },
+  "required": [
+    "text"
+  ]
+}

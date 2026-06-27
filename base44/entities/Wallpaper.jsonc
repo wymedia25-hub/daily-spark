@@ -1,0 +1,45 @@
+{
+  "title": "Wallpaper",
+  "type": "object",
+  "name": "Wallpaper",
+  "properties": {
+    "image_url": {
+      "type": "string",
+      "description": "Wallpaper image URL"
+    },
+    "quote_text": {
+      "type": "string",
+      "description": "Quote text displayed on the wallpaper"
+    },
+    "theme": {
+      "type": "string",
+      "description": "Theme name for the wallpaper"
+    },
+    "is_premium": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this wallpaper is premium-only"
+    }
+  },
+  "required": [
+    "image_url"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

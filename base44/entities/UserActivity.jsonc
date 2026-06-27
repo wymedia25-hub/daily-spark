@@ -1,0 +1,54 @@
+{
+  "title": "UserActivity",
+  "type": "object",
+  "name": "UserActivity",
+  "properties": {
+    "liked_quote_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of quotes the user liked"
+    },
+    "saved_quote_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of quotes the user saved"
+    },
+    "viewed_quote_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of quotes the user viewed"
+    },
+    "last_seen_date": {
+      "type": "string",
+      "description": "ISO date of last activity"
+    },
+    "current_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Current streak count"
+    },
+    "longest_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Longest streak achieved"
+    },
+    "streak_days": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Array of ISO dates representing active days"
+    }
+  },
+  "required": []
+}

@@ -1,0 +1,74 @@
+{
+  "title": "UserPreferences",
+  "type": "object",
+  "name": "UserPreferences",
+  "properties": {
+    "display_name": {
+      "type": "string",
+      "description": "User's display name"
+    },
+    "focus_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Areas the user wants to focus on"
+    },
+    "main_goal": {
+      "type": "string",
+      "enum": [
+        "Reduce stress",
+        "Build confidence",
+        "Stay motivated",
+        "Heal & grow",
+        "Improve relationships"
+      ],
+      "description": "User's primary goal"
+    },
+    "preferred_theme": {
+      "type": "string",
+      "enum": [
+        "Calm nature",
+        "Night sky",
+        "Cozy",
+        "Minimal"
+      ],
+      "description": "Preferred visual theme"
+    },
+    "gender_identity": {
+      "type": "string",
+      "description": "User's gender identity"
+    },
+    "age_range": {
+      "type": "string",
+      "description": "User's age range"
+    },
+    "relationship_status": {
+      "type": "string",
+      "description": "User's relationship status"
+    },
+    "beliefs": {
+      "type": "string",
+      "description": "User's beliefs / spirituality"
+    },
+    "muted_topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Topics the user has muted"
+    },
+    "reminder_time": {
+      "type": "string",
+      "description": "Preferred daily reminder time (HH:MM)"
+    },
+    "onboarding_complete": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether onboarding is complete"
+    }
+  },
+  "required": []
+}
