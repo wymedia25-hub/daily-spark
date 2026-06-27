@@ -4,9 +4,10 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import QuoteCard from "@/components/QuoteCard";
 import ThemeButton from "@/components/ThemeButton";
+import TopicPicker from "@/components/TopicPicker";
 import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
 import { calculateStreakUpdate } from "@/lib/streakUtils";
-import { LogIn, Sparkles } from "lucide-react";
+import { LogIn, Sparkles, X } from "lucide-react";
 
 export default function Home() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
@@ -14,6 +15,9 @@ export default function Home() {
   const [prefs, setPrefs] = useState(null);
   const [activity, setActivity] = useState(null);
   const [feed, setFeed] = useState([]);
+  const [allQuotes, setAllQuotes] = useState([]);
+  const [allTopics, setAllTopics] = useState([]);
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState("Calm nature");
   const containerRef = useRef(null);
@@ -67,17 +71,44 @@ export default function Home() {
       }
       setActivity(act);
 
-      const [allQuotes, allTopics] = await Promise.all([
+      const [quotes, topics] = await Promise.all([
         base44.entities.Quote.list(200),
         base44.entities.Topic.list(50),
       ]);
+      setAllQuotes(quotes);
+      setAllTopics(topics);
+      buildFeed(quotes, topics, p, null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      const muted = new Set(p.muted_topics || []);
-      let filtered = allQuotes.filter((q) => !muted.has(q.topic));
+  const buildFeed = (quotes, topics, p, topic) => {
+    const muted = new Set(p.muted_topics || []);
+    let filtered = quotes.filter((q) => !muted.has(q.topic));
 
+    if (topic) {
+      // Topic selected: show only quotes from that topic
+      const topicObj = topics.find((t) => t.name === topic);
+      const isPremiumTopic = topicObj?.is_premium;
+
+      filtered = filtered.filter((q) => q.topic === topic);
+
+      if (isPremiumTopic && !p.is_premium) {
+        // Non-premium user selecting a premium topic: show paywall
+        filtered = [{
+          _locked: true,
+          id: "paywall",
+          paywallTitle: `Unlock ${topic}, chosen for you`,
+          paywallSubtitle: "Upgrade to access all quotes in this topic, plus wallpapers & more.",
+        }];
+      }
+    } else {
+      // Default "For You" feed
       const focusSet = new Set(p.focus_areas || p.recommended_topics || []);
 
-      // Sort: focus area / recommended quotes first
       filtered.sort((a, b) => {
         const aFocus = focusSet.has(a.topic) ? 0 : 1;
         const bFocus = focusSet.has(b.topic) ? 0 : 1;
@@ -85,9 +116,8 @@ export default function Home() {
       });
 
       if (!p.is_premium) {
-        // Premium recommended topic names for personalized paywall
         const premiumRecTopics = (p.recommended_topics || []).filter((name) => {
-          const t = allTopics.find((t) => t.name === name);
+          const t = topics.find((t) => t.name === name);
           return t && t.is_premium;
         });
 
@@ -102,7 +132,6 @@ export default function Home() {
           paywallSubtitle: "Unlock all premium topics, unlimited quotes, wallpapers & more",
         };
 
-        // Free focus-area quotes first, then paywall, then filler free quotes
         const freeFocus = filtered
           .filter((q) => !q.is_premium && focusSet.has(q.topic))
           .slice(0, FREE_DAILY_SETS * QUOTES_PER_SET);
@@ -112,13 +141,16 @@ export default function Home() {
 
         filtered = [...freeFocus, paywallCard, ...freeFiller];
       }
-
-      setFeed(filtered);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
     }
+
+    setFeed(filtered);
+  };
+
+  const handleTopicSelect = (topic) => {
+    setSelectedTopic(topic);
+    viewedSet.current.clear();
+    if (containerRef.current) containerRef.current.scrollTo({ top: 0 });
+    if (prefs) buildFeed(allQuotes, allTopics, prefs, topic);
   };
 
   const markViewed = useCallback(async (quoteId) => {
@@ -212,6 +244,15 @@ export default function Home() {
 
   return (
     <div className="relative h-screen overflow-hidden">
+      <TopicPicker topics={allTopics} selectedTopic={selectedTopic} onSelect={handleTopicSelect} userPrefs={prefs} />
+      {selectedTopic && (
+        <button
+          onClick={() => handleTopicSelect(null)}
+          className="fixed right-4 top-16 z-40 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur-md"
+        >
+          <X size={16} className="text-white" />
+        </button>
+      )}
       <div ref={containerRef} className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide">
         {feed.map((quote, i) => (
           <div key={quote.id || i} data-idx={i}>
@@ -232,7 +273,7 @@ export default function Home() {
           </div>
         ))}
       </div>
-      <div className="fixed right-4 top-6 z-30">
+      <div className="fixed bottom-28 right-4 z-30">
         <ThemeButton currentTheme={theme} onThemeChange={handleThemeChange} />
       </div>
     </div>
