@@ -26,6 +26,61 @@
       ],
       "description": "User's primary goal"
     },
+    "mood": {
+      "type": "string",
+      "enum": [
+        "Sad",
+        "Anxious",
+        "Unmotivated",
+        "Okay",
+        "Hopeful"
+      ],
+      "description": "How the user feels right now (onboarding signal)"
+    },
+    "struggles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Heartbreak",
+          "Anxiety & overthinking",
+          "Depression & sadness",
+          "Low confidence",
+          "Lack of motivation",
+          "Toxic relationship",
+          "Loneliness",
+          "Work & business stress"
+        ]
+      },
+      "default": [],
+      "description": "What the user is struggling with (multi-select onboarding signal)"
+    },
+    "quote_style": {
+      "type": "string",
+      "enum": [
+        "Short & punchy",
+        "Deep & reflective",
+        "Tough love",
+        "Gentle & soft"
+      ],
+      "description": "Preferred quote style (onboarding signal)"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Interest chips the user selected during onboarding"
+    },
+    "recommended_topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Topics recommended by the scoring engine based on onboarding answers; pre-selected for the user"
+    },
     "preferred_theme": {
       "type": "string",
       "enum": [
@@ -35,6 +90,11 @@
         "Minimal"
       ],
       "description": "Preferred visual theme"
+    },
+    "is_premium": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has premium access"
     },
     "gender_identity": {
       "type": "string",

@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import QuoteCard from "@/components/QuoteCard";
 import ThemeButton from "@/components/ThemeButton";
-import { getThemeBackground, FREE_TOPIC_COUNT, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
+import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
 import { calculateStreakUpdate } from "@/lib/streakUtils";
 import { LogIn, Sparkles } from "lucide-react";
 
@@ -75,23 +75,42 @@ export default function Home() {
       const muted = new Set(p.muted_topics || []);
       let filtered = allQuotes.filter((q) => !muted.has(q.topic));
 
-      if (!p.is_premium) {
-        const freeTopicNames = new Set(
-          allTopics.filter((t) => !t.is_premium).sort((a, b) => (a.order || 0) - (b.order || 0)).slice(0, FREE_TOPIC_COUNT).map((t) => t.name)
-        );
-        filtered = filtered.filter((q) => !q.is_premium && freeTopicNames.has(q.topic));
-        filtered = filtered.slice(0, FREE_DAILY_SETS * QUOTES_PER_SET);
-      }
+      const focusSet = new Set(p.focus_areas || p.recommended_topics || []);
 
-      const focusSet = new Set(p.focus_areas || []);
+      // Sort: focus area / recommended quotes first
       filtered.sort((a, b) => {
         const aFocus = focusSet.has(a.topic) ? 0 : 1;
         const bFocus = focusSet.has(b.topic) ? 0 : 1;
         return aFocus - bFocus;
       });
 
-      if (!p.is_premium && filtered.length >= FREE_DAILY_SETS * QUOTES_PER_SET) {
-        filtered = [...filtered, { _locked: true, id: "paywall" }];
+      if (!p.is_premium) {
+        // Premium recommended topic names for personalized paywall
+        const premiumRecTopics = (p.recommended_topics || []).filter((name) => {
+          const t = allTopics.find((t) => t.name === name);
+          return t && t.is_premium;
+        });
+
+        const paywallTitle = premiumRecTopics.length > 0
+          ? `Unlock ${premiumRecTopics.slice(0, 2).join(" & ")}${premiumRecTopics.length > 2 ? " & more" : ""}, chosen for you`
+          : "You've reached your daily limit";
+
+        const paywallCard = {
+          _locked: true,
+          id: "paywall",
+          paywallTitle,
+          paywallSubtitle: "Unlock all premium topics, unlimited quotes, wallpapers & more",
+        };
+
+        // Free focus-area quotes first, then paywall, then filler free quotes
+        const freeFocus = filtered
+          .filter((q) => !q.is_premium && focusSet.has(q.topic))
+          .slice(0, FREE_DAILY_SETS * QUOTES_PER_SET);
+        const freeFiller = filtered
+          .filter((q) => !q.is_premium && !focusSet.has(q.topic))
+          .slice(0, 5);
+
+        filtered = [...freeFocus, paywallCard, ...freeFiller];
       }
 
       setFeed(filtered);
@@ -207,6 +226,8 @@ export default function Home() {
               onShare={() => handleShare(quote)}
               backgroundUrl={quote._locked ? null : getThemeBackground(theme, i)}
               isLocked={quote._locked}
+              paywallTitle={quote.paywallTitle}
+              paywallSubtitle={quote.paywallSubtitle}
             />
           </div>
         ))}
