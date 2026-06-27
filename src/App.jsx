@@ -9,19 +9,16 @@ import ScrollToTop from './components/ScrollToTop';
 import AppLayout from './components/AppLayout';
 import Home from './pages/Home';
 import Onboarding from './pages/Onboarding';
-import Progress from './pages/Progress';
+import Explore from './pages/Explore';
 import Profile from './pages/Profile';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminAddContent from './pages/AdminAddContent';
-import SourceDetail from './pages/SourceDetail';
-import Search from './pages/Search';
-import Library from './pages/Library';
-// Add page imports here
+import Settings from './pages/Settings';
+import Wallpapers from './pages/Wallpapers';
+import MyQuotes from './pages/MyQuotes';
+import Paywall from './pages/Paywall';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
@@ -30,40 +27,33 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
       navigateToLogin();
       return null;
     }
   }
 
-  // Render the main app
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/library" element={<Library />} />
-        <Route path="/bookmarks" element={<Library />} />
-        <Route path="/progress" element={<Progress />} />
+        <Route path="/explore" element={<Explore />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/wallpapers" element={<Wallpapers />} />
+        <Route path="/my-quotes" element={<MyQuotes />} />
+        <Route path="/paywall" element={<Paywall />} />
       </Route>
-      <Route path="/source/:id" element={<SourceDetail />} />
       <Route path="/onboarding" element={<Onboarding />} />
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/admin/add" element={<AdminAddContent />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 };
 
-
 function App() {
-
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>

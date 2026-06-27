@@ -1,10 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Search, BookOpen } from "lucide-react";
+import { Home, Compass, User } from "lucide-react";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
-  { icon: Search, label: "Search", path: "/search" },
-  { icon: BookOpen, label: "Library", path: "/library" },
+  { icon: Compass, label: "Explore", path: "/explore" },
+  { icon: User, label: "Profile", path: "/profile" },
 ];
 
 export default function BottomNav() {
@@ -20,7 +20,7 @@ export default function BottomNav() {
               key={path}
               to={path}
               className={`flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 transition-colors ${
-                active ? "text-[#FF6B35]" : "text-neutral-400 hover:text-neutral-600"
+                active ? "text-purple-600" : "text-neutral-400 hover:text-neutral-600"
               }`}
             >
               <Icon size={22} strokeWidth={active ? 2.5 : 2} />

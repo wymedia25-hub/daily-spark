@@ -1,229 +1,219 @@
-import { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import FeaturedSource from "@/components/FeaturedSource";
-import SourceCarousel from "@/components/SourceCarousel";
-import StreakBadge from "@/components/StreakBadge";
-import CategoryStrip from "@/components/CategoryStrip";
-import TopicSelector from "@/components/TopicSelector";
-import CollectionCard from "@/components/CollectionCard";
-import { User, Sparkles, LogIn, X, Flame, BookOpen } from "lucide-react";
-import { TOPIC_COLORS } from "@/lib/topics";
-
-const TOPIC_GOALS = {
-  "Psychology": "reach happiness",
-  "Business": "have a successful career",
-  "Science": "boost intelligence",
-  "History": "learn from the past",
-  "Technology": "boost intelligence",
-  "Philosophy": "think deeper",
-  "Health": "reach happiness",
-  "Productivity": "get more done",
-  "Finance": "build your wealth",
-  "Arts & Culture": "spark creativity",
-};
-
-const COLLECTION_THEMES = {
-  "Psychology": { title: "Master Your Mind", subtitle: "Understand human behavior" },
-  "Business": { title: "Think Like a CEO", subtitle: "Plan, Achieve, Succeed" },
-  "Self-Help": { title: "Unlock Your Potential", subtitle: "Transform your daily habits" },
-  "Science": { title: "How The World Works", subtitle: "Science-backed insights" },
-  "History": { title: "Lessons From The Past", subtitle: "Timeless wisdom & stories" },
-  "Philosophy": { title: "Deep Thinking", subtitle: "Big questions, clear answers" },
-  "Finance": { title: "Build Your Wealth", subtitle: "Smart money strategies" },
-  "Productivity": { title: "Get More Done", subtitle: "Work smarter, not harder" },
-  "Health": { title: "Live Better", subtitle: "Mind, body & wellness" },
-  "Technology": { title: "The Future Is Now", subtitle: "Innovation & the digital age" },
-};
+import QuoteCard from "@/components/QuoteCard";
+import ThemeButton from "@/components/ThemeButton";
+import { getThemeBackground, FREE_TOPIC_COUNT, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
+import { calculateStreakUpdate } from "@/lib/streakUtils";
+import { LogIn, Sparkles } from "lucide-react";
 
 export default function Home() {
-  const { user, isAuthenticated, isLoadingAuth, checkUserAuth } = useAuth();
+  const { user, isAuthenticated, isLoadingAuth } = useAuth();
   const navigate = useNavigate();
-  const [sources, setSources] = useState([]);
-  const [progress, setProgress] = useState([]);
+  const [prefs, setPrefs] = useState(null);
+  const [activity, setActivity] = useState(null);
+  const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showGoals, setShowGoals] = useState(false);
-  const [editTopics, setEditTopics] = useState([]);
-  const [savingTopics, setSavingTopics] = useState(false);
-
-  useEffect(() => {
-    if (!isLoadingAuth && isAuthenticated && user && (!user.topics || user.topics.length === 0)) {
-      navigate("/onboarding");
-    }
-  }, [isLoadingAuth, isAuthenticated, user, navigate]);
+  const [theme, setTheme] = useState("Calm nature");
+  const containerRef = useRef(null);
+  const viewedSet = useRef(new Set());
 
   useEffect(() => {
     if (isLoadingAuth) return;
-    loadData();
-  }, [isLoadingAuth, isAuthenticated, user]);
+    if (!isAuthenticated) { setLoading(false); return; }
+    loadAll();
+  }, [isLoadingAuth, isAuthenticated]);
 
-  const loadData = async () => {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success")) {
+      window.history.replaceState({}, "", "/");
+      if (prefs) setPrefs({ ...prefs, is_premium: true });
+    }
+  }, [prefs]);
+
+  const loadAll = async () => {
     try {
-      const src = await base44.entities.ContentSource.filter({ status: "published" }, "-created_date", 200);
-      setSources(src);
-      if (isAuthenticated && user) {
-        const prog = await base44.entities.UserProgress.filter({ created_by_id: user.id }, "-updated_date", 300);
-        setProgress(prog);
+      const userPrefs = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
+      if (userPrefs.length === 0 || !userPrefs[0].onboarding_complete) {
+        navigate("/onboarding");
+        return;
       }
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
+      const p = userPrefs[0];
+      setPrefs(p);
+      setTheme(p.preferred_theme || "Calm nature");
+
+      const userActivity = await base44.entities.UserActivity.filter({ created_by_id: user.id }, "-created_date", 1);
+      let act = userActivity[0];
+      if (!act) {
+        act = await base44.entities.UserActivity.create({
+          liked_quote_ids: [], saved_quote_ids: [], viewed_quote_ids: [],
+          current_streak: 0, longest_streak: 0, streak_days: [],
+          last_seen_date: "", viewed_today_count: 0, viewed_today_date: "",
+        });
+      }
+
+      const streakUpdate = calculateStreakUpdate(act.streak_days, act.last_seen_date);
+      if (streakUpdate.changed) {
+        const longest = Math.max(act.longest_streak || 0, streakUpdate.current_streak);
+        const today = new Date().toISOString().split("T")[0];
+        act = await base44.entities.UserActivity.update(act.id, {
+          streak_days: streakUpdate.streak_days,
+          current_streak: streakUpdate.current_streak,
+          longest_streak: longest,
+          last_seen_date: today,
+        });
+      }
+      setActivity(act);
+
+      const [allQuotes, allTopics] = await Promise.all([
+        base44.entities.Quote.list(200),
+        base44.entities.Topic.list(50),
+      ]);
+
+      const muted = new Set(p.muted_topics || []);
+      let filtered = allQuotes.filter((q) => !muted.has(q.topic));
+
+      if (!p.is_premium) {
+        const freeTopicNames = new Set(
+          allTopics.filter((t) => !t.is_premium).sort((a, b) => (a.order || 0) - (b.order || 0)).slice(0, FREE_TOPIC_COUNT).map((t) => t.name)
+        );
+        filtered = filtered.filter((q) => !q.is_premium && freeTopicNames.has(q.topic));
+        filtered = filtered.slice(0, FREE_DAILY_SETS * QUOTES_PER_SET);
+      }
+
+      const focusSet = new Set(p.focus_areas || []);
+      filtered.sort((a, b) => {
+        const aFocus = focusSet.has(a.topic) ? 0 : 1;
+        const bFocus = focusSet.has(b.topic) ? 0 : 1;
+        return aFocus - bFocus;
+      });
+
+      if (!p.is_premium && filtered.length >= FREE_DAILY_SETS * QUOTES_PER_SET) {
+        filtered = [...filtered, { _locked: true, id: "paywall" }];
+      }
+
+      setFeed(filtered);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const userTopics = user?.topics || [];
-  const completedIds = new Set(progress.filter((p) => p.completed).map((p) => p.source_id));
+  const markViewed = useCallback(async (quoteId) => {
+    if (!quoteId || quoteId === "paywall" || viewedSet.current.has(quoteId)) return;
+    viewedSet.current.add(quoteId);
 
-  const topicSources = useMemo(() => {
-    const map = {};
-    userTopics.forEach((topic) => {
-      map[topic] = sources.filter((s) => s.topic === topic);
+    if (!activity) return;
+    const newViewed = [...new Set([...(activity.viewed_quote_ids || []), quoteId])];
+    const today = new Date().toISOString().split("T")[0];
+    const isNewDay = activity.viewed_today_date !== today;
+    const newCount = isNewDay ? 1 : (activity.viewed_today_count || 0) + 1;
+
+    const updated = await base44.entities.UserActivity.update(activity.id, {
+      viewed_quote_ids: newViewed,
+      viewed_today_count: newCount,
+      viewed_today_date: today,
     });
-    return map;
-  }, [sources, userTopics]);
+    setActivity(updated);
+  }, [activity]);
 
-  const featured = useMemo(() => {
-    return sources.find((s) => userTopics.includes(s.topic) && !completedIds.has(s.id)) || sources[0];
-  }, [sources, userTopics, completedIds]);
-
-  const recommended = useMemo(() => {
-    const readTopics = new Set(progress.map(p => p.topic).filter(Boolean));
-    return sources.filter(s => readTopics.has(s.topic) && !completedIds.has(s.id) && !userTopics.includes(s.topic)).slice(0, 10);
-  }, [sources, progress, completedIds, userTopics]);
-
-  const otherSources = useMemo(() => {
-    return sources.filter((s) => !userTopics.includes(s.topic));
-  }, [sources, userTopics]);
-
-  const saveGoals = async () => {
-    if (editTopics.length < 3) return;
-    setSavingTopics(true);
-    await base44.auth.updateMe({ topics: editTopics });
-    await checkUserAuth();
-    setShowGoals(false);
-    setSavingTopics(false);
+  const toggleLike = async (quoteId) => {
+    if (!activity) return;
+    const liked = activity.liked_quote_ids || [];
+    const newLiked = liked.includes(quoteId) ? liked.filter((id) => id !== quoteId) : [...liked, quoteId];
+    const updated = await base44.entities.UserActivity.update(activity.id, { liked_quote_ids: newLiked });
+    setActivity(updated);
   };
+
+  const toggleSave = async (quoteId) => {
+    if (!activity) return;
+    const saved = activity.saved_quote_ids || [];
+    const newSaved = saved.includes(quoteId) ? saved.filter((id) => id !== quoteId) : [...saved, quoteId];
+    const updated = await base44.entities.UserActivity.update(activity.id, { saved_quote_ids: newSaved });
+    setActivity(updated);
+  };
+
+  const handleShare = async (quote) => {
+    const text = `"${quote.text}"${quote.author ? ` — ${quote.author}` : ""}`;
+    try {
+      if (navigator.share) await navigator.share({ text });
+      else await navigator.clipboard.writeText(text);
+    } catch (e) {}
+  };
+
+  const handleThemeChange = async (newTheme) => {
+    setTheme(newTheme);
+    if (prefs) {
+      const updated = await base44.entities.UserPreferences.update(prefs.id, { preferred_theme: newTheme });
+      setPrefs(updated);
+    }
+  };
+
+  useEffect(() => {
+    if (!feed.length || !containerRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = parseInt(entry.target.dataset.idx);
+            const quote = feed[idx];
+            if (quote && !quote._locked) markViewed(quote.id);
+          }
+        });
+      },
+      { threshold: 0.6 }
+    );
+    const cards = containerRef.current.querySelectorAll("[data-idx]");
+    cards.forEach((c) => observer.observe(c));
+    return () => observer.disconnect();
+  }, [feed, markViewed]);
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-[#FF6B35]" /></div>;
+    return <div className="flex h-screen items-center justify-center bg-[#FAFAFA]"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
   }
 
+  if (!isAuthenticated) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 px-6 text-center text-white">
+        <Sparkles size={48} className="mb-6" />
+        <h1 className="text-3xl font-bold">Daily Spark</h1>
+        <p className="mt-3 max-w-xs text-white/80">Start your journey to daily motivation and self-growth.</p>
+        <button onClick={() => base44.auth.redirectToLogin(window.location.href)} className="mt-8 flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-purple-600">
+          <LogIn size={16} /> Get Started
+        </button>
+      </div>
+    );
+  }
+
+  const likedSet = new Set(activity?.liked_quote_ids || []);
+  const savedSet = new Set(activity?.saved_quote_ids || []);
+
   return (
-    <div>
-      {/* Header */}
-      <header className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold tracking-tight text-neutral-900">Knowi</h1>
-        <div className="flex items-center gap-3">
-          {isAuthenticated && <StreakBadge count={user?.streak_count || 0} />}
-          {isAuthenticated ? (
-            <Link to="/profile" className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100">
-              <User size={16} className="text-neutral-500" />
-            </Link>
-          ) : (
-            <button onClick={() => base44.auth.redirectToLogin(window.location.href)}
-              className="flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-2 text-xs font-semibold text-white">
-              <LogIn size={14} /> Sign in
-            </button>
-          )}
-        </div>
-      </header>
-
-      {/* Not signed in banner */}
-      {!isAuthenticated && (
-        <div className="mb-5 flex items-center gap-3 rounded-xl border border-[#FF6B35]/20 bg-[#FF6B35]/5 px-4 py-3">
-          <Sparkles size={18} className="shrink-0 text-[#FF6B35]" />
-          <p className="text-sm text-neutral-600">Sign in to personalize your feed and track progress</p>
-        </div>
-      )}
-
-      {/* Free daily read */}
-      {featured && <FeaturedSource source={featured} />}
-
-      {/* Categories you're interested in */}
-      {isAuthenticated && userTopics.length > 0 && (
-        <CategoryStrip topics={userTopics} onTopicClick={(t) => navigate(`/search?q=${encodeURIComponent(t)}`)} />
-      )}
-
-      {/* You might also like */}
-      {recommended.length > 0 && (
-        <SourceCarousel title="You might also like" subtitle="Summaries based on your activity" sources={recommended} />
-      )}
-
-      {/* Topic carousels — More to [goal] */}
-      {userTopics.map((topic) => (
-        topicSources[topic]?.length > 0 && (
-          <SourceCarousel
-            key={topic}
-            title={`More to ${TOPIC_GOALS[topic] || topic.toLowerCase()}`}
-            subtitle="You might like these summaries for this goal"
-            sources={topicSources[topic]}
-          />
-        )
-      ))}
-
-      {/* Discover more */}
-      {otherSources.length > 0 && (
-        <SourceCarousel title="Discover more" subtitle="Explore other topics" sources={otherSources} />
-      )}
-
-      {/* Collections made for you */}
-      {isAuthenticated && userTopics.length > 0 && (
-        <section className="mb-6">
-          <h2 className="text-lg font-bold tracking-tight text-neutral-900 mb-3">Collections made for you</h2>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {userTopics.slice(0, 4).map((topic) => {
-              const theme = COLLECTION_THEMES[topic];
-              if (!theme) return null;
-              const color = TOPIC_COLORS[topic] || "#6B7280";
-              return (
-                <CollectionCard
-                  key={topic}
-                  title={theme.title}
-                  subtitle={theme.subtitle}
-                  color={color}
-                  onClick={() => navigate(`/search?q=${encodeURIComponent(topic)}`)}
-                />
-              );
-            })}
+    <div className="relative h-screen overflow-hidden">
+      <div ref={containerRef} className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide">
+        {feed.map((quote, i) => (
+          <div key={quote.id || i} data-idx={i}>
+            <QuoteCard
+              quote={quote}
+              index={i}
+              total={feed.length}
+              isLiked={likedSet.has(quote.id)}
+              isSaved={savedSet.has(quote.id)}
+              onLike={() => toggleLike(quote.id)}
+              onSave={() => toggleSave(quote.id)}
+              onShare={() => handleShare(quote)}
+              backgroundUrl={quote._locked ? null : getThemeBackground(theme, i)}
+              isLocked={quote._locked}
+            />
           </div>
-        </section>
-      )}
-
-      {/* Manage recommendations */}
-      {isAuthenticated && (
-        <div className="mt-2 mb-8 rounded-2xl border border-neutral-200 bg-white p-5">
-          <h3 className="text-sm font-bold text-neutral-900 mb-1">Manage recommendations</h3>
-          <p className="text-xs text-neutral-400 mb-3">To get new recommendations, you need to adjust your goals</p>
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {userTopics.map((t) => (
-              <span key={t} className="rounded-lg bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700">{t}</span>
-            ))}
-          </div>
-          <button
-            onClick={() => { setEditTopics(userTopics); setShowGoals(true); }}
-            className="w-full rounded-xl border border-neutral-200 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
-          >
-            Manage
-          </button>
-        </div>
-      )}
-
-      {/* Goals modal */}
-      {showGoals && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40">
-          <div className="w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-white p-6 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-bold text-neutral-900">Update recommendations?</h3>
-              <button onClick={() => setShowGoals(false)}><X size={20} className="text-neutral-400" /></button>
-            </div>
-            <p className="text-sm text-neutral-400 mb-5">Your content will refresh to match your updated goals</p>
-            <TopicSelector selected={editTopics} onToggle={(t) => setEditTopics((prev) => prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t])} minRequired={3} />
-            <button onClick={saveGoals} disabled={editTopics.length < 3 || savingTopics}
-              className="mt-5 w-full rounded-xl bg-[#FF6B35] py-3 text-sm font-semibold text-white disabled:bg-neutral-200 disabled:text-neutral-400">
-              {savingTopics ? "Saving..." : "Continue"}
-            </button>
-          </div>
-        </div>
-      )}
+        ))}
+      </div>
+      <div className="fixed right-4 top-6 z-30">
+        <ThemeButton currentTheme={theme} onThemeChange={handleThemeChange} />
+      </div>
     </div>
   );
 }

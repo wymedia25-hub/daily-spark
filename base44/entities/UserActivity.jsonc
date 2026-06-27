@@ -48,6 +48,15 @@
       },
       "default": [],
       "description": "Array of ISO dates representing active days"
+    },
+    "viewed_today_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of quotes viewed today (resets daily)"
+    },
+    "viewed_today_date": {
+      "type": "string",
+      "description": "ISO date for the current daily view count"
     }
   },
   "required": []
