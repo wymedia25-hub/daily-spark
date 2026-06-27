@@ -68,11 +68,6 @@
       "type": "boolean",
       "default": false,
       "description": "Whether onboarding is complete"
-    },
-    "is_premium": {
-      "type": "boolean",
-      "default": false,
-      "description": "Whether user has an active premium subscription"
     }
   },
   "required": []
