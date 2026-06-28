@@ -75,7 +75,6 @@ export default function Explore() {
 
   const shortcuts = [
     { label: "Saved Quotes", icon: Heart, count: favQuoteIds.size, action: () => navigate("/saved-quotes") },
-    { label: "Saved", icon: Bookmark, count: savedIds.size, action: () => setView("saved") },
     { label: "Your Quotes", icon: Plus, count: null, action: () => navigate("/my-quotes") },
     { label: "History", icon: Clock, count: viewedIds.size, action: () => setView("history") },
   ];
@@ -152,7 +151,7 @@ export default function Explore() {
     <div className="mx-auto max-w-2xl px-4 pb-24 pt-6">
       <h1 className="mb-5 text-2xl font-bold tracking-tight text-neutral-900">Explore</h1>
 
-      <div className="mb-6 grid grid-cols-4 gap-3">
+      <div className="mb-6 grid grid-cols-3 gap-3">
         {shortcuts.map((s) => (
           <button key={s.label} onClick={s.action} className="flex flex-col items-center gap-2 rounded-2xl border border-neutral-200 bg-white p-3 transition-colors hover:bg-neutral-50">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50">
