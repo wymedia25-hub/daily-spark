@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { ArrowLeft, User, Palette, Globe, LogOut, Share, Star, Heart, Languages, Check } from "lucide-react";
+import { ArrowLeft, User, Palette, Globe, LogOut, Share, Star, Heart, Languages, Bell, Mail, Check } from "lucide-react";
 import { MAIN_GOALS, GENDER_OPTIONS, AGE_RANGES, RELATIONSHIP_OPTIONS, BELIEF_OPTIONS } from "@/lib/themes";
 
 export default function Settings() {
@@ -97,6 +97,39 @@ export default function Settings() {
               <span className="text-xs font-medium">Saved</span>
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <div className="mb-3 flex items-center gap-2">
+          <Bell size={18} className="text-neutral-400" />
+          <h2 className="text-sm font-bold text-neutral-900">Reminders</h2>
+        </div>
+        <div className="rounded-2xl border border-neutral-200 bg-white">
+          <div className="flex items-center justify-between px-5 py-4">
+            <div>
+              <span className="text-sm text-neutral-500">Daily reminder time</span>
+              <p className="text-xs text-neutral-400">We'll email you a quote at this hour</p>
+            </div>
+            <input
+              type="time"
+              value={prefs?.reminder_time || ""}
+              onChange={async (e) => {
+                const val = e.target.value;
+                setPrefs({ ...prefs, reminder_time: val });
+                const updated = await base44.entities.UserPreferences.update(prefs.id, { reminder_time: val });
+                setPrefs(updated);
+              }}
+              className="rounded-lg border border-neutral-200 px-3 py-2 text-sm font-medium text-neutral-900 outline-none focus:border-purple-400"
+            />
+          </div>
+          <div className="flex items-center justify-between border-t border-neutral-100 px-5 py-4">
+            <div className="flex items-center gap-2">
+              <Mail size={16} className="text-neutral-400" />
+              <span className="text-sm text-neutral-500">Method</span>
+            </div>
+            <span className="text-sm font-medium text-neutral-900">Email</span>
+          </div>
         </div>
       </div>
 
