@@ -112,7 +112,7 @@ export default function Home() {
       }
     } else {
       // Only show quotes from topics the user follows
-      const focusSet = new Set(p.focus_areas || p.recommended_topics || []);
+      const focusSet = new Set(p.focus_areas || []);
       filtered = filtered.filter((q) => focusSet.has(q.topic));
 
       if (!p.is_premium) {

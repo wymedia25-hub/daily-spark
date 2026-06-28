@@ -59,6 +59,7 @@ export default function Profile() {
   const saveFocus = async () => {
     const updated = await base44.entities.UserPreferences.update(prefs.id, { focus_areas: focusAreas });
     setPrefs(updated);
+    setFocusAreas(updated.focus_areas || []);
     setEditingFocus(false);
     setSavedFocus(true);
     setTimeout(() => setSavedFocus(false), 2000);
