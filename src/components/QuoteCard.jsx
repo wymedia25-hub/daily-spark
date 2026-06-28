@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, Share2, Loader2, Plus, Check } from "lucide-react";
+import { Heart, Share2, Loader2 } from "lucide-react";
 import { shareQuoteAsImage } from "@/lib/shareQuoteImage";
 
 export default function QuoteCard({
@@ -12,9 +12,6 @@ export default function QuoteCard({
   isLocked,
   paywallTitle,
   paywallSubtitle,
-  showFollow,
-  isFollowing,
-  onFollow,
 }) {
   const [sharing, setSharing] = useState(false);
 
@@ -67,21 +64,13 @@ export default function QuoteCard({
         )}
       </div>
 
-      <div className="absolute bottom-28 left-0 right-0 z-20 flex items-center justify-center gap-6">
+      <div className="absolute bottom-28 left-0 right-0 z-20 flex items-center justify-center gap-8">
         <button
           onClick={onFavorite}
           className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-transform active:scale-90"
         >
           <Heart size={22} className={isFavorited ? "fill-red-400 text-red-400" : "text-white"} />
         </button>
-        {showFollow && (
-          <button
-            onClick={onFollow}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-transform active:scale-90"
-          >
-            {isFollowing ? <Check size={20} className="text-white" /> : <Plus size={20} className="text-white" />}
-          </button>
-        )}
         <button
           onClick={handleShare}
           className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-transform active:scale-90"

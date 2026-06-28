@@ -199,23 +199,6 @@ export default function Explore() {
             </div>
           )}
 
-          {!search && (
-            <div className="mb-8 space-y-2.5">
-              <div
-                onClick={() => navigate("/my-quotes")}
-                className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50"
-              >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
-                  <Plus size={20} />
-                </div>
-                <div className="flex-1">
-                  <span className="font-semibold text-neutral-900">Your Own Quotes</span>
-                  <p className="text-xs text-neutral-400">{userQuotes.length} {userQuotes.length === 1 ? "quote" : "quotes"}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
           <div className="space-y-8">
             {filteredSections.map((section) => (
               <div key={section.name}>
