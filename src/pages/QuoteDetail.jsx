@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import QuoteCard from "@/components/QuoteCard";
 import { getThemeBackground } from "@/lib/themes";
-import { toggleFavoriteQuote } from "@/lib/userPrefs";
+import { toggleFavoriteQuote, toggleFollowingTopic } from "@/lib/userPrefs";
 import { ChevronLeft } from "lucide-react";
 
 export default function QuoteDetail() {
@@ -48,6 +48,12 @@ export default function QuoteDetail() {
     setPrefs(updated);
   };
 
+  const toggleFollow = async () => {
+    if (!quote?.topic) return;
+    const updated = await toggleFollowingTopic(user.id, quote.topic);
+    setPrefs(updated);
+  };
+
   if (loading) {
     return <div className="flex h-screen items-center justify-center bg-[#FAFAFA]"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
   }
@@ -62,6 +68,9 @@ export default function QuoteDetail() {
   }
 
   const favoriteSet = new Set(prefs?.favorite_quotes || []);
+  const followingSet = new Set(prefs?.following_topics || []);
+  const quoteTopic = quote?.topic;
+  const showFollow = !!quoteTopic;
 
   return (
     <div className="relative h-screen overflow-hidden">
@@ -82,6 +91,9 @@ export default function QuoteDetail() {
             isFavorited={favoriteSet.has(quote.id)}
             onFavorite={() => toggleFavorite(quote.id)}
             backgroundUrl={getThemeBackground(prefs?.preferred_theme || "Calm nature", 0)}
+            showFollow={showFollow}
+            isFollowing={showFollow && followingSet.has(quoteTopic)}
+            onFollow={toggleFollow}
           />
         </div>
       </div>
