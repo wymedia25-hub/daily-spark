@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StreakTracker from "@/components/StreakTracker";
-import { Settings as SettingsIcon, LogOut, Shield, Bookmark, Bell, Sparkles, Crown, Pencil, Check, X, Heart, CheckCircle2, Circle } from "lucide-react";
-import { toggleFollowingTopic } from "@/lib/userPrefs";
+import { Settings as SettingsIcon, LogOut, Shield, Bookmark, Bell, Sparkles, Crown, Pencil, Check, X, Heart } from "lucide-react";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoadingAuth, logout, checkUserAuth } = useAuth();
@@ -13,7 +12,6 @@ export default function Profile() {
   const [prefs, setPrefs] = useState(null);
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [editingFocus, setEditingFocus] = useState(false);
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -61,15 +59,9 @@ export default function Profile() {
     );
   }
 
-  const toggleFollow = async (name) => {
-    const updated = await toggleFollowingTopic(user.id, name);
-    setPrefs(updated);
-  };
-
   const isAdmin = user?.role === "admin";
 
   const customizeItems = [
-    { label: "Topics You Follow", icon: Sparkles, action: () => setEditingFocus(true) },
     { label: "Saved Quotes", icon: Heart, action: () => navigate("/saved-quotes") },
     { label: "Wallpapers", icon: Bookmark, action: () => navigate("/wallpapers") },
     { label: "Reminders", icon: Bell, action: () => navigate("/settings") },
@@ -128,29 +120,6 @@ export default function Profile() {
         <LogOut size={16} /> Sign out
       </button>
 
-      {editingFocus && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
-          <div className="max-h-[80vh] w-full max-w-md overflow-y-auto rounded-t-2xl bg-white p-6 sm:rounded-2xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-neutral-900">Topics You Follow</h3>
-              <button onClick={() => setEditingFocus(false)}><X size={20} className="text-neutral-400" /></button>
-            </div>
-            <div className="space-y-2.5">
-              {topics.map((t) => {
-                const selected = (prefs?.following_topics || []).includes(t.name);
-                return (
-                  <button key={t.id} onClick={() => toggleFollow(t.name)} className="flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors hover:bg-neutral-50">
-                    <span className="text-sm font-medium text-neutral-800">{t.name}</span>
-                    {selected
-                      ? <CheckCircle2 size={20} className="text-purple-500" />
-                      : <Circle size={20} className="text-neutral-300" />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
