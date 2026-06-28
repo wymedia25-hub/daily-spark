@@ -67,7 +67,7 @@ export default function Settings() {
   const handleShare = async () => {
     const url = window.location.origin;
     try {
-      if (navigator.share) await navigator.share({ title: "Self Made", text: "Get daily motivation!", url });
+      if (navigator.share) await navigator.share({ title: "Daily Spark", text: "Get daily motivation!", url });
       else await navigator.clipboard.writeText(url);
     } catch (e) {}
   };
@@ -141,7 +141,7 @@ export default function Settings() {
         <div className="rounded-2xl border border-neutral-200 bg-white">
           <button onClick={handleShare} className="flex w-full items-center gap-3 border-b border-neutral-100 px-5 py-4 text-left">
             <Share size={18} className="text-neutral-400" />
-            <span className="text-sm text-neutral-700">Share Self Made</span>
+            <span className="text-sm text-neutral-700">Share Daily Spark</span>
           </button>
           <button className="flex w-full items-center gap-3 px-5 py-4 text-left">
             <Star size={18} className="text-neutral-400" />

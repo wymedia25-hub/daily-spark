@@ -234,8 +234,8 @@ export default function Home() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 px-6 text-center text-white">
         <Sparkles size={48} className="mb-6" />
-        <h1 className="text-3xl font-bold">Self Made</h1>
-        <p className="mt-3 max-w-xs text-white/80">Daily fuel for the self-made</p>
+        <h1 className="text-3xl font-bold">Daily Spark</h1>
+        <p className="mt-3 max-w-xs text-white/80">Daily motivation for the self-made</p>
         <button onClick={() => base44.auth.redirectToLogin(window.location.href)} className="mt-8 flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-purple-600">
           <LogIn size={16} /> Get Started
         </button>
