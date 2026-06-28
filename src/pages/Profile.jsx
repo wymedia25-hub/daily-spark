@@ -74,7 +74,7 @@ export default function Profile() {
           {(prefs?.display_name || user?.email || "U")[0].toUpperCase()}
         </div>
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-neutral-900">{prefs?.display_name || "Daily Spark User"}</h1>
+          <h1 className="text-xl font-bold tracking-tight text-neutral-900">{prefs?.display_name || "Self Made User"}</h1>
           <p className="text-sm text-neutral-400">{user?.email}</p>
         </div>
       </div>

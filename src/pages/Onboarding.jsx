@@ -227,8 +227,8 @@ export default function Onboarding() {
             <div className="mb-8 flex h-28 w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500">
               <Sparkles size={52} className="text-white" strokeWidth={1.5} />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Welcome to Daily Spark</h1>
-            <p className="mt-2 text-base text-neutral-500">Your daily dose of motivation, one quote at a time.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Welcome to Self Made</h1>
+            <p className="mt-2 text-base text-neutral-500">Daily fuel for the self-made</p>
             <h2 className="mb-3 mt-8 text-lg font-semibold text-neutral-900">What should we call you?</h2>
             <input
               type="text"

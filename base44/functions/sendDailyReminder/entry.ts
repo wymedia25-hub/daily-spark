@@ -29,12 +29,12 @@ Deno.serve(async (req) => {
 
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: user.email,
-          subject: "Your Daily Spark ✨",
+          subject: "Self Made ✨",
           body: `<div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px; text-align: center;">
-            <h2 style="color: #7C3AED; margin-bottom: 24px;">Your Daily Spark</h2>
+            <h2 style="color: #7C3AED; margin-bottom: 24px;">Self Made</h2>
             <p style="font-size: 22px; line-height: 1.6; color: #1f2937; font-style: italic;">"${quote.text}"</p>
             ${quote.author ? `<p style="color: #6b7280; margin-top: 16px;">— ${quote.author}</p>` : ""}
-            <p style="color: #9ca3af; margin-top: 32px; font-size: 14px;">Open Daily Spark for more inspiration</p>
+            <p style="color: #9ca3af; margin-top: 32px; font-size: 14px;">Open Self Made for more inspiration</p>
           </div>`,
         });
         sentCount++;

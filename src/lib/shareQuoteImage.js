@@ -54,7 +54,7 @@ export async function shareQuoteAsImage(quote, backgroundUrl) {
 
   ctx.shadowColor = "transparent";
   const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
-  const file = new File([blob], "daily-spark-quote.png", { type: "image/png" });
+  const file = new File([blob], "self-made-quote.png", { type: "image/png" });
 
   const shareText = `"${quote.text}"${quote.author ? ` — ${quote.author}` : ""}`;
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -63,7 +63,7 @@ export async function shareQuoteAsImage(quote, backgroundUrl) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "daily-spark-quote.png";
+    a.download = "self-made-quote.png";
     document.body.appendChild(a);
     a.click();
     a.remove();

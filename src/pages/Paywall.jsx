@@ -72,7 +72,7 @@ export default function Paywall() {
           <div className="mb-4 flex h-20 w-20 mx-auto items-center justify-center rounded-3xl bg-white/20 backdrop-blur-md">
             <Crown size={40} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold">Daily Spark Premium</h1>
+          <h1 className="text-3xl font-bold">Self Made Premium</h1>
           <p className="mt-2 text-white/80">Unlock unlimited motivation and self-growth</p>
         </div>
 
