@@ -4,10 +4,9 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import QuoteCard from "@/components/QuoteCard";
 import ThemeButton from "@/components/ThemeButton";
-import TopicPicker from "@/components/TopicPicker";
 import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
 import { calculateStreakUpdate } from "@/lib/streakUtils";
-import { LogIn, Sparkles, X } from "lucide-react";
+import { LogIn, Sparkles } from "lucide-react";
 
 export default function Home() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
@@ -17,7 +16,6 @@ export default function Home() {
   const [feed, setFeed] = useState([]);
   const [allQuotes, setAllQuotes] = useState([]);
   const [allTopics, setAllTopics] = useState([]);
-  const [selectedTopic, setSelectedTopic] = useState(null);
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState("Calm nature");
   const containerRef = useRef(null);
@@ -79,13 +77,8 @@ export default function Home() {
       setAllTopics(topics);
       const params = new URLSearchParams(window.location.search);
       const topicParam = params.get("topic");
-      if (topicParam) {
-        setSelectedTopic(topicParam);
-        buildFeed(quotes, topics, p, topicParam);
-        window.history.replaceState({}, "", "/");
-      } else {
-        buildFeed(quotes, topics, p, null);
-      }
+      buildFeed(quotes, topics, p, topicParam);
+      if (topicParam) window.history.replaceState({}, "", "/");
     } catch (err) {
       console.error(err);
     } finally {
@@ -152,13 +145,6 @@ export default function Home() {
     }
 
     setFeed(filtered);
-  };
-
-  const handleTopicSelect = (topic) => {
-    setSelectedTopic(topic);
-    viewedSet.current.clear();
-    if (containerRef.current) containerRef.current.scrollTo({ top: 0 });
-    if (prefs) buildFeed(allQuotes, allTopics, prefs, topic);
   };
 
   const markViewed = useCallback(async (quoteId) => {
@@ -252,15 +238,6 @@ export default function Home() {
 
   return (
     <div className="relative h-screen overflow-hidden">
-      <TopicPicker topics={allTopics} selectedTopic={selectedTopic} onSelect={handleTopicSelect} userPrefs={prefs} />
-      {selectedTopic && (
-        <button
-          onClick={() => handleTopicSelect(null)}
-          className="fixed right-4 top-16 z-40 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur-md"
-        >
-          <X size={16} className="text-white" />
-        </button>
-      )}
       <div ref={containerRef} className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide">
         {feed.map((quote, i) => (
           <div key={quote.id || i} data-idx={i}>
