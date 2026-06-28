@@ -81,12 +81,21 @@ export default function Reminders() {
             </div>
             <span className="text-sm font-medium text-neutral-900">Email</span>
           </div>
-          <div className="flex items-center justify-between border-t border-neutral-100 px-5 py-4">
+          <button
+            onClick={() => reminderEnabled && updateTime("")}
+            disabled={!reminderEnabled}
+            className="flex w-full items-center justify-between border-t border-neutral-100 px-5 py-4 text-left"
+          >
             <span className="text-sm text-neutral-500">Status</span>
-            <span className={`text-sm font-medium ${reminderEnabled ? "text-green-600" : "text-neutral-400"}`}>
-              {reminderEnabled ? "On" : "Off"}
-            </span>
-          </div>
+            <div className="flex items-center gap-2">
+              <span className={`text-sm font-medium ${reminderEnabled ? "text-green-600" : "text-neutral-400"}`}>
+                {reminderEnabled ? "On" : "Off"}
+              </span>
+              <div className={`relative h-6 w-11 rounded-full transition-colors ${reminderEnabled ? "bg-green-500" : "bg-neutral-200"}`}>
+                <div className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${reminderEnabled ? "translate-x-5" : "translate-x-0.5"}`} />
+              </div>
+            </div>
+          </button>
           {savedFlash && (
             <div className="flex items-center gap-1.5 border-t border-neutral-100 px-5 py-3 text-green-600">
               <Check size={14} />
