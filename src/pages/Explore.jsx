@@ -18,7 +18,6 @@ export default function Explore() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [view, setView] = useState("topics");
-  const [favoriteTopics, setFavoriteTopics] = useState([]);
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -37,24 +36,9 @@ export default function Explore() {
       setTopics(t.sort((a, b) => (a.order || 0) - (b.order || 0)));
       setQuotes(q);
       if (a[0]) setActivity(a[0]);
-      if (p[0]) {
-        setPrefs(p[0]);
-        setFavoriteTopics(p[0].favorite_topics || []);
-      }
+      if (p[0]) setPrefs(p[0]);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
-  };
-
-  const toggleFavorite = async (topicName, e) => {
-    e.stopPropagation();
-    const newFavs = favoriteTopics.includes(topicName)
-      ? favoriteTopics.filter((n) => n !== topicName)
-      : [...favoriteTopics, topicName];
-    setFavoriteTopics(newFavs);
-    if (prefs) {
-      const updated = await base44.entities.UserPreferences.update(prefs.id, { favorite_topics: newFavs });
-      setPrefs(updated);
-    }
   };
 
   if (loading) {
@@ -69,7 +53,6 @@ export default function Explore() {
   const savedIds = new Set(activity?.saved_quote_ids || []);
   const viewedIds = new Set(activity?.viewed_quote_ids || []);
   const isPremiumUser = prefs?.is_premium;
-  const favSet = new Set(favoriteTopics);
 
   const getQuotesByIds = (ids) => quotes.filter((q) => ids.has(q.id));
 
@@ -85,17 +68,16 @@ export default function Explore() {
   const renderTopicChip = (topic) => {
     const Icon = TOPIC_ICON_MAP[topic.icon] || Sparkles;
     const locked = topic.is_premium && !isPremiumUser;
-    const isFav = favSet.has(topic.name);
     return (
-      <div
+      <button
         key={topic.name}
         onClick={() => openTopic(topic.name)}
-        className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50"
+        className="flex w-full items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50"
       >
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-neutral-500">
           <Icon size={20} />
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-neutral-900">{topic.name}</span>
             {topic.is_premium && (
@@ -106,13 +88,7 @@ export default function Explore() {
           </div>
           {topic.description && <p className="text-xs text-neutral-400">{topic.description}</p>}
         </div>
-        <button
-          onClick={(e) => toggleFavorite(topic.name, e)}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
-        >
-          <Heart size={18} className={isFav ? "fill-red-400 text-red-400" : "text-neutral-300"} />
-        </button>
-      </div>
+      </button>
     );
   };
 
@@ -121,17 +97,10 @@ export default function Explore() {
     .map((name) => topics.find((t) => t.name === name))
     .filter(Boolean);
 
-  const favoriteTopicObjects = favoriteTopics
-    .map((name) => topics.find((t) => t.name === name))
-    .filter(Boolean);
-
   const sectionsList = [];
   if (recommendedTopics.length > 0) {
     sectionsList.push({ name: "For you", topics: recommendedTopics });
   }
-
-  sectionsList.push({ name: "Favorites", topics: favoriteTopicObjects, isFavorites: true });
-
   for (const sectionName of STATIC_SECTIONS) {
     const sectionTopics = topics
       .filter((t) => (t.sections || []).includes(sectionName))
@@ -192,9 +161,7 @@ export default function Explore() {
             {filteredSections.map((section) => (
               <div key={section.name}>
                 <h2 className="mb-3 text-lg font-bold tracking-tight text-neutral-900">{section.name}</h2>
-                {section.isFavorites && section.topics.length === 0 ? (
-                  <p className="py-3 text-sm text-neutral-400">Tap the heart on any topic to save it here.</p>
-                ) : section.topics.length === 0 ? (
+                {section.topics.length === 0 ? (
                   <p className="py-4 text-center text-sm text-neutral-400">No topics here yet</p>
                 ) : (
                   <div className="space-y-2.5">

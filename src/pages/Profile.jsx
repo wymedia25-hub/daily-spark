@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StreakTracker from "@/components/StreakTracker";
-import { Settings as SettingsIcon, LogOut, Shield, Bookmark, Bell, Sparkles, Crown, Pencil, Check, X, Heart } from "lucide-react";
+import { Settings as SettingsIcon, LogOut, Shield, Bookmark, Bell, Sparkles, Crown, Pencil, Check, X } from "lucide-react";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoadingAuth, logout, checkUserAuth } = useAuth();
@@ -15,7 +15,6 @@ export default function Profile() {
   const [editingFocus, setEditingFocus] = useState(false);
   const [focusAreas, setFocusAreas] = useState([]);
   const [savedFocus, setSavedFocus] = useState(false);
-  const [favoriteTopics, setFavoriteTopics] = useState([]);
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -34,7 +33,6 @@ export default function Profile() {
       if (p[0]) setPrefs(p[0]);
       setTopics(t.sort((a, b) => (a.order || 0) - (b.order || 0)));
       setFocusAreas(p[0]?.focus_areas || []);
-      setFavoriteTopics(p[0]?.favorite_topics || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
@@ -56,16 +54,7 @@ export default function Profile() {
     setFocusAreas((prev) => prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name]);
   };
 
-  const toggleFavorite = async (name) => {
-    const newFavs = favoriteTopics.includes(name)
-      ? favoriteTopics.filter((t) => t !== name)
-      : [...favoriteTopics, name];
-    setFavoriteTopics(newFavs);
-    if (prefs) {
-      const updated = await base44.entities.UserPreferences.update(prefs.id, { favorite_topics: newFavs });
-      setPrefs(updated);
-    }
-  };
+
 
   const saveFocus = async () => {
     const updated = await base44.entities.UserPreferences.update(prefs.id, { focus_areas: focusAreas });
@@ -146,17 +135,11 @@ export default function Profile() {
             <div className="space-y-2.5">
               {topics.map((t) => {
                 const selected = focusAreas.includes(t.name);
-                const isFav = favoriteTopics.includes(t.name);
                 return (
-                  <div key={t.id} className={`flex w-full items-center gap-2 rounded-xl border px-4 py-3 ${selected ? "border-purple-500 bg-purple-50" : "border-neutral-200"}`}>
-                    <button onClick={() => toggleFocus(t.name)} className="flex flex-1 items-center justify-between text-left">
-                      <span className="text-sm font-medium text-neutral-800">{t.name}</span>
-                      {selected && <Check size={16} className="text-purple-500" />}
-                    </button>
-                    <button onClick={() => toggleFavorite(t.name)} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full hover:bg-neutral-100 transition-colors">
-                      <Heart size={15} className={isFav ? "fill-red-400 text-red-400" : "text-neutral-300"} />
-                    </button>
-                  </div>
+                  <button key={t.id} onClick={() => toggleFocus(t.name)} className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left ${selected ? "border-purple-500 bg-purple-50" : "border-neutral-200"}`}>
+                    <span className="text-sm font-medium text-neutral-800">{t.name}</span>
+                    {selected && <Check size={16} className="text-purple-500" />}
+                  </button>
                 );
               })}
             </div>

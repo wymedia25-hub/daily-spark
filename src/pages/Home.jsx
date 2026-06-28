@@ -108,14 +108,9 @@ export default function Home() {
         }];
       }
     } else {
-      // Default "For You" feed
+      // Only show quotes from topics the user follows
       const focusSet = new Set(p.focus_areas || p.recommended_topics || []);
-
-      filtered.sort((a, b) => {
-        const aFocus = focusSet.has(a.topic) ? 0 : 1;
-        const bFocus = focusSet.has(b.topic) ? 0 : 1;
-        return aFocus - bFocus;
-      });
+      filtered = filtered.filter((q) => focusSet.has(q.topic));
 
       if (!p.is_premium) {
         const premiumRecTopics = (p.recommended_topics || []).filter((name) => {
@@ -134,14 +129,11 @@ export default function Home() {
           paywallSubtitle: "Unlock all premium topics, unlimited quotes, wallpapers & more",
         };
 
-        const freeFocus = filtered
-          .filter((q) => !q.is_premium && focusSet.has(q.topic))
+        const freeQuotes = filtered
+          .filter((q) => !q.is_premium)
           .slice(0, FREE_DAILY_SETS * QUOTES_PER_SET);
-        const freeFiller = filtered
-          .filter((q) => !q.is_premium && !focusSet.has(q.topic))
-          .slice(0, 5);
 
-        filtered = [...freeFocus, paywallCard, ...freeFiller];
+        filtered = [...freeQuotes, paywallCard];
       }
     }
 
