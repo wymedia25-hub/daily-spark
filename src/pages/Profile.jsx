@@ -63,7 +63,7 @@ export default function Profile() {
 
   const customizeItems = [
     { label: "Saved Quotes", icon: Heart, action: () => navigate("/saved-quotes") },
-    { label: "Reminders", icon: Bell, action: () => navigate("/settings") },
+    { label: "Reminders", icon: Bell, action: () => navigate("/reminders") },
     { label: "Settings", icon: SettingsIcon, action: () => navigate("/settings") },
   ];
 

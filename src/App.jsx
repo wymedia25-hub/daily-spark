@@ -18,6 +18,7 @@ import SavedQuotes from './pages/SavedQuotes';
 import QuoteDetail from './pages/QuoteDetail';
 import MyQuotes from './pages/MyQuotes';
 import Paywall from './pages/Paywall';
+import Reminders from './pages/Reminders';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -52,6 +53,7 @@ const AuthenticatedApp = () => {
         <Route path="/quote/:id" element={<QuoteDetail />} />
         <Route path="/my-quotes" element={<MyQuotes />} />
         <Route path="/paywall" element={<Paywall />} />
+        <Route path="/reminders" element={<Reminders />} />
       </Route>
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="*" element={<PageNotFound />} />
