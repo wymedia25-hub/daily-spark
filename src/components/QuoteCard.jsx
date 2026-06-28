@@ -1,19 +1,20 @@
-import { Heart, Bookmark, Share2 } from "lucide-react";
+import { useState } from "react";
+import { Heart, Share2, Loader2 } from "lucide-react";
+import { shareQuoteAsImage } from "@/lib/shareQuoteImage";
 
 export default function QuoteCard({
   quote,
   index,
   total,
   isFavorited,
-  isSaved,
   onFavorite,
-  onSave,
-  onShare,
   backgroundUrl,
   isLocked,
   paywallTitle,
   paywallSubtitle,
 }) {
+  const [sharing, setSharing] = useState(false);
+
   if (isLocked) {
     return (
       <div className="relative flex h-screen w-full shrink-0 snap-start snap-always items-center justify-center overflow-hidden bg-gradient-to-br from-purple-600 to-pink-500 px-8">
@@ -35,6 +36,17 @@ export default function QuoteCard({
     );
   }
 
+  const handleShare = async () => {
+    if (sharing) return;
+    setSharing(true);
+    try {
+      await shareQuoteAsImage(quote, backgroundUrl);
+    } catch (e) {
+      console.error(e);
+    }
+    setSharing(false);
+  };
+
   return (
     <div className="relative h-screen w-full shrink-0 snap-start snap-always overflow-hidden">
       <img src={backgroundUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -52,7 +64,7 @@ export default function QuoteCard({
         )}
       </div>
 
-      <div className="absolute bottom-28 left-0 right-0 z-20 flex items-center justify-center gap-6">
+      <div className="absolute bottom-28 left-0 right-0 z-20 flex items-center justify-center gap-8">
         <button
           onClick={onFavorite}
           className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-transform active:scale-90"
@@ -60,16 +72,10 @@ export default function QuoteCard({
           <Heart size={22} className={isFavorited ? "fill-red-400 text-red-400" : "text-white"} />
         </button>
         <button
-          onClick={onSave}
+          onClick={handleShare}
           className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-transform active:scale-90"
         >
-          <Bookmark size={22} className={isSaved ? "fill-amber-400 text-amber-400" : "text-white"} />
-        </button>
-        <button
-          onClick={onShare}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-transform active:scale-90"
-        >
-          <Share2 size={20} className="text-white" />
+          {sharing ? <Loader2 size={20} className="animate-spin text-white" /> : <Share2 size={20} className="text-white" />}
         </button>
       </div>
     </div>

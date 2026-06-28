@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import QuoteCard from "@/components/QuoteCard";
-import ShareSheet from "@/components/ShareSheet";
 import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
 import { calculateStreakUpdate } from "@/lib/streakUtils";
 import { toggleFavoriteQuote } from "@/lib/userPrefs";
@@ -21,7 +20,6 @@ export default function Home() {
   const [theme, setTheme] = useState("Calm nature");
   const [customBackground, setCustomBackground] = useState(null);
   const [activeTopic, setActiveTopic] = useState(null);
-  const [shareQuote, setShareQuote] = useState(null);
   const containerRef = useRef(null);
   const viewedSet = useRef(new Set());
 
@@ -170,18 +168,6 @@ export default function Home() {
     setPrefs(updated);
   };
 
-  const toggleSave = async (quoteId) => {
-    if (!activity) return;
-    const saved = activity.saved_quote_ids || [];
-    const newSaved = saved.includes(quoteId) ? saved.filter((id) => id !== quoteId) : [...saved, quoteId];
-    const updated = await base44.entities.UserActivity.update(activity.id, { saved_quote_ids: newSaved });
-    setActivity(updated);
-  };
-
-  const handleShare = (quote) => {
-    setShareQuote(quote);
-  };
-
   const toggleFollowTopic = async () => {
     if (!activeTopic || !prefs) return;
     const focus = prefs.focus_areas || [];
@@ -229,7 +215,6 @@ export default function Home() {
   }
 
   const favoriteSet = new Set(prefs?.favorite_quotes || []);
-  const savedSet = new Set(activity?.saved_quote_ids || []);
   const isFollowing = activeTopic && (prefs?.focus_areas || []).includes(activeTopic);
 
   return (
@@ -262,10 +247,7 @@ export default function Home() {
               index={i}
               total={feed.length}
               isFavorited={favoriteSet.has(quote.id)}
-              isSaved={savedSet.has(quote.id)}
               onFavorite={() => toggleFavorite(quote.id)}
-              onSave={() => toggleSave(quote.id)}
-              onShare={() => handleShare(quote)}
               backgroundUrl={quote._locked ? null : (customBackground || getThemeBackground(theme, i))}
               isLocked={quote._locked}
               paywallTitle={quote.paywallTitle}
@@ -283,7 +265,6 @@ export default function Home() {
           <Paintbrush size={18} />
         </button>
       </div>
-      <ShareSheet quote={shareQuote} open={!!shareQuote} onClose={() => setShareQuote(null)} />
     </div>
   );
 }
