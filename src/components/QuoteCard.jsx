@@ -52,12 +52,6 @@ export default function QuoteCard({
         )}
       </div>
 
-      <div className="absolute top-6 left-1/2 z-20 -translate-x-1/2">
-        <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
-          {index + 1} / {total}
-        </span>
-      </div>
-
       <div className="absolute bottom-28 left-0 right-0 z-20 flex items-center justify-center gap-6">
         <button
           onClick={onLike}

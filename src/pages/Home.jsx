@@ -18,6 +18,7 @@ export default function Home() {
   const [allTopics, setAllTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState("Calm nature");
+  const [customBackground, setCustomBackground] = useState(null);
   const containerRef = useRef(null);
   const viewedSet = useRef(new Set());
 
@@ -189,12 +190,8 @@ export default function Home() {
     } catch (e) {}
   };
 
-  const handleThemeChange = async (newTheme) => {
-    setTheme(newTheme);
-    if (prefs) {
-      const updated = await base44.entities.UserPreferences.update(prefs.id, { preferred_theme: newTheme });
-      setPrefs(updated);
-    }
+  const handleBackgroundSelect = (url) => {
+    setCustomBackground(url);
   };
 
   useEffect(() => {
@@ -250,7 +247,7 @@ export default function Home() {
               onLike={() => toggleLike(quote.id)}
               onSave={() => toggleSave(quote.id)}
               onShare={() => handleShare(quote)}
-              backgroundUrl={quote._locked ? null : getThemeBackground(theme, i)}
+              backgroundUrl={quote._locked ? null : (customBackground || getThemeBackground(theme, i))}
               isLocked={quote._locked}
               paywallTitle={quote.paywallTitle}
               paywallSubtitle={quote.paywallSubtitle}
@@ -259,7 +256,7 @@ export default function Home() {
         ))}
       </div>
       <div className="fixed bottom-28 right-4 z-30">
-        <ThemeButton currentTheme={theme} onThemeChange={handleThemeChange} />
+        <ThemeButton onBackgroundSelect={handleBackgroundSelect} />
       </div>
     </div>
   );
