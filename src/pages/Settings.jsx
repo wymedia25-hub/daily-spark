@@ -151,8 +151,8 @@ export default function Settings() {
       </div>
 
       {editing && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={() => setEditing(null)}>
-          <div className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-2xl bg-white p-6 pb-8 sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4" onClick={() => setEditing(null)}>
+          <div className="w-full max-w-md rounded-2xl bg-white p-6" onClick={(e) => e.stopPropagation()}>
             <h3 className="mb-4 text-lg font-bold text-neutral-900">{editing.label}</h3>
             {editing.options ? (
               <select value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-purple-400 bg-white">
