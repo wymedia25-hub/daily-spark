@@ -28,7 +28,7 @@ export default function Onboarding() {
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [computed, setComputed] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [favorites, setFavorites] = useState([]);
+  const [following, setFollowing] = useState([]);
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -101,7 +101,7 @@ export default function Onboarding() {
         ...prefs,
         recommended_topics: recommendedTopics,
         focus_areas: selectedTopics,
-        favorite_topics: favorites,
+        following_topics: following,
         onboarding_complete: true,
       };
       const existing = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
@@ -130,9 +130,9 @@ export default function Onboarding() {
     );
   };
 
-  const toggleFavorite = (name, e) => {
+  const toggleFollowing = (name, e) => {
     e.stopPropagation();
-    setFavorites((prev) => prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name]);
+    setFollowing((prev) => prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name]);
   };
 
   const recommendedSet = new Set(recommendedTopics);
@@ -166,11 +166,11 @@ export default function Onboarding() {
     </button>
   );
 
-  const favSet = new Set(favorites);
+  const followingSet = new Set(following);
 
   const TopicCard = ({ topic, selected, recommended, onClick }) => {
     const Icon = ICON_MAP[TOPIC_ICONS[topic.name]] || Sparkles;
-    const isFav = favSet.has(topic.name);
+    const isFollowing = followingSet.has(topic.name);
     return (
       <div
         onClick={onClick}
@@ -189,10 +189,10 @@ export default function Onboarding() {
         )}
         {!recommended && selected && <Check size={18} className="text-purple-500" />}
         <button
-          onClick={(e) => toggleFavorite(topic.name, e)}
+          onClick={(e) => toggleFollowing(topic.name, e)}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
         >
-          <Heart size={16} className={isFav ? "fill-red-400 text-red-400" : "text-neutral-300"} />
+          <Heart size={16} className={isFollowing ? "fill-red-400 text-red-400" : "text-neutral-300"} />
         </button>
       </div>
     );

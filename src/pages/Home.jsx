@@ -6,6 +6,7 @@ import QuoteCard from "@/components/QuoteCard";
 import ShareSheet from "@/components/ShareSheet";
 import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
 import { calculateStreakUpdate } from "@/lib/streakUtils";
+import { toggleFavoriteQuote } from "@/lib/userPrefs";
 import { LogIn, Sparkles, ChevronLeft, Plus, Check, Paintbrush } from "lucide-react";
 
 export default function Home() {
@@ -161,12 +162,9 @@ export default function Home() {
     setActivity(updated);
   }, [activity]);
 
-  const toggleLike = async (quoteId) => {
-    if (!activity) return;
-    const liked = activity.liked_quote_ids || [];
-    const newLiked = liked.includes(quoteId) ? liked.filter((id) => id !== quoteId) : [...liked, quoteId];
-    const updated = await base44.entities.UserActivity.update(activity.id, { liked_quote_ids: newLiked });
-    setActivity(updated);
+  const toggleFavorite = async (quoteId) => {
+    const updated = await toggleFavoriteQuote(user.id, quoteId);
+    setPrefs(updated);
   };
 
   const toggleSave = async (quoteId) => {
@@ -227,7 +225,7 @@ export default function Home() {
     );
   }
 
-  const likedSet = new Set(activity?.liked_quote_ids || []);
+  const favoriteSet = new Set(prefs?.favorite_quotes || []);
   const savedSet = new Set(activity?.saved_quote_ids || []);
   const isFollowing = activeTopic && (prefs?.focus_areas || []).includes(activeTopic);
 
@@ -260,9 +258,9 @@ export default function Home() {
               quote={quote}
               index={i}
               total={feed.length}
-              isLiked={likedSet.has(quote.id)}
+              isFavorited={favoriteSet.has(quote.id)}
               isSaved={savedSet.has(quote.id)}
-              onLike={() => toggleLike(quote.id)}
+              onFavorite={() => toggleFavorite(quote.id)}
               onSave={() => toggleSave(quote.id)}
               onShare={() => handleShare(quote)}
               backgroundUrl={quote._locked ? null : (customBackground || getThemeBackground(theme, i))}

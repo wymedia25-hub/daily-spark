@@ -81,13 +81,21 @@
       "default": [],
       "description": "Topics recommended by the scoring engine based on onboarding answers; pre-selected for the user"
     },
-    "favorite_topics": {
+    "following_topics": {
       "type": "array",
       "items": {
         "type": "string"
       },
       "default": [],
-      "description": "Topic names the user has favorited (bookmarked shortcut list)"
+      "description": "Topic names the user follows (bookmarked via heart icon)"
+    },
+    "favorite_quotes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Quote IDs the user has favorited (heart icon)"
     },
     "preferred_theme": {
       "type": "string",

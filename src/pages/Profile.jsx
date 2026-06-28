@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StreakTracker from "@/components/StreakTracker";
-import { Settings as SettingsIcon, LogOut, Shield, Bookmark, Bell, Sparkles, Crown, Pencil, Check, X } from "lucide-react";
+import { Settings as SettingsIcon, LogOut, Shield, Bookmark, Bell, Sparkles, Crown, Pencil, Check, X, Heart } from "lucide-react";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoadingAuth, logout, checkUserAuth } = useAuth();
@@ -69,6 +69,7 @@ export default function Profile() {
 
   const customizeItems = [
     { label: "Topics You Follow", icon: Sparkles, action: () => setEditingFocus(true) },
+    { label: "Saved Quotes", icon: Heart, action: () => navigate("/saved-quotes") },
     { label: "Wallpapers", icon: Bookmark, action: () => navigate("/wallpapers") },
     { label: "Reminders", icon: Bell, action: () => navigate("/settings") },
     { label: "Settings", icon: SettingsIcon, action: () => navigate("/settings") },

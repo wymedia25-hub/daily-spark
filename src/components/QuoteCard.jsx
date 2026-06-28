@@ -4,9 +4,9 @@ export default function QuoteCard({
   quote,
   index,
   total,
-  isLiked,
+  isFavorited,
   isSaved,
-  onLike,
+  onFavorite,
   onSave,
   onShare,
   backgroundUrl,
@@ -54,10 +54,10 @@ export default function QuoteCard({
 
       <div className="absolute bottom-28 left-0 right-0 z-20 flex items-center justify-center gap-6">
         <button
-          onClick={onLike}
+          onClick={onFavorite}
           className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-transform active:scale-90"
         >
-          <Heart size={22} className={isLiked ? "fill-red-400 text-red-400" : "text-white"} />
+          <Heart size={22} className={isFavorited ? "fill-red-400 text-red-400" : "text-white"} />
         </button>
         <button
           onClick={onSave}

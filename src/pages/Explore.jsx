@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Bookmark, Clock, Plus, Sparkles, Lock, Check } from "lucide-react";
+import { toggleFollowingTopic } from "@/lib/userPrefs";
 
 const TOPIC_ICON_MAP = { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap };
 
@@ -54,11 +55,13 @@ export default function Explore() {
   const viewedIds = new Set(activity?.viewed_quote_ids || []);
   const isPremiumUser = prefs?.is_premium;
   const focusSet = new Set(prefs?.focus_areas || []);
+  const followingSet = new Set(prefs?.following_topics || []);
+  const favQuoteIds = new Set(prefs?.favorite_quotes || []);
 
   const getQuotesByIds = (ids) => quotes.filter((q) => ids.has(q.id));
 
   const shortcuts = [
-    { label: "Liked", icon: Heart, count: likedIds.size, action: () => setView("liked") },
+    { label: "Saved Quotes", icon: Heart, count: favQuoteIds.size, action: () => navigate("/saved-quotes") },
     { label: "Saved", icon: Bookmark, count: savedIds.size, action: () => setView("saved") },
     { label: "Your Quotes", icon: Plus, count: null, action: () => navigate("/my-quotes") },
     { label: "History", icon: Clock, count: viewedIds.size, action: () => setView("history") },
@@ -66,15 +69,22 @@ export default function Explore() {
 
   const openTopic = (topicName) => navigate(`/?topic=${encodeURIComponent(topicName)}`);
 
+  const handleToggleFollow = async (topicName, e) => {
+    e.stopPropagation();
+    const updated = await toggleFollowingTopic(user.id, topicName);
+    setPrefs(updated);
+  };
+
   const renderTopicChip = (topic) => {
     const Icon = TOPIC_ICON_MAP[topic.icon] || Sparkles;
     const locked = topic.is_premium && !isPremiumUser;
     const following = focusSet.has(topic.name);
+    const isFollowed = followingSet.has(topic.name);
     return (
-      <button
+      <div
         key={topic.name}
         onClick={() => openTopic(topic.name)}
-        className="flex w-full items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50"
+        className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50"
       >
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-neutral-500">
           <Icon size={20} />
@@ -95,18 +105,24 @@ export default function Explore() {
             <Check size={16} className="text-purple-600" />
           </div>
         )}
-      </button>
+        <button
+          onClick={(e) => handleToggleFollow(topic.name, e)}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-neutral-100"
+        >
+          <Heart size={16} className={isFollowed ? "fill-red-400 text-red-400" : "text-neutral-300"} />
+        </button>
+      </div>
     );
   };
 
   // Build section groups
-  const recommendedTopics = (prefs?.recommended_topics || [])
+  const followingTopicObjects = (prefs?.following_topics || [])
     .map((name) => topics.find((t) => t.name === name))
     .filter(Boolean);
 
   const sectionsList = [];
-  if (recommendedTopics.length > 0) {
-    sectionsList.push({ name: "For you", topics: recommendedTopics });
+  if (followingTopicObjects.length > 0) {
+    sectionsList.push({ name: "Following", topics: followingTopicObjects });
   }
   for (const sectionName of STATIC_SECTIONS) {
     const sectionTopics = topics
@@ -163,6 +179,13 @@ export default function Explore() {
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search topics" className="w-full rounded-2xl border border-neutral-200 bg-white py-3 pl-12 pr-4 text-sm outline-none focus:border-purple-400" />
           </div>
+
+          {followingSet.size === 0 && !search && (
+            <div className="mb-6 rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-6 text-center">
+              <Heart size={24} className="mx-auto mb-2 text-neutral-300" />
+              <p className="text-sm text-neutral-400">Tap the heart on any topic to follow it.</p>
+            </div>
+          )}
 
           <div className="space-y-8">
             {filteredSections.map((section) => (
