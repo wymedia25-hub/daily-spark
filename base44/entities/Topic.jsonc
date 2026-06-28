@@ -24,6 +24,14 @@
       "type": "boolean",
       "default": false,
       "description": "Whether this topic is premium-only"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Shelves this topic belongs to (e.g. Daily Mindset, Inner Work, Hustle & Wins, Founders & Business). A topic can appear under multiple sections."
     }
   },
   "required": [

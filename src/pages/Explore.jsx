@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Heart as HeartIcon, Bookmark, Clock, Plus, Sparkles } from "lucide-react";
+import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Heart as HeartIcon, Bookmark, Clock, Plus, Sparkles, Lock } from "lucide-react";
 
 const TOPIC_ICON_MAP = { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap };
+
+const STATIC_SECTIONS = ["Daily Mindset", "Inner Work", "Hustle & Wins", "Founders & Business"];
 
 export default function Explore() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
@@ -50,6 +52,7 @@ export default function Explore() {
   const likedIds = new Set(activity?.liked_quote_ids || []);
   const savedIds = new Set(activity?.saved_quote_ids || []);
   const viewedIds = new Set(activity?.viewed_quote_ids || []);
+  const isPremiumUser = prefs?.is_premium;
 
   const getQuotesByIds = (ids) => quotes.filter((q) => ids.has(q.id));
 
@@ -60,7 +63,56 @@ export default function Explore() {
     { label: "History", icon: Clock, count: viewedIds.size, action: () => setView("history") },
   ];
 
-  const filteredTopics = topics.filter((t) => t.name.toLowerCase().includes(search.toLowerCase()));
+  const openTopic = (topicName) => navigate(`/?topic=${encodeURIComponent(topicName)}`);
+
+  const renderTopicChip = (topic) => {
+    const Icon = TOPIC_ICON_MAP[topic.icon] || Sparkles;
+    const locked = topic.is_premium && !isPremiumUser;
+    return (
+      <button
+        key={`${topic.name}`}
+        onClick={() => openTopic(topic.name)}
+        className="flex w-full items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50"
+      >
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-neutral-500">
+          <Icon size={20} />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-neutral-900">{topic.name}</span>
+            {topic.is_premium && (
+              <span className="flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-600">
+                {locked ? <><Lock size={9} /> Premium</> : <Crown size={10} />}
+              </span>
+            )}
+          </div>
+          {topic.description && <p className="text-xs text-neutral-400">{topic.description}</p>}
+        </div>
+      </button>
+    );
+  };
+
+  // Build section groups
+  const recommendedTopics = (prefs?.recommended_topics || [])
+    .map((name) => topics.find((t) => t.name === name))
+    .filter(Boolean);
+
+  const sectionsList = [];
+  if (recommendedTopics.length > 0) {
+    sectionsList.push({ name: "For you", topics: recommendedTopics });
+  }
+  for (const sectionName of STATIC_SECTIONS) {
+    const sectionTopics = topics
+      .filter((t) => (t.sections || []).includes(sectionName))
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+    sectionsList.push({ name: sectionName, topics: sectionTopics });
+  }
+
+  const filteredSections = sectionsList.map((section) => ({
+    ...section,
+    topics: section.topics.filter((t) => t.name.toLowerCase().includes(search.toLowerCase())),
+  }));
+
   const displayQuotes = view === "liked" ? getQuotesByIds(likedIds) : view === "saved" ? getQuotesByIds(savedIds) : view === "history" ? getQuotesByIds(viewedIds) : [];
 
   return (
@@ -100,31 +152,24 @@ export default function Explore() {
 
       {view === "topics" && (
         <>
-          <div className="relative mb-5">
+          <div className="relative mb-6">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search topics" className="w-full rounded-2xl border border-neutral-200 bg-white py-3 pl-12 pr-4 text-sm outline-none focus:border-purple-400" />
           </div>
-          <div className="space-y-2.5">
-            {filteredTopics.map((topic) => {
-              const Icon = TOPIC_ICON_MAP[topic.icon] || Sparkles;
-              const quoteCount = quotes.filter((q) => q.topic === topic.name).length;
-              const isFollowing = prefs?.focus_areas?.includes(topic.name);
-              return (
-                <button key={topic.id} onClick={() => navigate(`/?topic=${encodeURIComponent(topic.name)}`)} className="flex w-full items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${isFollowing ? "bg-purple-500 text-white" : "bg-neutral-100 text-neutral-500"}`}>
-                    <Icon size={20} />
+
+          <div className="space-y-8">
+            {filteredSections.map((section) => (
+              <div key={section.name}>
+                <h2 className="mb-3 text-lg font-bold tracking-tight text-neutral-900">{section.name}</h2>
+                {section.topics.length === 0 ? (
+                  <p className="py-4 text-center text-sm text-neutral-400">No topics here yet</p>
+                ) : (
+                  <div className="space-y-2.5">
+                    {section.topics.map(renderTopicChip)}
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-neutral-900">{topic.name}</span>
-                      {topic.is_premium && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-600">Premium</span>}
-                    </div>
-                    <p className="text-xs text-neutral-400">{topic.description}</p>
-                  </div>
-                  <span className="text-xs text-neutral-400">{quoteCount}</span>
-                </button>
-              );
-            })}
+                )}
+              </div>
+            ))}
           </div>
         </>
       )}
