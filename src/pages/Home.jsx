@@ -112,9 +112,12 @@ export default function Home() {
         }];
       }
     } else {
-      // Only show quotes from topics the user follows
-      const focusSet = new Set(p.focus_areas || []);
-      filtered = filtered.filter((q) => focusSet.has(q.topic));
+      // Show quotes from followed topics; fallback to recommended, then all free
+      let topicNames = p.following_topics || [];
+      if (topicNames.length === 0) topicNames = p.recommended_topics || [];
+      if (topicNames.length === 0) topicNames = topics.filter((t) => !t.is_premium).map((t) => t.name);
+      const topicSet = new Set(topicNames);
+      filtered = filtered.filter((q) => topicSet.has(q.topic));
 
       if (!p.is_premium) {
         const premiumRecTopics = (p.recommended_topics || []).filter((name) => {

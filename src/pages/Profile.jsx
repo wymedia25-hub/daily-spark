@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StreakTracker from "@/components/StreakTracker";
-import { Settings as SettingsIcon, LogOut, Shield, Bookmark, Bell, Sparkles, Crown, Pencil, Check, X, Heart } from "lucide-react";
+import { Settings as SettingsIcon, LogOut, Shield, Bookmark, Bell, Sparkles, Crown, Pencil, Check, X, Heart, CheckCircle2, Circle } from "lucide-react";
+import { toggleFollowingTopic } from "@/lib/userPrefs";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoadingAuth, logout, checkUserAuth } = useAuth();
@@ -13,14 +14,25 @@ export default function Profile() {
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingFocus, setEditingFocus] = useState(false);
-  const [focusAreas, setFocusAreas] = useState([]);
-  const [savedFocus, setSavedFocus] = useState(false);
 
   useEffect(() => {
     if (isLoadingAuth) return;
     if (!isAuthenticated) { setLoading(false); return; }
     loadData();
   }, [isLoadingAuth, isAuthenticated]);
+
+  const reloadPrefs = async () => {
+    if (!user) return;
+    const p = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
+    if (p[0]) setPrefs(p[0]);
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const onFocus = () => reloadPrefs();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [isAuthenticated, user]);
 
   const loadData = async () => {
     try {
@@ -32,7 +44,6 @@ export default function Profile() {
       if (a[0]) setActivity(a[0]);
       if (p[0]) setPrefs(p[0]);
       setTopics(t.sort((a, b) => (a.order || 0) - (b.order || 0)));
-      setFocusAreas(p[0]?.focus_areas || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
@@ -50,19 +61,9 @@ export default function Profile() {
     );
   }
 
-  const toggleFocus = (name) => {
-    setFocusAreas((prev) => prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name]);
-  };
-
-
-
-  const saveFocus = async () => {
-    const updated = await base44.entities.UserPreferences.update(prefs.id, { focus_areas: focusAreas });
+  const toggleFollow = async (name) => {
+    const updated = await toggleFollowingTopic(user.id, name);
     setPrefs(updated);
-    setFocusAreas(updated.focus_areas || []);
-    setEditingFocus(false);
-    setSavedFocus(true);
-    setTimeout(() => setSavedFocus(false), 2000);
   };
 
   const isAdmin = user?.role === "admin";
@@ -136,17 +137,17 @@ export default function Profile() {
             </div>
             <div className="space-y-2.5">
               {topics.map((t) => {
-                const selected = focusAreas.includes(t.name);
+                const selected = (prefs?.following_topics || []).includes(t.name);
                 return (
-                  <button key={t.id} onClick={() => toggleFocus(t.name)} className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left ${selected ? "border-purple-500 bg-purple-50" : "border-neutral-200"}`}>
+                  <button key={t.id} onClick={() => toggleFollow(t.name)} className="flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors hover:bg-neutral-50">
                     <span className="text-sm font-medium text-neutral-800">{t.name}</span>
-                    {selected && <Check size={16} className="text-purple-500" />}
+                    {selected
+                      ? <CheckCircle2 size={20} className="text-purple-500" />
+                      : <Circle size={20} className="text-neutral-300" />}
                   </button>
                 );
               })}
             </div>
-            <button onClick={saveFocus} className="mt-5 w-full rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 py-3 text-sm font-semibold text-white">Save</button>
-            {savedFocus && <p className="mt-2 text-center text-xs text-emerald-500">Topics updated!</p>}
           </div>
         </div>
       )}

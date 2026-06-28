@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { calculateRecommendations, STRUGGLES, MOODS, QUOTE_STYLES } from "@/lib/recommendationEngine";
 import { MAIN_GOALS, TOPIC_ICONS } from "@/lib/themes";
-import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, ArrowRight, ArrowLeft, Check, Sparkles } from "lucide-react";
+import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, ArrowRight, ArrowLeft, Check, Sparkles, CheckCircle2, Circle } from "lucide-react";
 
 const ICON_MAP = { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap };
 const STEPS = ["welcome", "goal", "struggles", "mood", "quote_style", "interests", "result"];
@@ -192,7 +192,9 @@ export default function Onboarding() {
           onClick={(e) => toggleFollowing(topic.name, e)}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
         >
-          <Heart size={16} className={isFollowing ? "fill-red-400 text-red-400" : "text-neutral-300"} />
+          {isFollowing
+            ? <CheckCircle2 size={20} className="text-purple-500" />
+            : <Circle size={20} className="text-neutral-300" />}
         </button>
       </div>
     );

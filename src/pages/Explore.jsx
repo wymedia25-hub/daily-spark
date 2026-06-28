@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Bookmark, Clock, Plus, Sparkles, Lock, Check } from "lucide-react";
+import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Bookmark, Clock, Plus, Sparkles, Lock, Check, CheckCircle2, Circle } from "lucide-react";
 import { toggleFollowingTopic } from "@/lib/userPrefs";
 
 const TOPIC_ICON_MAP = { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap };
@@ -25,6 +25,19 @@ export default function Explore() {
     if (!isAuthenticated) { setLoading(false); return; }
     loadData();
   }, [isLoadingAuth, isAuthenticated]);
+
+  const reloadPrefs = async () => {
+    if (!user) return;
+    const p = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
+    if (p[0]) setPrefs(p[0]);
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const onFocus = () => reloadPrefs();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [isAuthenticated, user]);
 
   const loadData = async () => {
     try {
@@ -109,7 +122,9 @@ export default function Explore() {
           onClick={(e) => handleToggleFollow(topic.name, e)}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-neutral-100"
         >
-          <Heart size={16} className={isFollowed ? "fill-red-400 text-red-400" : "text-neutral-300"} />
+          {isFollowed
+            ? <CheckCircle2 size={20} className="text-purple-500" />
+            : <Circle size={20} className="text-neutral-300" />}
         </button>
       </div>
     );
@@ -182,8 +197,8 @@ export default function Explore() {
 
           {followingSet.size === 0 && !search && (
             <div className="mb-6 rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-6 text-center">
-              <Heart size={24} className="mx-auto mb-2 text-neutral-300" />
-              <p className="text-sm text-neutral-400">Tap the heart on any topic to follow it.</p>
+              <Circle size={24} className="mx-auto mb-2 text-neutral-300" />
+              <p className="text-sm text-neutral-400">Tap the circle on any topic to follow it.</p>
             </div>
           )}
 
