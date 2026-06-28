@@ -22,6 +22,16 @@ export default function Home() {
   const [activeTopic, setActiveTopic] = useState(null);
   const containerRef = useRef(null);
   const viewedSet = useRef(new Set());
+  const poolRef = useRef([]);
+
+  const shuffleArray = (arr) => {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -134,11 +144,14 @@ export default function Home() {
           paywallSubtitle: "Unlock all premium topics, unlimited quotes, wallpapers & more",
         };
 
-        const freeQuotes = filtered
-          .filter((q) => !q.is_premium)
+        const freeQuotes = shuffleArray(filtered.filter((q) => !q.is_premium))
           .slice(0, FREE_DAILY_SETS * QUOTES_PER_SET);
 
         filtered = [...freeQuotes, paywallCard];
+        poolRef.current = [];
+      } else {
+        poolRef.current = filtered;
+        filtered = shuffleArray(filtered);
       }
     }
 
@@ -197,6 +210,22 @@ export default function Home() {
     return () => observer.disconnect();
   }, [feed, markViewed]);
 
+  useEffect(() => {
+    if (!poolRef.current.length || !containerRef.current) return;
+    const sentinel = containerRef.current.querySelector("[data-sentinel]");
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && poolRef.current.length) {
+          setFeed((prev) => [...prev, ...shuffleArray(poolRef.current)]);
+        }
+      },
+      { root: containerRef.current, threshold: 0.1 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [feed]);
+
   if (loading) {
     return <div className="flex h-screen items-center justify-center bg-[#FAFAFA]"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
   }
@@ -241,7 +270,7 @@ export default function Home() {
       )}
       <div ref={containerRef} className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide">
         {feed.map((quote, i) => (
-          <div key={quote.id || i} data-idx={i}>
+          <div key={`${quote.id}-${i}`} data-idx={i}>
             <QuoteCard
               quote={quote}
               index={i}
@@ -255,6 +284,9 @@ export default function Home() {
             />
           </div>
         ))}
+        {poolRef.current.length > 0 && !activeTopic && (
+          <div data-sentinel className="h-1" />
+        )}
       </div>
       <div className="fixed bottom-28 right-4 z-30">
         <button
