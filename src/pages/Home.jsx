@@ -275,7 +275,7 @@ export default function Home() {
       </div>
       <div className="fixed bottom-28 right-4 z-30">
         <button
-          onClick={() => navigate("/wallpapers")}
+          onClick={() => navigate("/theme")}
           className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-transform active:scale-90"
           title="Wallpapers"
         >
