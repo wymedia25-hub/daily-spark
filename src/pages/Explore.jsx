@@ -113,11 +113,6 @@ export default function Explore() {
           </div>
           {topic.description && <p className="text-xs text-neutral-400">{topic.description}</p>}
         </div>
-        {following && (
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-100">
-            <Check size={16} className="text-purple-600" />
-          </div>
-        )}
         <button
           onClick={(e) => handleToggleFollow(topic.name, e)}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-neutral-100"
