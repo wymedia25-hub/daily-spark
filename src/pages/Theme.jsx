@@ -4,14 +4,13 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { THEMES } from "@/lib/themes";
 import ThemePreview from "@/components/ThemePreview";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function Theme() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
   const navigate = useNavigate();
   const [prefs, setPrefs] = useState(null);
   const [selectedTheme, setSelectedTheme] = useState("Calm nature");
-  const [customBg, setCustomBg] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,6 +31,7 @@ export default function Theme() {
   };
 
   const selectTheme = async (themeName) => {
+    if (selectedTheme === themeName) return;
     setSelectedTheme(themeName);
     if (prefs) {
       const updated = await base44.entities.UserPreferences.update(prefs.id, { preferred_theme: themeName });
@@ -44,30 +44,22 @@ export default function Theme() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-24 pt-6">
-      <button onClick={() => navigate("/")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700">
+    <div className="mx-auto max-w-2xl px-4 pb-28 pt-6">
+      <button onClick={() => navigate("/")} className="mb-6 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700">
         <ArrowLeft size={16} /> Back
       </button>
-      <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">Theme</h1>
-      <p className="mb-6 text-sm text-neutral-500">Choose a background theme for your quotes.</p>
+      <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Choose your vibe</h1>
+      <p className="mb-7 mt-1.5 text-sm text-neutral-500">Pick a mood for your daily quote backgrounds.</p>
 
-      <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-3">
         {THEMES.map((theme) => (
-          <div key={theme.name}>
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-bold text-neutral-900">{theme.name}</h2>
-              {selectedTheme === theme.name && (
-                <span className="flex items-center gap-1 rounded-full bg-purple-100 px-2.5 py-1 text-[10px] font-semibold text-purple-600">
-                  <Check size={11} /> Active
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {theme.backgrounds.map((url, idx) => (
-                <ThemePreview key={url} themeName={theme.name} url={url} selected={selectedTheme === theme.name} onSelect={() => selectTheme(theme.name)} />
-              ))}
-            </div>
-          </div>
+          <ThemePreview
+            key={theme.name}
+            themeName={theme.name}
+            coverUrl={theme.cover}
+            selected={selectedTheme === theme.name}
+            onSelect={() => selectTheme(theme.name)}
+          />
         ))}
       </div>
     </div>
