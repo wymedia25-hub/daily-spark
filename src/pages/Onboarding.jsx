@@ -28,6 +28,7 @@ export default function Onboarding() {
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [computed, setComputed] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -100,6 +101,7 @@ export default function Onboarding() {
         ...prefs,
         recommended_topics: recommendedTopics,
         focus_areas: selectedTopics,
+        favorite_topics: favorites,
         onboarding_complete: true,
       };
       const existing = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
@@ -126,6 +128,11 @@ export default function Onboarding() {
     setSelectedTopics((prev) =>
       prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name]
     );
+  };
+
+  const toggleFavorite = (name, e) => {
+    e.stopPropagation();
+    setFavorites((prev) => prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name]);
   };
 
   const recommendedSet = new Set(recommendedTopics);
@@ -159,12 +166,15 @@ export default function Onboarding() {
     </button>
   );
 
+  const favSet = new Set(favorites);
+
   const TopicCard = ({ topic, selected, recommended, onClick }) => {
     const Icon = ICON_MAP[TOPIC_ICONS[topic.name]] || Sparkles;
+    const isFav = favSet.has(topic.name);
     return (
-      <button
+      <div
         onClick={onClick}
-        className={`flex w-full items-center gap-3 rounded-2xl border px-5 py-4 text-left transition-all ${
+        className={`flex w-full cursor-pointer items-center gap-3 rounded-2xl border px-5 py-4 text-left transition-all ${
           selected ? "border-purple-500 bg-purple-50" : "border-neutral-200 bg-white hover:border-neutral-300"
         }`}
       >
@@ -172,14 +182,19 @@ export default function Onboarding() {
           <Icon size={18} />
         </div>
         <span className="flex-1 text-base font-medium text-neutral-800">{topic.name}</span>
-        {recommended ? (
+        {recommended && (
           <span className="flex items-center gap-1 rounded-full bg-purple-100 px-2.5 py-1 text-[10px] font-semibold text-purple-600">
             <Sparkles size={10} /> Chosen for you
           </span>
-        ) : (
-          selected && <Check size={18} className="text-purple-500" />
         )}
-      </button>
+        {!recommended && selected && <Check size={18} className="text-purple-500" />}
+        <button
+          onClick={(e) => toggleFavorite(topic.name, e)}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
+        >
+          <Heart size={16} className={isFav ? "fill-red-400 text-red-400" : "text-neutral-300"} />
+        </button>
+      </div>
     );
   };
 

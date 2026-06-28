@@ -81,6 +81,14 @@
       "default": [],
       "description": "Topics recommended by the scoring engine based on onboarding answers; pre-selected for the user"
     },
+    "favorite_topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Topic names the user has favorited (bookmarked shortcut list)"
+    },
     "preferred_theme": {
       "type": "string",
       "enum": [
