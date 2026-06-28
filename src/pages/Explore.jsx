@@ -6,7 +6,7 @@ import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Heart a
 
 const TOPIC_ICON_MAP = { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap };
 
-const STATIC_SECTIONS = ["Daily Mindset", "Inner Work", "Hustle & Wins", "Founders & Business"];
+const STATIC_SECTIONS = ["Daily Mindset", "Inner Work", "Hustle & Wins", "Founders & Business", "Heart & Relationships"];
 
 export default function Explore() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();

@@ -55,6 +55,8 @@ export default function Onboarding() {
         mood: prefs.mood,
         quote_style: prefs.quote_style,
         interests: prefs.interests,
+        focus_areas: prefs.focus_areas || [],
+        relationship_status: prefs.relationship_status || "",
       }, topics);
       setRecommendedTopics(recommended);
       setSelectedTopics(recommended);
