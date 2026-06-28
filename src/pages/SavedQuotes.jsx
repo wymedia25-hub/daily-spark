@@ -59,8 +59,10 @@ export default function SavedQuotes() {
         <div className="space-y-3">
           {favQuotes.map((q) => (
             <div key={q.id} className="rounded-2xl border border-neutral-200 bg-white p-5">
-              <p className="text-base leading-relaxed text-neutral-800">{q.text}</p>
-              {q.author && <p className="mt-3 text-xs text-neutral-400">— {q.author}</p>}
+              <div onClick={() => navigate(`/?topic=${encodeURIComponent(q.topic)}&from=saved-quotes`)} className="cursor-pointer">
+                <p className="text-base leading-relaxed text-neutral-800">{q.text}</p>
+                {q.author && <p className="mt-3 text-xs text-neutral-400">— {q.author}</p>}
+              </div>
               <button
                 onClick={() => handleToggle(q.id)}
                 className="mt-3 flex items-center gap-1.5 text-xs font-medium text-red-400"

@@ -20,6 +20,7 @@ export default function Home() {
   const [theme, setTheme] = useState("Calm nature");
   const [customBackground, setCustomBackground] = useState(null);
   const [activeTopic, setActiveTopic] = useState(null);
+  const [fromPage, setFromPage] = useState(null);
   const containerRef = useRef(null);
   const viewedSet = useRef(new Set());
 
@@ -79,7 +80,9 @@ export default function Home() {
       setAllTopics(topics);
       const params = new URLSearchParams(window.location.search);
       const topicParam = params.get("topic");
+      const fromParam = params.get("from");
       setActiveTopic(topicParam || null);
+      setFromPage(fromParam);
       buildFeed(quotes, topics, p, topicParam);
       if (topicParam) window.history.replaceState({}, "", "/");
     } catch (err) {
@@ -222,7 +225,7 @@ export default function Home() {
       {activeTopic && (
         <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/50 to-transparent">
           <button
-            onClick={() => navigate("/explore")}
+            onClick={() => navigate(fromPage === "saved-quotes" ? "/saved-quotes" : "/explore")}
             className="flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-md px-3 py-2 text-sm font-medium text-white max-w-[60%]"
           >
             <ChevronLeft size={16} className="shrink-0" />
