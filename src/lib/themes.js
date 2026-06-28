@@ -11,36 +11,6 @@ export const THEMES = [
     ],
   },
   {
-    name: "Night sky",
-    cover: "https://images.unsplash.com/photo-1419242902214-272adf3c1da4?w=800&q=80&auto=format&fit=crop",
-    backgrounds: [
-      "https://images.unsplash.com/photo-1419242902214-272adf3c1da4?w=800&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1532978879514-6cac7b25b6f8?w=800&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1488148895776-4f588c219608?w=800&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1502790671504-542ad42d5189?w=800&q=80&auto=format&fit=crop",
-    ],
-  },
-  {
-    name: "Cozy",
-    cover: "https://images.unsplash.com/photo-1519710164239-12349f8f5b6f?w=800&q=80&auto=format&fit=crop",
-    backgrounds: [
-      "https://images.unsplash.com/photo-1519710164239-12349f8f5b6f?w=800&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1449844908741-1bdcdea5e8be?w=800&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80&auto=format&fit=crop",
-    ],
-  },
-  {
-    name: "Minimal",
-    cover: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&q=80&auto=format&fit=crop",
-    backgrounds: [
-      "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=800&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1503602642458-232111445657?w=800&q=80&auto=format&fit=crop",
-    ],
-  },
-  {
     name: "Ocean",
     cover: "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&q=80&auto=format&fit=crop",
     backgrounds: [
