@@ -11,6 +11,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
   const [editValue, setEditValue] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -36,9 +37,13 @@ export default function Settings() {
   };
 
   const saveEdit = async () => {
-    const updated = await base44.entities.UserPreferences.update(prefs.id, { [editing.field]: editValue });
-    setPrefs(updated);
-    setEditing(null);
+    setSaving(true);
+    try {
+      const updated = await base44.entities.UserPreferences.update(prefs.id, { [editing.field]: editValue });
+      setPrefs(updated);
+      setEditing(null);
+    } catch (err) { console.error(err); }
+    setSaving(false);
   };
 
   const aboutYouFields = [
@@ -85,14 +90,6 @@ export default function Settings() {
           <h2 className="text-sm font-bold text-neutral-900">Make It Yours</h2>
         </div>
         <div className="rounded-2xl border border-neutral-200 bg-white">
-          <button onClick={() => navigate("/profile")} className="flex w-full items-center justify-between border-b border-neutral-100 px-5 py-4 text-left">
-            <span className="text-sm text-neutral-500">Content preferences</span>
-            <span className="text-sm font-medium text-neutral-900">Edit</span>
-          </button>
-          <button onClick={() => navigate("/profile")} className="flex w-full items-center justify-between border-b border-neutral-100 px-5 py-4 text-left">
-            <span className="text-sm text-neutral-500">Muted content</span>
-            <span className="text-sm font-medium text-neutral-900">{prefs?.muted_topics?.length || 0}</span>
-          </button>
           <button className="flex w-full items-center justify-between px-5 py-4 text-left">
             <div className="flex items-center gap-2">
               <Languages size={16} className="text-neutral-400" />
@@ -141,9 +138,9 @@ export default function Settings() {
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
           <div className="w-full max-w-md rounded-t-2xl bg-white p-6 sm:rounded-2xl">
             <h3 className="mb-4 text-lg font-bold text-neutral-900">{editing.label}</h3>
-            <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-purple-400" />
+            <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-purple-400" />
             <div className="mt-4 flex gap-2">
-              <button onClick={saveEdit} className="flex-1 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 py-3 text-sm font-semibold text-white">Save</button>
+              <button onClick={saveEdit} disabled={saving} className="flex-1 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 py-3 text-sm font-semibold text-white disabled:opacity-40">{saving ? "Saving..." : "Save"}</button>
               <button onClick={() => setEditing(null)} className="rounded-xl border border-neutral-200 px-5 py-3 text-sm font-medium text-neutral-600">Cancel</button>
             </div>
           </div>
