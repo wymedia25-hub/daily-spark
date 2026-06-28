@@ -67,9 +67,9 @@ export default function MyQuotes() {
       ) : (
         <div className="space-y-3">
           {quotes.map((q) => (
-            <div key={q.id} className="flex items-start gap-3 rounded-2xl border border-neutral-200 bg-white p-4">
+            <div key={q.id} onClick={() => navigate(`/quote/${q.id}`)} className="flex cursor-pointer items-start gap-3 rounded-2xl border border-neutral-200 bg-white p-4 transition-colors hover:bg-neutral-50">
               <p className="flex-1 text-sm text-neutral-800">{q.text}</p>
-              <button onClick={() => handleDelete(q.id)} className="shrink-0 text-neutral-300 hover:text-red-400">
+              <button onClick={(e) => { e.stopPropagation(); handleDelete(q.id); }} className="shrink-0 text-neutral-300 hover:text-red-400">
                 <Trash2 size={16} />
               </button>
             </div>

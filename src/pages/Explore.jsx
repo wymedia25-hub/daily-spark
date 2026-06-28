@@ -14,6 +14,7 @@ export default function Explore() {
   const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
   const [quotes, setQuotes] = useState([]);
+  const [userQuotes, setUserQuotes] = useState([]);
   const [activity, setActivity] = useState(null);
   const [prefs, setPrefs] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,14 +42,16 @@ export default function Explore() {
 
   const loadData = async () => {
     try {
-      const [t, q, a, p] = await Promise.all([
+      const [t, q, uq, a, p] = await Promise.all([
         base44.entities.Topic.list(50),
         base44.entities.Quote.list(200),
+        base44.entities.UserQuote.filter({ created_by_id: user.id }, "-created_date", 200),
         base44.entities.UserActivity.filter({ created_by_id: user.id }, "-created_date", 1),
         base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1),
       ]);
       setTopics(t.sort((a, b) => (a.order || 0) - (b.order || 0)));
       setQuotes(q);
+      setUserQuotes(uq);
       if (a[0]) setActivity(a[0]);
       if (p[0]) setPrefs(p[0]);
     } catch (err) { console.error(err); }
@@ -75,7 +78,7 @@ export default function Explore() {
 
   const shortcuts = [
     { label: "Saved Quotes", icon: Heart, count: favQuoteIds.size, action: () => navigate("/saved-quotes") },
-    { label: "Your Quotes", icon: Plus, count: null, action: () => navigate("/my-quotes") },
+    { label: "Your Quotes", icon: Plus, count: userQuotes.length, action: () => navigate("/my-quotes") },
     { label: "History", icon: Clock, count: viewedIds.size, action: () => setView("history") },
   ];
 
