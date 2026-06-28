@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import QuoteCard from "@/components/QuoteCard";
-import ThemeButton from "@/components/ThemeButton";
+import ShareSheet from "@/components/ShareSheet";
 import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
 import { calculateStreakUpdate } from "@/lib/streakUtils";
-import { LogIn, Sparkles, ChevronLeft, Plus, Check } from "lucide-react";
+import { LogIn, Sparkles, ChevronLeft, Plus, Check, Paintbrush } from "lucide-react";
 
 export default function Home() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
@@ -20,6 +20,7 @@ export default function Home() {
   const [theme, setTheme] = useState("Calm nature");
   const [customBackground, setCustomBackground] = useState(null);
   const [activeTopic, setActiveTopic] = useState(null);
+  const [shareQuote, setShareQuote] = useState(null);
   const containerRef = useRef(null);
   const viewedSet = useRef(new Set());
 
@@ -176,16 +177,8 @@ export default function Home() {
     setActivity(updated);
   };
 
-  const handleShare = async (quote) => {
-    const text = `"${quote.text}"${quote.author ? ` — ${quote.author}` : ""}`;
-    try {
-      if (navigator.share) await navigator.share({ text });
-      else await navigator.clipboard.writeText(text);
-    } catch (e) {}
-  };
-
-  const handleBackgroundSelect = (url) => {
-    setCustomBackground(url);
+  const handleShare = (quote) => {
+    setShareQuote(quote);
   };
 
   const toggleFollowTopic = async () => {
@@ -281,8 +274,15 @@ export default function Home() {
         ))}
       </div>
       <div className="fixed bottom-28 right-4 z-30">
-        <ThemeButton onBackgroundSelect={handleBackgroundSelect} />
+        <button
+          onClick={() => navigate("/wallpapers")}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-transform active:scale-90"
+          title="Wallpapers"
+        >
+          <Paintbrush size={18} />
+        </button>
       </div>
+      <ShareSheet quote={shareQuote} open={!!shareQuote} onClose={() => setShareQuote(null)} />
     </div>
   );
 }

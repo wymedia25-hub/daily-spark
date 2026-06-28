@@ -45,7 +45,7 @@ export default function Wallpapers() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-24 pt-6">
-      <button onClick={() => navigate("/profile")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700">
+      <button onClick={() => navigate("/explore")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700">
         <ArrowLeft size={16} /> Back
       </button>
       <h1 className="mb-5 text-2xl font-bold tracking-tight text-neutral-900">Wallpapers</h1>

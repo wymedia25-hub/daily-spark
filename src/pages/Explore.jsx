@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Bookmark, Clock, Plus, Sparkles, Lock } from "lucide-react";
+import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Bookmark, Clock, Plus, Sparkles, Lock, Check } from "lucide-react";
 
 const TOPIC_ICON_MAP = { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap };
 
@@ -53,6 +53,7 @@ export default function Explore() {
   const savedIds = new Set(activity?.saved_quote_ids || []);
   const viewedIds = new Set(activity?.viewed_quote_ids || []);
   const isPremiumUser = prefs?.is_premium;
+  const focusSet = new Set(prefs?.focus_areas || []);
 
   const getQuotesByIds = (ids) => quotes.filter((q) => ids.has(q.id));
 
@@ -68,6 +69,7 @@ export default function Explore() {
   const renderTopicChip = (topic) => {
     const Icon = TOPIC_ICON_MAP[topic.icon] || Sparkles;
     const locked = topic.is_premium && !isPremiumUser;
+    const following = focusSet.has(topic.name);
     return (
       <button
         key={topic.name}
@@ -88,6 +90,11 @@ export default function Explore() {
           </div>
           {topic.description && <p className="text-xs text-neutral-400">{topic.description}</p>}
         </div>
+        {following && (
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-100">
+            <Check size={16} className="text-purple-600" />
+          </div>
+        )}
       </button>
     );
   };
