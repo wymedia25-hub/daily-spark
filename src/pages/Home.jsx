@@ -6,7 +6,7 @@ import QuoteCard from "@/components/QuoteCard";
 import ThemeButton from "@/components/ThemeButton";
 import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
 import { calculateStreakUpdate } from "@/lib/streakUtils";
-import { LogIn, Sparkles } from "lucide-react";
+import { LogIn, Sparkles, ChevronLeft, Plus, Check } from "lucide-react";
 
 export default function Home() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
@@ -19,6 +19,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState("Calm nature");
   const [customBackground, setCustomBackground] = useState(null);
+  const [activeTopic, setActiveTopic] = useState(null);
   const containerRef = useRef(null);
   const viewedSet = useRef(new Set());
 
@@ -78,6 +79,7 @@ export default function Home() {
       setAllTopics(topics);
       const params = new URLSearchParams(window.location.search);
       const topicParam = params.get("topic");
+      setActiveTopic(topicParam || null);
       buildFeed(quotes, topics, p, topicParam);
       if (topicParam) window.history.replaceState({}, "", "/");
     } catch (err) {
@@ -186,6 +188,16 @@ export default function Home() {
     setCustomBackground(url);
   };
 
+  const toggleFollowTopic = async () => {
+    if (!activeTopic || !prefs) return;
+    const focus = prefs.focus_areas || [];
+    const newFocus = focus.includes(activeTopic)
+      ? focus.filter((t) => t !== activeTopic)
+      : [...focus, activeTopic];
+    const updated = await base44.entities.UserPreferences.update(prefs.id, { focus_areas: newFocus });
+    setPrefs(updated);
+  };
+
   useEffect(() => {
     if (!feed.length || !containerRef.current) return;
     const observer = new IntersectionObserver(
@@ -224,9 +236,30 @@ export default function Home() {
 
   const likedSet = new Set(activity?.liked_quote_ids || []);
   const savedSet = new Set(activity?.saved_quote_ids || []);
+  const isFollowing = activeTopic && (prefs?.focus_areas || []).includes(activeTopic);
 
   return (
     <div className="relative h-screen overflow-hidden">
+      {activeTopic && (
+        <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/50 to-transparent">
+          <button
+            onClick={() => navigate("/explore")}
+            className="flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-md px-3 py-2 text-sm font-medium text-white max-w-[60%]"
+          >
+            <ChevronLeft size={16} className="shrink-0" />
+            <span className="truncate">{activeTopic}</span>
+          </button>
+          <button
+            onClick={toggleFollowTopic}
+            className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold backdrop-blur-md transition-colors ${
+              isFollowing ? "bg-white/20 text-white" : "bg-white text-purple-600"
+            }`}
+          >
+            {isFollowing ? <Check size={15} /> : <Plus size={15} />}
+            {isFollowing ? "Following" : "Follow"}
+          </button>
+        </div>
+      )}
       <div ref={containerRef} className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide">
         {feed.map((quote, i) => (
           <div key={quote.id || i} data-idx={i}>
