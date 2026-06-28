@@ -86,10 +86,10 @@ export default function Profile() {
       )}
 
       <h2 className="mb-3 text-sm font-bold text-neutral-900">Customize the app</h2>
-      <div className="mb-5 grid grid-cols-3 gap-3">
+      <div className="mb-5 space-y-2.5">
         {customizeItems.map((item) => (
-          <button key={item.label} onClick={item.action} className="flex items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50">
+          <button key={item.label} onClick={item.action} className="flex w-full items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-50">
               <item.icon size={18} className="text-purple-600" />
             </div>
             <span className="text-sm font-medium text-neutral-800">{item.label}</span>
