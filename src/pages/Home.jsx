@@ -278,6 +278,7 @@ export default function Home() {
               isFavorited={favoriteSet.has(quote.id)}
               onFavorite={() => toggleFavorite(quote.id)}
               backgroundUrl={quote._locked ? null : (customBackground || getThemeBackground(theme, i))}
+              theme={theme}
               isLocked={quote._locked}
               paywallTitle={quote.paywallTitle}
               paywallSubtitle={quote.paywallSubtitle}

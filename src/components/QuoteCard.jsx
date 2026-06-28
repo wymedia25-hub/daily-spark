@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Heart, Share2, Loader2 } from "lucide-react";
 import { shareQuoteAsImage } from "@/lib/shareQuoteImage";
+import { getThemeGradient } from "@/lib/themeGradients";
 
 export default function QuoteCard({
   quote,
@@ -9,11 +10,13 @@ export default function QuoteCard({
   isFavorited,
   onFavorite,
   backgroundUrl,
+  theme,
   isLocked,
   paywallTitle,
   paywallSubtitle,
 }) {
   const [sharing, setSharing] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   if (isLocked) {
     return (
@@ -48,8 +51,10 @@ export default function QuoteCard({
   };
 
   return (
-    <div className="relative h-screen w-full shrink-0 snap-start snap-always overflow-hidden">
-      <img src={backgroundUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+    <div className="relative h-screen w-full shrink-0 snap-start snap-always overflow-hidden" style={{ background: getThemeGradient(theme) }}>
+      {!imgError && backgroundUrl && (
+        <img src={backgroundUrl} alt="" onError={() => setImgError(true)} className="absolute inset-0 h-full w-full object-cover" />
+      )}
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/65" />
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-8">

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { THEMES } from "@/lib/themes";
+import ThemePreview from "@/components/ThemePreview";
 import { ArrowLeft, Check } from "lucide-react";
 
 export default function Theme() {
@@ -63,20 +64,7 @@ export default function Theme() {
             </div>
             <div className="grid grid-cols-3 gap-2">
               {theme.backgrounds.map((url, idx) => (
-                <button
-                  key={url}
-                  onClick={() => selectTheme(theme.name)}
-                  className="relative aspect-[3/4] overflow-hidden rounded-xl border-2 transition-colors hover:border-purple-400"
-                >
-                  <img src={url} alt="" className="h-full w-full object-cover" />
-                  {selectedTheme === theme.name && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500">
-                        <Check size={16} className="text-white" />
-                      </div>
-                    </div>
-                  )}
-                </button>
+                <ThemePreview key={url} themeName={theme.name} url={url} selected={selectedTheme === theme.name} onSelect={() => selectTheme(theme.name)} />
               ))}
             </div>
           </div>

@@ -82,6 +82,7 @@ export default function QuoteDetail() {
             isFavorited={favoriteSet.has(quote.id)}
             onFavorite={() => toggleFavorite(quote.id)}
             backgroundUrl={getThemeBackground(prefs?.preferred_theme || "Calm nature", 0)}
+            theme={prefs?.preferred_theme || "Calm nature"}
           />
         </div>
       </div>
