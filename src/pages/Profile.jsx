@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StreakTracker from "@/components/StreakTracker";
-import { Settings as SettingsIcon, LogOut, Shield, Bookmark, Bell, Sparkles, Crown, Pencil, Check, X, Heart } from "lucide-react";
+import { Settings as SettingsIcon, LogOut, Bell, Crown, Heart } from "lucide-react";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoadingAuth, logout, checkUserAuth } = useAuth();
@@ -63,7 +63,6 @@ export default function Profile() {
 
   const customizeItems = [
     { label: "Saved Quotes", icon: Heart, action: () => navigate("/saved-quotes") },
-    { label: "Wallpapers", icon: Bookmark, action: () => navigate("/wallpapers") },
     { label: "Reminders", icon: Bell, action: () => navigate("/settings") },
     { label: "Settings", icon: SettingsIcon, action: () => navigate("/settings") },
   ];
@@ -87,7 +86,7 @@ export default function Profile() {
       )}
 
       <h2 className="mb-3 text-sm font-bold text-neutral-900">Customize the app</h2>
-      <div className="mb-5 grid grid-cols-2 gap-3">
+      <div className="mb-5 grid grid-cols-3 gap-3">
         {customizeItems.map((item) => (
           <button key={item.label} onClick={item.action} className="flex items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50">
@@ -106,13 +105,6 @@ export default function Profile() {
           </div>
           <p className="mt-2 text-sm text-white/80">Unlock premium affirmation decks: "I am" affirmations, gratitude, self-love, and more.</p>
           <span className="mt-3 inline-block rounded-lg bg-white px-4 py-2 text-sm font-bold text-purple-600">Unlock Premium</span>
-        </button>
-      )}
-
-      {isAdmin && (
-        <button onClick={() => navigate("/admin")} className="mb-3 flex w-full items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left hover:bg-neutral-50">
-          <Shield size={20} className="text-purple-600" />
-          <span className="text-sm font-semibold text-neutral-900">Admin Dashboard</span>
         </button>
       )}
 
