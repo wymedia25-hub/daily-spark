@@ -15,6 +15,7 @@ import Settings from './pages/Settings';
 import Wallpapers from './pages/Wallpapers';
 import Theme from './pages/Theme';
 import SavedQuotes from './pages/SavedQuotes';
+import QuoteDetail from './pages/QuoteDetail';
 import MyQuotes from './pages/MyQuotes';
 import Paywall from './pages/Paywall';
 
@@ -48,6 +49,7 @@ const AuthenticatedApp = () => {
         <Route path="/wallpapers" element={<Wallpapers />} />
         <Route path="/theme" element={<Theme />} />
         <Route path="/saved-quotes" element={<SavedQuotes />} />
+        <Route path="/quote/:id" element={<QuoteDetail />} />
         <Route path="/my-quotes" element={<MyQuotes />} />
         <Route path="/paywall" element={<Paywall />} />
       </Route>
