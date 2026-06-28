@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { ArrowLeft, User, Palette, Globe, LogOut, Share, Star, Heart, Languages } from "lucide-react";
+import { ArrowLeft, User, Palette, Globe, LogOut, Share, Star, Heart, Languages, Check } from "lucide-react";
+import { MAIN_GOALS, GENDER_OPTIONS, AGE_RANGES, RELATIONSHIP_OPTIONS, BELIEF_OPTIONS } from "@/lib/themes";
 
 export default function Settings() {
   const { user, isAuthenticated, isLoadingAuth, logout } = useAuth();
@@ -12,6 +13,7 @@ export default function Settings() {
   const [editing, setEditing] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [saving, setSaving] = useState(false);
+  const [savedFlash, setSavedFlash] = useState(false);
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -22,7 +24,12 @@ export default function Settings() {
   const loadPrefs = async () => {
     try {
       const p = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
-      if (p[0]) setPrefs(p[0]);
+      if (p[0]) {
+        setPrefs(p[0]);
+      } else {
+        const created = await base44.entities.UserPreferences.create({ display_name: user?.full_name || "" });
+        setPrefs(created);
+      }
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
@@ -31,9 +38,9 @@ export default function Settings() {
     return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
   }
 
-  const startEdit = (field, label) => {
-    setEditing({ field, label });
-    setEditValue(prefs[field] || "");
+  const startEdit = (field, label, options) => {
+    setEditing({ field, label, options });
+    setEditValue(prefs?.[field] || "");
   };
 
   const saveEdit = async () => {
@@ -42,16 +49,19 @@ export default function Settings() {
       const updated = await base44.entities.UserPreferences.update(prefs.id, { [editing.field]: editValue });
       setPrefs(updated);
       setEditing(null);
+      setSavedFlash(true);
+      setTimeout(() => setSavedFlash(false), 2000);
     } catch (err) { console.error(err); }
     setSaving(false);
   };
 
   const aboutYouFields = [
     { field: "display_name", label: "Name" },
-    { field: "gender_identity", label: "Gender identity" },
-    { field: "age_range", label: "Age" },
-    { field: "relationship_status", label: "Relationship status" },
-    { field: "beliefs", label: "Beliefs" },
+    { field: "gender_identity", label: "Gender identity", options: GENDER_OPTIONS },
+    { field: "age_range", label: "Age", options: AGE_RANGES },
+    { field: "relationship_status", label: "Relationship status", options: RELATIONSHIP_OPTIONS },
+    { field: "beliefs", label: "Beliefs", options: BELIEF_OPTIONS },
+    { field: "main_goal", label: "Main goal", options: MAIN_GOALS },
   ];
 
   const handleShare = async () => {
@@ -76,11 +86,17 @@ export default function Settings() {
         </div>
         <div className="rounded-2xl border border-neutral-200 bg-white">
           {aboutYouFields.map((f, i) => (
-            <button key={f.field} onClick={() => startEdit(f.field, f.label)} className={`flex w-full items-center justify-between px-5 py-4 text-left ${i > 0 ? "border-t border-neutral-100" : ""}`}>
+            <button key={f.field} onClick={() => startEdit(f.field, f.label, f.options)} className={`flex w-full items-center justify-between px-5 py-4 text-left ${i > 0 ? "border-t border-neutral-100" : ""}`}>
               <span className="text-sm text-neutral-500">{f.label}</span>
               <span className="text-sm font-medium text-neutral-900">{prefs?.[f.field] || "Not set"}</span>
             </button>
           ))}
+          {savedFlash && (
+            <div className="flex items-center gap-1.5 border-t border-neutral-100 px-5 py-3 text-green-600">
+              <Check size={14} />
+              <span className="text-xs font-medium">Saved</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -135,10 +151,19 @@ export default function Settings() {
       </div>
 
       {editing && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
-          <div className="w-full max-w-md rounded-t-2xl bg-white p-6 sm:rounded-2xl">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={() => setEditing(null)}>
+          <div className="w-full max-w-md rounded-t-2xl bg-white p-6 sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="mb-4 text-lg font-bold text-neutral-900">{editing.label}</h3>
-            <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-purple-400" />
+            {editing.options ? (
+              <select value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-purple-400 bg-white">
+                <option value="">Not set</option>
+                {editing.options.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            ) : (
+              <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-purple-400" />
+            )}
             <div className="mt-4 flex gap-2">
               <button onClick={saveEdit} disabled={saving} className="flex-1 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 py-3 text-sm font-semibold text-white disabled:opacity-40">{saving ? "Saving..." : "Save"}</button>
               <button onClick={() => setEditing(null)} className="rounded-xl border border-neutral-200 px-5 py-3 text-sm font-medium text-neutral-600">Cancel</button>
