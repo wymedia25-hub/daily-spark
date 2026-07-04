@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StreakTracker from "@/components/StreakTracker";
-import { Settings as SettingsIcon, LogOut, Bell, Crown, Heart } from "lucide-react";
+import { Settings as SettingsIcon, LogOut, Bell, Crown, Heart, Upload } from "lucide-react";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoadingAuth, logout, checkUserAuth } = useAuth();
@@ -65,6 +65,7 @@ export default function Profile() {
     { label: "Saved Quotes", icon: Heart, action: () => navigate("/saved-quotes") },
     { label: "Reminders", icon: Bell, action: () => navigate("/reminders") },
     { label: "Settings", icon: SettingsIcon, action: () => navigate("/settings") },
+    ...(isAdmin ? [{ label: "Import Data", icon: Upload, action: () => navigate("/admin/import") }] : []),
   ];
 
   return (
