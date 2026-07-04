@@ -42,13 +42,14 @@ export default function Explore() {
 
   const loadData = async () => {
     try {
-      const [t, q, uq, a, p] = await Promise.all([
+      const [t, uq, a, p] = await Promise.all([
         base44.entities.Topic.list(50),
-        base44.entities.Quote.list(200),
         base44.entities.UserQuote.filter({ created_by_id: user.id }, "-created_date", 200),
         base44.entities.UserActivity.filter({ created_by_id: user.id }, "-created_date", 1),
         base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1),
       ]);
+      const userLang = p[0]?.language_code || "en";
+      const q = await base44.entities.Quote.filter({ language_code: userLang }, "-created_date", 500);
       setTopics(t.sort((a, b) => (a.order || 0) - (b.order || 0)));
       setQuotes(q);
       setUserQuotes(uq);

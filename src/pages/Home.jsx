@@ -81,8 +81,9 @@ export default function Home() {
       }
       setActivity(act);
 
+      const userLang = p.language_code || "en";
       const [quotes, topics] = await Promise.all([
-        base44.entities.Quote.list(200),
+        base44.entities.Quote.filter({ language_code: userLang }, "-created_date", 500),
         base44.entities.Topic.list(50),
       ]);
       setAllQuotes(quotes);

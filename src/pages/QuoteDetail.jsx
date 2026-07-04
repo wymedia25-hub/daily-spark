@@ -24,21 +24,20 @@ export default function QuoteDetail() {
 
   const loadData = async () => {
     try {
-      const [q, uq, p] = await Promise.all([
-        base44.entities.Quote.list(200),
-        base44.entities.UserQuote.filter({ created_by_id: user.id }, "-created_date", 200),
-        base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1),
-      ]);
+      const p = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
+      if (p[0]) setPrefs(p[0]);
+      const userLang = p[0]?.language_code || "en";
+      const q = await base44.entities.Quote.filter({ language_code: userLang }, "-created_date", 500);
       const found = q.find((item) => item.id === id);
       if (found) {
         setQuote(found);
         setIsUserQuote(false);
       } else {
+        const uq = await base44.entities.UserQuote.filter({ created_by_id: user.id }, "-created_date", 200);
         const userFound = uq.find((item) => item.id === id);
         setQuote(userFound || null);
         setIsUserQuote(!!userFound);
       }
-      if (p[0]) setPrefs(p[0]);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };

@@ -20,11 +20,10 @@ export default function SavedQuotes() {
 
   const loadData = async () => {
     try {
-      const [p, allQuotes] = await Promise.all([
-        base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1),
-        base44.entities.Quote.list(200),
-      ]);
+      const p = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
       if (p[0]) setPrefs(p[0]);
+      const userLang = p[0]?.language_code || "en";
+      const allQuotes = await base44.entities.Quote.filter({ language_code: userLang }, "-created_date", 500);
       setQuotes(allQuotes);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
