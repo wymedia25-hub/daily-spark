@@ -143,7 +143,7 @@ export default function Settings() {
             <Share size={18} className="text-neutral-400" />
             <span className="text-sm text-neutral-700">Share Daily Spark</span>
           </button>
-          <button className="flex w-full items-center gap-3 px-5 py-4 text-left">
+          <button onClick={() => window.open("mailto:hello@selfmade.app?subject=Review%20for%20Self%20Made", "_blank")} className="flex w-full items-center gap-3 px-5 py-4 text-left">
             <Star size={18} className="text-neutral-400" />
             <span className="text-sm text-neutral-700">Leave a review</span>
           </button>
