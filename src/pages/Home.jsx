@@ -101,7 +101,8 @@ export default function Home() {
 
   const buildFeed = (quotes, topics, p, topic) => {
     const muted = new Set(p.muted_topics || []);
-    let filtered = quotes.filter((q) => !muted.has(q.topic));
+    const userLang = p.language_code || "en";
+    let filtered = quotes.filter((q) => !muted.has(q.topic) && (q.language_code || "en") === userLang);
 
     if (topic) {
       // Topic selected: show only quotes from that topic

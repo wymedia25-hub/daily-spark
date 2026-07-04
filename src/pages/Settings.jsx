@@ -5,6 +5,13 @@ import { useAuth } from "@/lib/AuthContext";
 import { ArrowLeft, User, Palette, Globe, LogOut, Share, Star, Heart, Languages, Bell, Mail, Check } from "lucide-react";
 import { MAIN_GOALS, GENDER_OPTIONS, AGE_RANGES, RELATIONSHIP_OPTIONS, BELIEF_OPTIONS } from "@/lib/themes";
 
+const LANGUAGE_OPTIONS = [
+  { value: "en", label: "English" },
+  { value: "zh", label: "中文 (Chinese)" },
+  { value: "ja", label: "日本語 (Japanese)" },
+  { value: "es", label: "Español (Spanish)" },
+];
+
 export default function Settings() {
   const { user, isAuthenticated, isLoadingAuth, logout } = useAuth();
   const navigate = useNavigate();
@@ -106,12 +113,12 @@ export default function Settings() {
           <h2 className="text-sm font-bold text-neutral-900">Make It Yours</h2>
         </div>
         <div className="rounded-2xl border border-neutral-200 bg-white">
-          <button className="flex w-full items-center justify-between px-5 py-4 text-left">
+          <button onClick={() => startEdit("language_code", "Language", LANGUAGE_OPTIONS)} className="flex w-full items-center justify-between px-5 py-4 text-left">
             <div className="flex items-center gap-2">
               <Languages size={16} className="text-neutral-400" />
               <span className="text-sm text-neutral-500">Language</span>
             </div>
-            <span className="text-sm font-medium text-neutral-900">English</span>
+            <span className="text-sm font-medium text-neutral-900">{LANGUAGE_OPTIONS.find((o) => o.value === prefs?.language_code)?.label || "English"}</span>
           </button>
         </div>
       </div>
@@ -157,9 +164,11 @@ export default function Settings() {
             {editing.options ? (
               <select value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-purple-400 bg-white">
                 <option value="">Not set</option>
-                {editing.options.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
+                {editing.options.map((opt) => {
+                  const val = typeof opt === "string" ? opt : opt.value;
+                  const label = typeof opt === "string" ? opt : opt.label;
+                  return <option key={val} value={val}>{label}</option>;
+                })}
               </select>
             ) : (
               <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-purple-400" />

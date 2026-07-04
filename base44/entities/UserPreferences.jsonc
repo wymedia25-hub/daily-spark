@@ -87,7 +87,7 @@
         "type": "string"
       },
       "default": [],
-      "description": "Topic names the user follows (bookmarked via heart icon)"
+      "description": "Topic names the user is following (heart on a topic); persisted shortcut list, does not affect feed or scoring"
     },
     "favorite_quotes": {
       "type": "array",
@@ -95,7 +95,7 @@
         "type": "string"
       },
       "default": [],
-      "description": "Quote IDs the user has favorited (heart icon)"
+      "description": "IDs of individual quotes the user has favorited (heart on a quote); persisted saved-quotes list"
     },
     "preferred_theme": {
       "type": "string",
@@ -103,9 +103,15 @@
         "Calm nature",
         "Night sky",
         "Cozy",
-        "Minimal"
+        "Minimal",
+        "Ocean",
+        "Sunset",
+        "Forest",
+        "Mountains",
+        "Galaxy",
+        "Golden hour"
       ],
-      "description": "Preferred visual theme"
+      "description": "Preferred visual theme for quote backgrounds"
     },
     "is_premium": {
       "type": "boolean",
@@ -144,6 +150,11 @@
       "type": "boolean",
       "default": false,
       "description": "Whether onboarding is complete"
+    },
+    "language_code": {
+      "type": "string",
+      "description": "Preferred content language (ISO code: 'en', 'zh', 'ja', 'es')",
+      "default": "en"
     }
   },
   "required": []
