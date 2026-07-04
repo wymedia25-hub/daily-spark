@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Heart, Share2, Loader2 } from "lucide-react";
-import { shareQuoteAsImage } from "@/lib/shareQuoteImage";
+import { Heart, Share2 } from "lucide-react";
 import { getThemeGradient } from "@/lib/themeGradients";
+import ShareModal from "@/components/ShareModal";
 
 export default function QuoteCard({
   quote,
@@ -15,7 +15,7 @@ export default function QuoteCard({
   paywallTitle,
   paywallSubtitle,
 }) {
-  const [sharing, setSharing] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   if (isLocked) {
@@ -38,17 +38,6 @@ export default function QuoteCard({
       </div>
     );
   }
-
-  const handleShare = async () => {
-    if (sharing) return;
-    setSharing(true);
-    try {
-      await shareQuoteAsImage(quote, backgroundUrl);
-    } catch (e) {
-      console.error(e);
-    }
-    setSharing(false);
-  };
 
   return (
     <div className="relative h-screen w-full shrink-0 snap-start snap-always overflow-hidden" style={{ background: getThemeGradient(theme) }}>
@@ -77,12 +66,19 @@ export default function QuoteCard({
           <Heart size={22} className={isFavorited ? "fill-red-400 text-red-400" : "text-white"} />
         </button>
         <button
-          onClick={handleShare}
+          onClick={() => setShowShare(true)}
           className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-transform active:scale-90"
         >
-          {sharing ? <Loader2 size={20} className="animate-spin text-white" /> : <Share2 size={20} className="text-white" />}
+          <Share2 size={20} className="text-white" />
         </button>
       </div>
+
+      <ShareModal
+        quote={quote}
+        backgroundUrl={backgroundUrl}
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-export async function shareQuoteAsImage(quote, backgroundUrl) {
+export async function generateQuoteBlob(quote, backgroundUrl) {
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 1920;
@@ -53,21 +53,34 @@ export async function shareQuoteAsImage(quote, backgroundUrl) {
   }
 
   ctx.shadowColor = "transparent";
-  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+  return await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+}
+
+export function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+export async function downloadQuoteImage(quote, backgroundUrl) {
+  const blob = await generateQuoteBlob(quote, backgroundUrl);
+  downloadBlob(blob, "daily-spark-quote.png");
+}
+
+export async function shareQuoteAsImage(quote, backgroundUrl) {
+  const blob = await generateQuoteBlob(quote, backgroundUrl);
   const file = new File([blob], "daily-spark-quote.png", { type: "image/png" });
 
   const shareText = `"${quote.text}"${quote.author ? ` — ${quote.author}` : ""}`;
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     await navigator.share({ files: [file], text: shareText });
   } else {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "daily-spark-quote.png";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    downloadBlob(blob, "daily-spark-quote.png");
   }
 }
 
