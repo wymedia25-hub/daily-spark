@@ -8,7 +8,7 @@ const ENTITY_OPTIONS = [
   {
     label: "Quotes",
     value: "Quote",
-    fields: ["text", "author", "topic", "background_image_url", "set_number", "is_premium"],
+    fields: ["text", "author", "topic", "background_image_url", "set_number", "is_premium", "language_code"],
     required: ["text", "topic"],
   },
   {
@@ -20,7 +20,7 @@ const ENTITY_OPTIONS = [
   {
     label: "Cards",
     value: "Card",
-    fields: ["source_id", "source_title", "source_author", "source_type", "topic", "card_number", "headline", "body"],
+    fields: ["source_id", "source_title", "source_author", "source_type", "topic", "card_number", "headline", "body", "language_code"],
     required: ["source_id", "source_title", "headline", "body", "topic", "source_type"],
   },
 ];
