@@ -163,7 +163,7 @@ export default function Settings() {
             <h3 className="mb-4 text-lg font-bold text-neutral-900">{editing.label}</h3>
             {editing.options ? (
               <select value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-purple-400 bg-white">
-                <option value="">Not set</option>
+                {editing.field !== "language_code" && <option value="">Not set</option>}
                 {editing.options.map((opt) => {
                   const val = typeof opt === "string" ? opt : opt.value;
                   const label = typeof opt === "string" ? opt : opt.label;
