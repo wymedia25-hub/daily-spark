@@ -127,7 +127,10 @@ export default function Home() {
       if (topicNames.length === 0) topicNames = p.recommended_topics || [];
       if (topicNames.length === 0) topicNames = topics.filter((t) => !t.is_premium).map((t) => t.name);
       const topicSet = new Set(topicNames);
-      filtered = filtered.filter((q) => topicSet.has(q.topic));
+      const topicFiltered = filtered.filter((q) => topicSet.has(q.topic));
+      // Fallback: if no quotes match followed/recommended topics in this language,
+      // show all available quotes in the user's language so the feed is never empty.
+      filtered = topicFiltered.length > 0 ? topicFiltered : filtered;
 
       if (!p.is_premium) {
         const premiumRecTopics = (p.recommended_topics || []).filter((name) => {
