@@ -21,6 +21,7 @@ import MyQuotes from './pages/MyQuotes';
 import Paywall from './pages/Paywall';
 import Reminders from './pages/Reminders';
 import AdminImport from './pages/AdminImport';
+import SourceDetail from './pages/SourceDetail';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -57,6 +58,7 @@ const AuthenticatedApp = () => {
         <Route path="/paywall" element={<Paywall />} />
         <Route path="/reminders" element={<Reminders />} />
         <Route path="/admin/import" element={<AdminImport />} />
+        <Route path="/source/:id" element={<SourceDetail />} />
       </Route>
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="*" element={<PageNotFound />} />

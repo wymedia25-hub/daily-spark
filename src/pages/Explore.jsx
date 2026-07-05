@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import { labelFor } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Bookmark, Clock, Plus, Sparkles, Lock, Check, CheckCircle2, Circle } from "lucide-react";
+import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Bookmark, Clock, Plus, Sparkles, Lock, Check, CheckCircle2, Circle, BookOpen } from "lucide-react";
 import { toggleFollowingTopic } from "@/lib/userPrefs";
+import SourceCarousel from "@/components/SourceCarousel";
 
 const TOPIC_ICON_MAP = { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap };
 
@@ -17,6 +18,7 @@ export default function Explore() {
   const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
   const [quotes, setQuotes] = useState([]);
+  const [sources, setSources] = useState([]);
   const [userQuotes, setUserQuotes] = useState([]);
   const [activity, setActivity] = useState(null);
   const [prefs, setPrefs] = useState(null);
@@ -52,9 +54,13 @@ export default function Explore() {
         base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1),
       ]);
       const userLang = p[0]?.language_code || "en";
-      const q = await base44.entities.Quote.filter({ language_code: userLang }, "-created_date", 500);
+      const [q, srcs] = await Promise.all([
+        base44.entities.Quote.filter({ language_code: userLang }, "-created_date", 500),
+        base44.entities.ContentSource.filter({ status: "published" }, "-created_date", 50),
+      ]);
       setTopics(topicsData.sort((a, b) => (a.order || 0) - (b.order || 0)));
       setQuotes(q);
+      setSources(srcs);
       setUserQuotes(uq);
       if (a[0]) setActivity(a[0]);
       if (p[0]) setPrefs(p[0]);
@@ -209,6 +215,16 @@ export default function Explore() {
 
       {view === "topics" && (
         <>
+          {sources.length > 0 && (
+            <div className="mb-8">
+              <div className="mb-3 flex items-center gap-2">
+                <BookOpen size={18} className="text-neutral-400 dark:text-neutral-500" />
+                <h2 className="text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Book Summaries</h2>
+              </div>
+              <SourceCarousel title="" subtitle="" sources={sources} />
+            </div>
+          )}
+
           <div className="relative mb-6">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("explore.searchTopics")} className="w-full rounded-2xl border border-neutral-200 bg-white py-3 pl-12 pr-4 text-sm outline-none focus:border-purple-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100" />
