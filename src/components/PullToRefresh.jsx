@@ -26,6 +26,7 @@ export default function PullToRefresh({ onRefresh, children, className }) {
     if (!el) return;
     const diff = e.touches[0].clientY - startY.current;
     if (diff > 0 && el.scrollTop === 0) {
+      if (e.cancelable) e.preventDefault();
       const distance = Math.min(diff * 0.5, MAX_PULL);
       setPullDistance(distance);
     }
@@ -51,7 +52,7 @@ export default function PullToRefresh({ onRefresh, children, className }) {
     const el = containerRef.current;
     if (!el) return;
     el.addEventListener("touchstart", handleTouchStart, { passive: true });
-    el.addEventListener("touchmove", handleTouchMove, { passive: true });
+    el.addEventListener("touchmove", handleTouchMove, { passive: false });
     el.addEventListener("touchend", handleTouchEnd);
     return () => {
       el.removeEventListener("touchstart", handleTouchStart);
