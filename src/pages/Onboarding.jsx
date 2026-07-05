@@ -14,7 +14,7 @@ const STEPS = ["welcome", "goal", "struggles", "mood", "quote_style", "interests
 export default function Onboarding() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
   const navigate = useNavigate();
-  useTranslation();
+  const { t } = useTranslation();
   const [stepIdx, setStepIdx] = useState(0);
   const [topics, setTopics] = useState([]);
   const [prefs, setPrefs] = useState({
@@ -230,14 +230,14 @@ export default function Onboarding() {
             <div className="mb-8 flex h-28 w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500">
               <Sparkles size={52} className="text-white" strokeWidth={1.5} />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Welcome to Daily Spark</h1>
-            <p className="mt-2 text-base text-neutral-500">Daily motivation for the self-made</p>
-            <h2 className="mb-3 mt-8 text-lg font-semibold text-neutral-900">What should we call you?</h2>
+            <h1 className="text-3xl font-bold tracking-tight text-neutral-900">{t("onboarding.welcomeTitle")}</h1>
+            <p className="mt-2 text-base text-neutral-500">{t("onboarding.welcomeSubtitle")}</p>
+            <h2 className="mb-3 mt-8 text-lg font-semibold text-neutral-900">{t("onboarding.namePrompt")}</h2>
             <input
               type="text"
               value={prefs.display_name}
               onChange={(e) => setPrefs({ ...prefs, display_name: e.target.value })}
-              placeholder="Your name"
+              placeholder={t("onboarding.namePlaceholder")}
               className="w-full rounded-2xl border border-neutral-200 px-5 py-4 text-base text-neutral-900 outline-none focus:border-purple-400"
               autoFocus
             />
@@ -247,8 +247,8 @@ export default function Onboarding() {
         {/* Step 2: Main Goal */}
         {step === "goal" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">What's your main goal?</h1>
-            <p className="mb-6 text-sm text-neutral-500">We'll tailor your daily quotes to help you get there.</p>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.goalTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500">{t("onboarding.goalSubtitle")}</p>
             <div className="space-y-2.5">
               {MAIN_GOALS.map((goal) => (
                 <OptionTile
@@ -265,8 +265,8 @@ export default function Onboarding() {
         {/* Step 3: Struggles */}
         {step === "struggles" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">What are you struggling with?</h1>
-            <p className="mb-6 text-sm text-neutral-500">Select all that apply. This helps us personalize your feed.</p>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.strugglesTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500">{t("onboarding.strugglesSubtitle")}</p>
             <div className="flex flex-wrap gap-2.5">
               {STRUGGLES.map((s) => (
                 <Chip
@@ -283,8 +283,8 @@ export default function Onboarding() {
         {/* Step 4: Mood */}
         {step === "mood" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">How do you feel right now?</h1>
-            <p className="mb-6 text-sm text-neutral-500">There's no wrong answer. We're here for you.</p>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.moodTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500">{t("onboarding.moodSubtitle")}</p>
             <div className="space-y-2.5">
               {MOODS.map((mood) => (
                 <OptionTile
@@ -301,8 +301,8 @@ export default function Onboarding() {
         {/* Step 5: Quote Style */}
         {step === "quote_style" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">What kind of quotes hit hardest for you?</h1>
-            <p className="mb-6 text-sm text-neutral-500">We'll match the tone to what resonates.</p>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.styleTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500">{t("onboarding.styleSubtitle")}</p>
             <div className="space-y-2.5">
               {QUOTE_STYLES.map((style) => (
                 <OptionTile
@@ -319,8 +319,8 @@ export default function Onboarding() {
         {/* Step 6: Interests */}
         {step === "interests" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">Pick what speaks to you</h1>
-            <p className="mb-6 text-sm text-neutral-500">Select topics that resonate with you.</p>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.interestsTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500">{t("onboarding.interestsSubtitle")}</p>
             <div className="flex flex-wrap gap-2.5">
               {topics.map((topic) => (
                 <Chip
@@ -337,9 +337,9 @@ export default function Onboarding() {
         {/* Step 7: Result */}
         {step === "result" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">Based on your answers</h1>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.resultTitle")}</h1>
             <p className="mb-6 text-sm text-neutral-500">
-              Here's your personalized feed. Toggle any topic on or off.
+              {t("onboarding.resultSubtitle")}
             </p>
 
             <div className="mb-6 space-y-2.5">
@@ -356,7 +356,7 @@ export default function Onboarding() {
 
             {otherTopicObjects.length > 0 && (
               <>
-                <h2 className="mb-3 text-sm font-bold text-neutral-400">More topics</h2>
+                <h2 className="mb-3 text-sm font-bold text-neutral-400">{t("onboarding.moreTopics")}</h2>
                 <div className="mb-6 space-y-2.5">
                   {otherTopicObjects.map((topic) => (
                     <TopicCard
@@ -376,7 +376,7 @@ export default function Onboarding() {
               disabled={!canProceed() || saving}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 py-4 text-base font-semibold text-white transition-all disabled:opacity-40"
             >
-              {saving ? "Setting up..." : "Start my journey"}
+              {saving ? t("onboarding.settingUp") : t("onboarding.startBtn")}
               {!saving && <ArrowRight size={18} />}
             </button>
           </div>
@@ -389,7 +389,7 @@ export default function Onboarding() {
             disabled={!canProceed() || saving}
             className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 py-4 text-base font-semibold text-white transition-all disabled:opacity-40"
           >
-            Continue
+            {t("onboarding.continueBtn")}
             {!saving && <ArrowRight size={18} />}
           </button>
         )}
