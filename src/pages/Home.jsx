@@ -7,9 +7,12 @@ import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/theme
 import { calculateStreakUpdate } from "@/lib/streakUtils";
 import { toggleFavoriteQuote } from "@/lib/userPrefs";
 import { LogIn, Sparkles, ChevronLeft, Plus, Check, Paintbrush } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { labelFor } from "@/lib/i18n";
 
 export default function Home() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
+  useTranslation();
   const navigate = useNavigate();
   const [prefs, setPrefs] = useState(null);
   const [activity, setActivity] = useState(null);
@@ -260,7 +263,7 @@ export default function Home() {
             className="flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-md px-3 py-2 text-sm font-medium text-white max-w-[60%]"
           >
             <ChevronLeft size={16} className="shrink-0" />
-            <span className="truncate">{activeTopic}</span>
+            <span className="truncate">{labelFor("topics", activeTopic)}</span>
           </button>
           <button
             onClick={toggleFollowTopic}

@@ -1,7 +1,9 @@
 import { TOPICS } from "@/lib/topics";
 import { Check } from "lucide-react";
+import { useLabel } from "@/lib/i18n";
 
 export default function TopicSelector({ selected, onToggle, minRequired = 3 }) {
+  const label = useLabel();
   return (
     <div>
       <div className="flex flex-wrap gap-2.5">
@@ -18,7 +20,7 @@ export default function TopicSelector({ selected, onToggle, minRequired = 3 }) {
               }`}
             >
               {isSelected && <Check size={15} strokeWidth={3} />}
-              {topic}
+              {label("categories", topic)}
             </button>
           );
         })}

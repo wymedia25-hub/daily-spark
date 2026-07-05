@@ -1,5 +1,5 @@
 import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
+import { initReactI18next, useTranslation } from "react-i18next";
 
 const resources = {
   en: {
@@ -355,5 +355,67 @@ i18n.use(initReactI18next).init({
   fallbackLng: "en",
   interpolation: { escapeValue: false },
 });
+
+export const UI_LABELS = {
+  "zh": {
+    topics: { "Being Single": "單身生活", "Discipline & Focus": "自律與專注", "Finance & Investing": "理財與投資", "Financial Freedom": "財務自由", "Global Magnates": "全球鉅子", "Gratitude": "感恩", "Healing": "療癒", "Hustle": "拚搏", "Iconic Founders": "傳奇創辦人", "Industry Titans": "產業巨頭", "Internet & Media": "網路與媒體", "Love & Relationships": "愛與關係", "Money & Wealth": "金錢與財富", "Positive Thinking": "正向思考", "Retail & Brands": "零售與品牌", "Self-Esteem": "自尊", "Self-Love": "自愛", "Short Quotes": "短語錄", "Social Anxiety": "社交焦慮", "Software Pioneers": "軟體先驅", "Strength": "力量", "Tech & Hardware": "科技與硬體" },
+    categories: { "Psychology": "心理學", "Business": "商業", "Science": "科學", "History": "歷史", "Technology": "科技", "Philosophy": "哲學", "Health": "健康", "Productivity": "生產力", "Finance": "財經", "Arts & Culture": "藝術與文化" },
+    relationship: { "Single": "單身", "In a relationship": "交往中", "Married": "已婚", "It's complicated": "一言難盡" },
+    gender: { "Woman": "女性", "Man": "男性", "Non-binary": "非二元", "Prefer not to say": "不願透露" },
+    age: { "Under 18": "未滿 18 歲", "18-24": "18-24", "25-34": "25-34", "35-44": "35-44", "45-54": "45-54", "55+": "55 歲以上" },
+    belief: { "Spiritual": "靈性", "Religious": "宗教信仰", "Agnostic": "不可知論", "Atheist": "無神論", "Other": "其他" },
+    mainGoal: { "Reduce stress": "減輕壓力", "Build confidence": "建立自信", "Stay motivated": "保持動力", "Heal & grow": "療癒與成長", "Improve relationships": "改善關係" },
+    struggles: { "Heartbreak": "心碎", "Anxiety & overthinking": "焦慮與過度思考", "Depression & sadness": "憂鬱與悲傷", "Low confidence": "缺乏自信", "Lack of motivation": "缺乏動力", "Toxic relationship": "有毒關係", "Loneliness": "孤獨", "Work & business stress": "工作與事業壓力" },
+    moods: { "Sad": "難過", "Anxious": "焦慮", "Unmotivated": "沒動力", "Okay": "還好", "Hopeful": "充滿希望" },
+    quoteStyle: { "Short & punchy": "簡短有力", "Deep & reflective": "深刻反思", "Tough love": "嚴厲的愛", "Gentle & soft": "溫柔和緩" },
+  },
+  "zh-CN": {
+    topics: { "Being Single": "单身生活", "Discipline & Focus": "自律与专注", "Finance & Investing": "理财与投资", "Financial Freedom": "财务自由", "Global Magnates": "全球巨头", "Gratitude": "感恩", "Healing": "疗愈", "Hustle": "拼搏进取", "Iconic Founders": "传奇创办人", "Industry Titans": "产业巨头", "Internet & Media": "网络与媒体", "Love & Relationships": "爱与关系", "Money & Wealth": "金钱与财富", "Positive Thinking": "积极思考", "Retail & Brands": "零售与品牌", "Self-Esteem": "自尊", "Self-Love": "自爱", "Short Quotes": "短语录", "Social Anxiety": "社交焦虑", "Software Pioneers": "软件先驱", "Strength": "力量", "Tech & Hardware": "科技与硬件" },
+    categories: { "Psychology": "心理学", "Business": "商业", "Science": "科学", "History": "历史", "Technology": "科技", "Philosophy": "哲学", "Health": "健康", "Productivity": "生产力", "Finance": "财经", "Arts & Culture": "艺术与文化" },
+    relationship: { "Single": "单身", "In a relationship": "交往中", "Married": "已婚", "It's complicated": "一言难尽" },
+    gender: { "Woman": "女性", "Man": "男性", "Non-binary": "非二元", "Prefer not to say": "不愿透露" },
+    age: { "Under 18": "未满 18 岁", "18-24": "18-24", "25-34": "25-34", "35-44": "35-44", "45-54": "45-54", "55+": "55 岁以上" },
+    belief: { "Spiritual": "灵性", "Religious": "宗教信仰", "Agnostic": "不可知论", "Atheist": "无神论", "Other": "其他" },
+    mainGoal: { "Reduce stress": "减轻压力", "Build confidence": "建立自信", "Stay motivated": "保持动力", "Heal & grow": "疗愈与成长", "Improve relationships": "改善关系" },
+    struggles: { "Heartbreak": "心碎", "Anxiety & overthinking": "焦虑与过度思考", "Depression & sadness": "忧郁与悲伤", "Low confidence": "缺乏自信", "Lack of motivation": "缺乏动力", "Toxic relationship": "有毒关系", "Loneliness": "孤独", "Work & business stress": "工作与事业压力" },
+    moods: { "Sad": "难过", "Anxious": "焦虑", "Unmotivated": "没动力", "Okay": "还好", "Hopeful": "充满希望" },
+    quoteStyle: { "Short & punchy": "简短有力", "Deep & reflective": "深刻反思", "Tough love": "严厉的爱", "Gentle & soft": "温柔和缓" },
+  },
+  "ja": {
+    topics: { "Being Single": "シングルライフ", "Discipline & Focus": "規律と集中", "Finance & Investing": "金融と投資", "Financial Freedom": "経済的自由", "Global Magnates": "世界の実業家", "Gratitude": "感謝", "Healing": "癒し", "Hustle": "努力と行動", "Iconic Founders": "伝説の創業者", "Industry Titans": "業界の巨人", "Internet & Media": "インターネットとメディア", "Love & Relationships": "愛と人間関係", "Money & Wealth": "お金と富", "Positive Thinking": "ポジティブ思考", "Retail & Brands": "小売とブランド", "Self-Esteem": "自尊心", "Self-Love": "自己愛", "Short Quotes": "短い名言", "Social Anxiety": "社交不安", "Software Pioneers": "ソフトウェアの先駆者", "Strength": "強さ", "Tech & Hardware": "テクノロジーとハードウェア" },
+    categories: { "Psychology": "心理学", "Business": "ビジネス", "Science": "科学", "History": "歴史", "Technology": "テクノロジー", "Philosophy": "哲学", "Health": "健康", "Productivity": "生産性", "Finance": "金融", "Arts & Culture": "芸術と文化" },
+    relationship: { "Single": "独身", "In a relationship": "交際中", "Married": "既婚", "It's complicated": "複雑" },
+    gender: { "Woman": "女性", "Man": "男性", "Non-binary": "ノンバイナリー", "Prefer not to say": "回答しない" },
+    age: { "Under 18": "18歳未満", "18-24": "18〜24", "25-34": "25〜34", "35-44": "35〜44", "45-54": "45〜54", "55+": "55歳以上" },
+    belief: { "Spiritual": "スピリチュアル", "Religious": "信仰あり", "Agnostic": "不可知論", "Atheist": "無神論", "Other": "その他" },
+    mainGoal: { "Reduce stress": "ストレスを減らす", "Build confidence": "自信をつける", "Stay motivated": "モチベーションを保つ", "Heal & grow": "癒しと成長", "Improve relationships": "人間関係を改善する" },
+    struggles: { "Heartbreak": "失恋", "Anxiety & overthinking": "不安と考えすぎ", "Depression & sadness": "憂うつと悲しみ", "Low confidence": "自信のなさ", "Lack of motivation": "やる気のなさ", "Toxic relationship": "有害な関係", "Loneliness": "孤独", "Work & business stress": "仕事とビジネスのストレス" },
+    moods: { "Sad": "悲しい", "Anxious": "不安", "Unmotivated": "やる気がない", "Okay": "まあまあ", "Hopeful": "希望を感じる" },
+    quoteStyle: { "Short & punchy": "短くて力強い", "Deep & reflective": "深く内省的", "Tough love": "厳しくも愛のある", "Gentle & soft": "優しく穏やか" },
+  },
+  "es": {
+    topics: { "Being Single": "Vida de soltero", "Discipline & Focus": "Disciplina y enfoque", "Finance & Investing": "Finanzas e inversión", "Financial Freedom": "Libertad financiera", "Global Magnates": "Magnates globales", "Gratitude": "Gratitud", "Healing": "Sanación", "Hustle": "Esfuerzo", "Iconic Founders": "Fundadores icónicos", "Industry Titans": "Titanes de la industria", "Internet & Media": "Internet y medios", "Love & Relationships": "Amor y relaciones", "Money & Wealth": "Dinero y riqueza", "Positive Thinking": "Pensamiento positivo", "Retail & Brands": "Comercio y marcas", "Self-Esteem": "Autoestima", "Self-Love": "Amor propio", "Short Quotes": "Frases breves", "Social Anxiety": "Ansiedad social", "Software Pioneers": "Pioneros del software", "Strength": "Fortaleza", "Tech & Hardware": "Tecnología y hardware" },
+    categories: { "Psychology": "Psicología", "Business": "Negocios", "Science": "Ciencia", "History": "Historia", "Technology": "Tecnología", "Philosophy": "Filosofía", "Health": "Salud", "Productivity": "Productividad", "Finance": "Finanzas", "Arts & Culture": "Arte y cultura" },
+    relationship: { "Single": "Soltero/a", "In a relationship": "En una relación", "Married": "Casado/a", "It's complicated": "Es complicado" },
+    gender: { "Woman": "Mujer", "Man": "Hombre", "Non-binary": "No binario", "Prefer not to say": "Prefiero no decirlo" },
+    age: { "Under 18": "Menor de 18", "18-24": "18-24", "25-34": "25-34", "35-44": "35-44", "45-54": "45-54", "55+": "55+" },
+    belief: { "Spiritual": "Espiritual", "Religious": "Religioso/a", "Agnostic": "Agnóstico/a", "Atheist": "Ateo/a", "Other": "Otro" },
+    mainGoal: { "Reduce stress": "Reducir el estrés", "Build confidence": "Ganar confianza", "Stay motivated": "Mantener la motivación", "Heal & grow": "Sanar y crecer", "Improve relationships": "Mejorar las relaciones" },
+    struggles: { "Heartbreak": "Desamor", "Anxiety & overthinking": "Ansiedad y pensar demasiado", "Depression & sadness": "Depresión y tristeza", "Low confidence": "Falta de confianza", "Lack of motivation": "Falta de motivación", "Toxic relationship": "Relación tóxica", "Loneliness": "Soledad", "Work & business stress": "Estrés laboral y de negocios" },
+    moods: { "Sad": "Triste", "Anxious": "Ansioso/a", "Unmotivated": "Desmotivado/a", "Okay": "Bien", "Hopeful": "Esperanzado/a" },
+    quoteStyle: { "Short & punchy": "Breve y directo", "Deep & reflective": "Profundo y reflexivo", "Tough love": "Amor firme", "Gentle & soft": "Suave y amable" },
+  },
+};
+
+export function labelFor(group, value) {
+  const lng = i18n.language || "en";
+  const base = lng.startsWith("zh-CN") || lng === "zh-CN" ? "zh-CN" : lng.split("-")[0];
+  return (UI_LABELS[base] && UI_LABELS[base][group] && UI_LABELS[base][group][value]) || value;
+}
+
+export function useLabel() {
+  useTranslation();
+  return (group, value) => labelFor(group, value);
+}
 
 export default i18n;

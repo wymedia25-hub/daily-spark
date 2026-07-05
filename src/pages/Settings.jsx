@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { labelFor } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { ArrowLeft, User, Palette, Globe, LogOut, Share, Star, Heart, Languages, Bell, Mail, Check } from "lucide-react";
@@ -48,8 +49,8 @@ export default function Settings() {
     return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
   }
 
-  const startEdit = (field, label, options) => {
-    setEditing({ field, label, options });
+  const startEdit = (field, label, options, labelGroup) => {
+    setEditing({ field, label, options, labelGroup });
     setEditValue(prefs?.[field] || "");
   };
 
@@ -68,11 +69,11 @@ export default function Settings() {
 
   const aboutYouFields = [
     { field: "display_name", label: t("settings.name") },
-    { field: "gender_identity", label: t("settings.genderIdentity"), options: GENDER_OPTIONS },
-    { field: "age_range", label: t("settings.age"), options: AGE_RANGES },
-    { field: "relationship_status", label: t("settings.relationshipStatus"), options: RELATIONSHIP_OPTIONS },
-    { field: "beliefs", label: t("settings.beliefs"), options: BELIEF_OPTIONS },
-    { field: "main_goal", label: t("settings.mainGoal"), options: MAIN_GOALS },
+    { field: "gender_identity", label: t("settings.genderIdentity"), options: GENDER_OPTIONS, labelGroup: "gender" },
+    { field: "age_range", label: t("settings.age"), options: AGE_RANGES, labelGroup: "age" },
+    { field: "relationship_status", label: t("settings.relationshipStatus"), options: RELATIONSHIP_OPTIONS, labelGroup: "relationship" },
+    { field: "beliefs", label: t("settings.beliefs"), options: BELIEF_OPTIONS, labelGroup: "belief" },
+    { field: "main_goal", label: t("settings.mainGoal"), options: MAIN_GOALS, labelGroup: "mainGoal" },
   ];
 
   const handleShare = async () => {
@@ -97,9 +98,9 @@ export default function Settings() {
         </div>
         <div className="rounded-2xl border border-neutral-200 bg-white">
           {aboutYouFields.map((f, i) => (
-            <button key={f.field} onClick={() => startEdit(f.field, f.label, f.options)} className={`flex w-full items-center justify-between px-5 py-4 text-left ${i > 0 ? "border-t border-neutral-100" : ""}`}>
+            <button key={f.field} onClick={() => startEdit(f.field, f.label, f.options, f.labelGroup)} className={`flex w-full items-center justify-between px-5 py-4 text-left ${i > 0 ? "border-t border-neutral-100" : ""}`}>
               <span className="text-sm text-neutral-500">{f.label}</span>
-              <span className="text-sm font-medium text-neutral-900">{prefs?.[f.field] || t("settings.notSet")}</span>
+              <span className="text-sm font-medium text-neutral-900">{prefs?.[f.field] ? (f.labelGroup ? labelFor(f.labelGroup, prefs[f.field]) : prefs[f.field]) : t("settings.notSet")}</span>
             </button>
           ))}
           {savedFlash && (
@@ -171,7 +172,8 @@ export default function Settings() {
                 {editing.options.map((opt) => {
                   const val = typeof opt === "string" ? opt : opt.value;
                   const label = typeof opt === "string" ? opt : opt.label;
-                  return <option key={val} value={val}>{label}</option>;
+                  const displayLabel = editing.labelGroup ? labelFor(editing.labelGroup, val) : label;
+                  return <option key={val} value={val}>{displayLabel}</option>;
                 })}
               </select>
             ) : (

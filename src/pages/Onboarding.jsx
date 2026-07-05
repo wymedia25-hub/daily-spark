@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { calculateRecommendations, STRUGGLES, MOODS, QUOTE_STYLES } from "@/lib/recommendationEngine";
+import { useTranslation } from "react-i18next";
+import { labelFor } from "@/lib/i18n";
 import { MAIN_GOALS, TOPIC_ICONS } from "@/lib/themes";
 import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, ArrowRight, ArrowLeft, Check, Sparkles, CheckCircle2, Circle } from "lucide-react";
 
@@ -12,6 +14,7 @@ const STEPS = ["welcome", "goal", "struggles", "mood", "quote_style", "interests
 export default function Onboarding() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
   const navigate = useNavigate();
+  useTranslation();
   const [stepIdx, setStepIdx] = useState(0);
   const [topics, setTopics] = useState([]);
   const [prefs, setPrefs] = useState({
@@ -181,7 +184,7 @@ export default function Onboarding() {
         <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${selected ? "bg-purple-500 text-white" : "bg-neutral-100 text-neutral-500"}`}>
           <Icon size={18} />
         </div>
-        <span className="flex-1 text-base font-medium text-neutral-800">{topic.name}</span>
+        <span className="flex-1 text-base font-medium text-neutral-800">{labelFor("topics", topic.name)}</span>
         {recommended && (
           <span className="flex items-center gap-1 rounded-full bg-purple-100 px-2.5 py-1 text-[10px] font-semibold text-purple-600">
             <Sparkles size={10} /> Chosen for you
@@ -250,7 +253,7 @@ export default function Onboarding() {
               {MAIN_GOALS.map((goal) => (
                 <OptionTile
                   key={goal}
-                  label={goal}
+                  label={labelFor("mainGoal", goal)}
                   selected={prefs.main_goal === goal}
                   onClick={() => setPrefs({ ...prefs, main_goal: goal })}
                 />
@@ -268,7 +271,7 @@ export default function Onboarding() {
               {STRUGGLES.map((s) => (
                 <Chip
                   key={s}
-                  label={s}
+                  label={labelFor("struggles", s)}
                   selected={prefs.struggles.includes(s)}
                   onClick={() => toggleArrayItem("struggles", s)}
                 />
@@ -286,7 +289,7 @@ export default function Onboarding() {
               {MOODS.map((mood) => (
                 <OptionTile
                   key={mood}
-                  label={mood}
+                  label={labelFor("moods", mood)}
                   selected={prefs.mood === mood}
                   onClick={() => setPrefs({ ...prefs, mood })}
                 />
@@ -304,7 +307,7 @@ export default function Onboarding() {
               {QUOTE_STYLES.map((style) => (
                 <OptionTile
                   key={style}
-                  label={style}
+                  label={labelFor("quoteStyle", style)}
                   selected={prefs.quote_style === style}
                   onClick={() => setPrefs({ ...prefs, quote_style: style })}
                 />
@@ -322,7 +325,7 @@ export default function Onboarding() {
               {topics.map((topic) => (
                 <Chip
                   key={topic.id}
-                  label={topic.name}
+                  label={labelFor("topics", topic.name)}
                   selected={prefs.interests.includes(topic.name)}
                   onClick={() => toggleArrayItem("interests", topic.name)}
                 />

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { labelFor } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Bookmark, Clock, Plus, Sparkles, Lock, Check, CheckCircle2, Circle } from "lucide-react";
@@ -109,7 +110,7 @@ export default function Explore() {
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-neutral-900">{topic.name}</span>
+            <span className="font-semibold text-neutral-900">{labelFor("topics", topic.name)}</span>
             {topic.is_premium && (
               <span className="flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-600">
                 {locked ? <><Lock size={9} /> {t("common.premium")}</> : <Crown size={10} />}

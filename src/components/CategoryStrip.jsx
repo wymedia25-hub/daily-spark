@@ -1,4 +1,5 @@
 import { Brain, Briefcase, FlaskConical, ScrollText, Cpu, Lightbulb, Heart, Zap, DollarSign, Palette } from "lucide-react";
+import { useLabel } from "@/lib/i18n";
 
 const TOPIC_ICONS = {
   "Psychology": Brain,
@@ -14,6 +15,7 @@ const TOPIC_ICONS = {
 };
 
 export default function CategoryStrip({ topics, onTopicClick }) {
+  const label = useLabel();
   return (
     <section className="mb-6">
       <h2 className="text-lg font-bold tracking-tight text-neutral-900 mb-3">Categories you're interested in</h2>
@@ -29,7 +31,7 @@ export default function CategoryStrip({ topics, onTopicClick }) {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-50">
                 <Icon size={22} className="text-neutral-700" />
               </div>
-              <span className="text-xs font-semibold text-neutral-800 text-center leading-tight">{topic}</span>
+              <span className="text-xs font-semibold text-neutral-800 text-center leading-tight">{label("categories", topic)}</span>
             </button>
           );
         })}
