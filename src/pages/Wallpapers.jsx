@@ -30,7 +30,7 @@ export default function Wallpapers() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
+    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500 dark:border-neutral-700 dark:border-t-purple-400" /></div>;
   }
 
   const isPremium = prefs?.is_premium;
@@ -44,17 +44,17 @@ export default function Wallpapers() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-24 pt-6">
-      <button onClick={() => navigate("/explore")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700">
+    <div className="mx-auto max-w-2xl px-4 pb-24 pt-[calc(1.5rem+env(safe-area-inset-top))]">
+      <button onClick={() => navigate("/explore")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">
         <ArrowLeft size={16} /> Back
       </button>
-      <h1 className="mb-5 text-2xl font-bold tracking-tight text-neutral-900">Wallpapers</h1>
+      <h1 className="mb-5 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Wallpapers</h1>
 
       <div className="grid grid-cols-2 gap-3">
         {wallpapers.map((wp) => {
           const locked = wp.is_premium && !isPremium;
           return (
-            <div key={wp.id} className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+            <div key={wp.id} className="overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
               <div className="relative aspect-[9/16]">
                 <img src={wp.image_url} alt="" className="h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

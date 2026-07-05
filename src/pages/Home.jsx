@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import QuoteCard from "@/components/QuoteCard";
+import PullToRefresh from "@/components/PullToRefresh";
 import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
 import { calculateStreakUpdate } from "@/lib/streakUtils";
 import { toggleFavoriteQuote } from "@/lib/userPrefs";
@@ -12,7 +13,7 @@ import { labelFor } from "@/lib/i18n";
 
 export default function Home() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
-  useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [prefs, setPrefs] = useState(null);
   const [activity, setActivity] = useState(null);
@@ -109,14 +110,12 @@ export default function Home() {
     let filtered = quotes.filter((q) => !muted.has(q.topic) && (q.language_code || "en") === userLang);
 
     if (topic) {
-      // Topic selected: show only quotes from that topic
       const topicObj = topics.find((t) => t.name === topic);
       const isPremiumTopic = topicObj?.is_premium;
 
       filtered = filtered.filter((q) => q.topic === topic);
 
       if (isPremiumTopic && !p.is_premium) {
-        // Non-premium user selecting a premium topic: show paywall
         filtered = [{
           _locked: true,
           id: "paywall",
@@ -125,14 +124,11 @@ export default function Home() {
         }];
       }
     } else {
-      // Show quotes from followed topics; fallback to recommended, then all free
       let topicNames = p.following_topics || [];
       if (topicNames.length === 0) topicNames = p.recommended_topics || [];
       if (topicNames.length === 0) topicNames = topics.filter((t) => !t.is_premium).map((t) => t.name);
       const topicSet = new Set(topicNames);
       const topicFiltered = filtered.filter((q) => topicSet.has(q.topic));
-      // Fallback: if no quotes match followed/recommended topics in this language,
-      // show all available quotes in the user's language so the feed is never empty.
       filtered = topicFiltered.length > 0 ? topicFiltered : filtered;
 
       if (!p.is_premium) {
@@ -185,18 +181,38 @@ export default function Home() {
   }, [activity]);
 
   const toggleFavorite = async (quoteId) => {
-    const updated = await toggleFavoriteQuote(user.id, quoteId);
-    setPrefs(updated);
+    // Optimistic UI: update local state immediately
+    const currentFavs = prefs?.favorite_quotes || [];
+    const isFav = currentFavs.includes(quoteId);
+    setPrefs({ ...prefs, favorite_quotes: isFav ? currentFavs.filter((id) => id !== quoteId) : [...currentFavs, quoteId] });
+    try {
+      const updated = await toggleFavoriteQuote(user.id, quoteId);
+      setPrefs(updated);
+    } catch (err) {
+      // Revert on error
+      setPrefs(prefs);
+      console.error(err);
+    }
   };
 
   const toggleFollowTopic = async () => {
     if (!activeTopic || !prefs) return;
     const focus = prefs.focus_areas || [];
-    const newFocus = focus.includes(activeTopic)
-      ? focus.filter((t) => t !== activeTopic)
-      : [...focus, activeTopic];
-    const updated = await base44.entities.UserPreferences.update(prefs.id, { focus_areas: newFocus });
-    setPrefs(updated);
+    const isFollowing = focus.includes(activeTopic);
+    // Optimistic UI
+    const newFocus = isFollowing ? focus.filter((t) => t !== activeTopic) : [...focus, activeTopic];
+    setPrefs({ ...prefs, focus_areas: newFocus });
+    try {
+      const updated = await base44.entities.UserPreferences.update(prefs.id, { focus_areas: newFocus });
+      setPrefs(updated);
+    } catch (err) {
+      setPrefs(prefs);
+      console.error(err);
+    }
+  };
+
+  const handleRefresh = async () => {
+    await loadAll();
   };
 
   useEffect(() => {
@@ -228,14 +244,14 @@ export default function Home() {
           setFeed((prev) => [...prev, ...shuffleArray(poolRef.current)]);
         }
       },
-      { root: containerRef.current, threshold: 0.1 }
+      { threshold: 0.1 }
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [feed]);
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center bg-[#FAFAFA]"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
+    return <div className="flex h-screen items-center justify-center bg-[#FAFAFA] dark:bg-neutral-950"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500 dark:border-neutral-700 dark:border-t-purple-400" /></div>;
   }
 
   if (!isAuthenticated) {
@@ -257,7 +273,7 @@ export default function Home() {
   return (
     <div className="relative h-screen overflow-hidden">
       {activeTopic && (
-        <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/50 to-transparent">
+        <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] bg-gradient-to-b from-black/50 to-transparent">
           <button
             onClick={() => navigate("/explore")}
             className="flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-md px-3 py-2 text-sm font-medium text-white max-w-[60%]"
@@ -272,31 +288,36 @@ export default function Home() {
             }`}
           >
             {isFollowing ? <Check size={15} /> : <Plus size={15} />}
-            {isFollowing ? "Following" : "Follow"}
+            {isFollowing ? t("common.following") : t("common.follow")}
           </button>
         </div>
       )}
-      <div ref={containerRef} className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide">
-        {feed.map((quote, i) => (
-          <div key={`${quote.id}-${i}`} data-idx={i}>
-            <QuoteCard
-              quote={quote}
-              index={i}
-              total={feed.length}
-              isFavorited={favoriteSet.has(quote.id)}
-              onFavorite={() => toggleFavorite(quote.id)}
-              backgroundUrl={quote._locked ? null : (customBackground || getThemeBackground(theme, i))}
-              theme={theme}
-              isLocked={quote._locked}
-              paywallTitle={quote.paywallTitle}
-              paywallSubtitle={quote.paywallSubtitle}
-            />
-          </div>
-        ))}
-        {poolRef.current.length > 0 && !activeTopic && (
-          <div data-sentinel className="h-1" />
-        )}
-      </div>
+      <PullToRefresh
+        onRefresh={handleRefresh}
+        className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide no-overscroll"
+      >
+        <div ref={containerRef}>
+          {feed.map((quote, i) => (
+            <div key={`${quote.id}-${i}`} data-idx={i}>
+              <QuoteCard
+                quote={quote}
+                index={i}
+                total={feed.length}
+                isFavorited={favoriteSet.has(quote.id)}
+                onFavorite={() => toggleFavorite(quote.id)}
+                backgroundUrl={quote._locked ? null : (customBackground || getThemeBackground(theme, i))}
+                theme={theme}
+                isLocked={quote._locked}
+                paywallTitle={quote.paywallTitle}
+                paywallSubtitle={quote.paywallSubtitle}
+              />
+            </div>
+          ))}
+          {poolRef.current.length > 0 && !activeTopic && (
+            <div data-sentinel className="h-1" />
+          )}
+        </div>
+      </PullToRefresh>
       <div className="fixed bottom-28 right-4 z-30">
         <button
           onClick={() => navigate("/theme")}

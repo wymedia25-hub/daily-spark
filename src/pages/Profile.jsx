@@ -49,13 +49,13 @@ export default function Profile() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
+    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500 dark:border-neutral-700 dark:border-t-purple-400" /></div>;
   }
 
   if (!isAuthenticated) {
     return (
       <div className="px-5 py-20 text-center">
-        <h1 className="mb-6 text-2xl font-bold tracking-tight text-neutral-900">{t("profile.title")}</h1>
+        <h1 className="mb-6 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("profile.title")}</h1>
         <button onClick={() => base44.auth.redirectToLogin(window.location.href)} className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-semibold text-white">{t("profile.signIn")}</button>
       </div>
     );
@@ -77,8 +77,8 @@ export default function Profile() {
           {(prefs?.display_name || user?.email || "U")[0].toUpperCase()}
         </div>
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-neutral-900">{prefs?.display_name || t("profile.defaultName")}</h1>
-          <p className="text-sm text-neutral-400">{user?.email}</p>
+          <h1 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{prefs?.display_name || t("profile.defaultName")}</h1>
+          <p className="text-sm text-neutral-400 dark:text-neutral-500">{user?.email}</p>
         </div>
       </div>
 
@@ -88,14 +88,14 @@ export default function Profile() {
         </div>
       )}
 
-      <h2 className="mb-3 text-sm font-bold text-neutral-900">{t("profile.customizeApp")}</h2>
+      <h2 className="mb-3 text-sm font-bold text-neutral-900 dark:text-neutral-100">{t("profile.customizeApp")}</h2>
       <div className="mb-5 space-y-2.5">
         {customizeItems.map((item) => (
-          <button key={item.label} onClick={item.action} className="flex w-full items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50">
+          <button key={item.label} onClick={item.action} className="flex w-full items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-50">
               <item.icon size={18} className="text-purple-600" />
             </div>
-            <span className="text-sm font-medium text-neutral-800">{item.label}</span>
+            <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{item.label}</span>
           </button>
         ))}
       </div>
@@ -111,7 +111,7 @@ export default function Profile() {
         </button>
       )}
 
-      <button onClick={() => logout()} className="flex w-full items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white py-3.5 text-sm font-medium text-neutral-600 hover:bg-neutral-50">
+      <button onClick={() => logout()} className="flex w-full items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white py-3.5 text-sm font-medium text-neutral-600 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800">
         <LogOut size={16} /> {t("profile.signOut")}
       </button>
 

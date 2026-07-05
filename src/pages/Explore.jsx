@@ -63,11 +63,11 @@ export default function Explore() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
+    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500 dark:border-neutral-700 dark:border-t-purple-400" /></div>;
   }
 
   if (!isAuthenticated) {
-    return <div className="px-5 py-20 text-center"><p className="text-neutral-500">{t("explore.pleaseSignIn")}</p></div>;
+    return <div className="px-5 py-20 text-center"><p className="text-neutral-500 dark:text-neutral-400">{t("explore.pleaseSignIn")}</p></div>;
   }
 
   const likedIds = new Set(activity?.liked_quote_ids || []);
@@ -90,8 +90,18 @@ export default function Explore() {
 
   const handleToggleFollow = async (topicName, e) => {
     e.stopPropagation();
-    const updated = await toggleFollowingTopic(user.id, topicName);
-    setPrefs(updated);
+    // Optimistic UI: update local state immediately
+    const currentFollowing = prefs?.following_topics || [];
+    const isFollowing = currentFollowing.includes(topicName);
+    const newFollowing = isFollowing ? currentFollowing.filter((t) => t !== topicName) : [...currentFollowing, topicName];
+    setPrefs({ ...prefs, following_topics: newFollowing });
+    try {
+      const updated = await toggleFollowingTopic(user.id, topicName);
+      setPrefs(updated);
+    } catch (err) {
+      setPrefs(prefs);
+      console.error(err);
+    }
   };
 
   const renderTopicChip = (topic) => {
@@ -103,25 +113,25 @@ export default function Explore() {
       <div
         key={topic.name}
         onClick={() => openTopic(topic.name)}
-        className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50"
+        className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800"
       >
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-neutral-500">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
           <Icon size={20} />
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-neutral-900">{labelFor("topics", topic.name)}</span>
+            <span className="font-semibold text-neutral-900 dark:text-neutral-100">{labelFor("topics", topic.name)}</span>
             {topic.is_premium && (
               <span className="flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-600">
                 {locked ? <><Lock size={9} /> {t("common.premium")}</> : <Crown size={10} />}
               </span>
             )}
           </div>
-          {topic.description && <p className="text-xs text-neutral-400">{topic.description}</p>}
+          {topic.description && <p className="text-xs text-neutral-400 dark:text-neutral-500">{topic.description}</p>}
         </div>
         <button
           onClick={(e) => handleToggleFollow(topic.name, e)}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-neutral-100"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
         >
           {isFollowed
             ? <CheckCircle2 size={20} className="text-purple-500" />
@@ -163,33 +173,33 @@ export default function Explore() {
   const displayQuotes = view === "liked" ? getQuotesByIds(likedIds) : view === "saved" ? getQuotesByIds(savedIds) : view === "history" ? getQuotesByIds(viewedIds) : [];
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-24 pt-6">
-      <h1 className="mb-5 text-2xl font-bold tracking-tight text-neutral-900">{t("explore.title")}</h1>
+    <div className="mx-auto max-w-2xl px-4 pb-24 pt-[calc(1.5rem+env(safe-area-inset-top))]">
+      <h1 className="mb-5 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("explore.title")}</h1>
 
       <div className="mb-6 grid grid-cols-3 gap-3">
         {shortcuts.map((s) => (
-          <button key={s.label} onClick={s.action} className="flex flex-col items-center gap-2 rounded-2xl border border-neutral-200 bg-white p-3 transition-colors hover:bg-neutral-50">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50">
-              <s.icon size={18} className="text-purple-600" />
+          <button key={s.label} onClick={s.action} className="flex flex-col items-center gap-2 rounded-2xl border border-neutral-200 bg-white p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 dark:bg-purple-900/30">
+              <s.icon size={18} className="text-purple-600 dark:text-purple-400" />
             </div>
-            <span className="text-[10px] font-medium text-neutral-700 text-center leading-tight">{s.label}</span>
-            {s.count !== null && <span className="text-[10px] text-neutral-400">{s.count}</span>}
+            <span className="text-[10px] font-medium text-neutral-700 text-center leading-tight dark:text-neutral-300">{s.label}</span>
+            {s.count !== null && <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{s.count}</span>}
           </button>
         ))}
       </div>
 
       {view !== "topics" && (
         <div className="mb-6">
-          <button onClick={() => setView("topics")} className="mb-3 text-sm text-purple-600">{t("explore.backToTopics")}</button>
-          <h2 className="mb-3 text-lg font-bold text-neutral-900">{view === "liked" ? t("explore.likedQuotes") : view === "saved" ? t("explore.savedQuotes") : t("explore.history")}</h2>
+          <button onClick={() => setView("topics")} className="mb-3 text-sm text-purple-600 dark:text-purple-400">{t("explore.backToTopics")}</button>
+          <h2 className="mb-3 text-lg font-bold text-neutral-900 dark:text-neutral-100">{view === "liked" ? t("explore.likedQuotes") : view === "saved" ? t("explore.savedQuotes") : t("explore.history")}</h2>
           {displayQuotes.length === 0 ? (
-            <p className="py-8 text-center text-sm text-neutral-400">{t("explore.noQuotesYet")}</p>
+            <p className="py-8 text-center text-sm text-neutral-400 dark:text-neutral-500">{t("explore.noQuotesYet")}</p>
           ) : (
             <div className="space-y-3">
               {displayQuotes.map((q) => (
-                <div key={q.id} className="rounded-2xl border border-neutral-200 bg-white p-4">
-                  <p className="text-sm text-neutral-800">{q.text}</p>
-                  {q.author && <p className="mt-2 text-xs text-neutral-400">— {q.author}</p>}
+                <div key={q.id} className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
+                  <p className="select-text text-sm text-neutral-800 dark:text-neutral-200">{q.text}</p>
+                  {q.author && <p className="mt-2 text-xs text-neutral-400 dark:text-neutral-500">— {q.author}</p>}
                 </div>
               ))}
             </div>
@@ -201,22 +211,22 @@ export default function Explore() {
         <>
           <div className="relative mb-6">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
-            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("explore.searchTopics")} className="w-full rounded-2xl border border-neutral-200 bg-white py-3 pl-12 pr-4 text-sm outline-none focus:border-purple-400" />
+            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("explore.searchTopics")} className="w-full rounded-2xl border border-neutral-200 bg-white py-3 pl-12 pr-4 text-sm outline-none focus:border-purple-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100" />
           </div>
 
           {followingSet.size === 0 && !search && (
-            <div className="mb-6 rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-6 text-center">
-              <Circle size={24} className="mx-auto mb-2 text-neutral-300" />
-              <p className="text-sm text-neutral-400">{t("explore.followHint")}</p>
+            <div className="mb-6 rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-6 text-center dark:border-neutral-800 dark:bg-neutral-900">
+              <Circle size={24} className="mx-auto mb-2 text-neutral-300 dark:text-neutral-600" />
+              <p className="text-sm text-neutral-400 dark:text-neutral-500">{t("explore.followHint")}</p>
             </div>
           )}
 
           <div className="space-y-8">
             {filteredSections.map((section) => (
               <div key={section.name}>
-                <h2 className="mb-3 text-lg font-bold tracking-tight text-neutral-900">{section.name}</h2>
+                <h2 className="mb-3 text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{section.name}</h2>
                 {section.topics.length === 0 ? (
-                  <p className="py-4 text-center text-sm text-neutral-400">{t("explore.noTopicsYet")}</p>
+                  <p className="py-4 text-center text-sm text-neutral-400 dark:text-neutral-500">{t("explore.noTopicsYet")}</p>
                 ) : (
                   <div className="space-y-2.5">
                     {section.topics.map(renderTopicChip)}

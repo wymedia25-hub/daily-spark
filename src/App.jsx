@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import LanguageProvider from './components/LanguageProvider';
+import { useDarkMode } from './lib/useDarkMode';
 import AppLayout from './components/AppLayout';
 import Home from './pages/Home';
 import Onboarding from './pages/Onboarding';
@@ -65,6 +66,7 @@ const AuthenticatedApp = () => {
 };
 
 function App() {
+  useDarkMode();
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>

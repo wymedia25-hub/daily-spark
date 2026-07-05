@@ -48,13 +48,13 @@ export default function QuoteDetail() {
   };
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center bg-[#FAFAFA]"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
+    return <div className="flex h-screen items-center justify-center bg-[#FAFAFA] dark:bg-neutral-950"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500 dark:border-neutral-700 dark:border-t-purple-400" /></div>;
   }
 
   if (!quote) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center">
-        <p className="text-neutral-500">Quote not found.</p>
+      <div className="flex h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center dark:bg-neutral-950">
+        <p className="text-neutral-500 dark:text-neutral-400">Quote not found.</p>
         <button onClick={() => navigate(isUserQuote ? "/my-quotes" : "/saved-quotes")} className="mt-4 text-sm text-purple-600">← Back</button>
       </div>
     );
@@ -64,7 +64,7 @@ export default function QuoteDetail() {
 
   return (
     <div className="relative h-screen overflow-hidden">
-      <div className="fixed top-0 left-0 right-0 z-40 flex items-center px-4 py-3 bg-gradient-to-b from-black/50 to-transparent">
+      <div className="fixed top-0 left-0 right-0 z-40 flex items-center px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] bg-gradient-to-b from-black/50 to-transparent">
         <button
           onClick={() => navigate(isUserQuote ? "/my-quotes" : "/saved-quotes")}
           className="flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-md px-3 py-2 text-sm font-medium text-white"
@@ -72,7 +72,7 @@ export default function QuoteDetail() {
           <ChevronLeft size={16} /> {isUserQuote ? "Your Own Quotes" : "Saved Quotes"}
         </button>
       </div>
-      <div className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide">
+      <div className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide no-overscroll">
         <div data-idx={0}>
           <QuoteCard
             quote={quote}

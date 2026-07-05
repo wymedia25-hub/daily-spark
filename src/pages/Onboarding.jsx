@@ -70,8 +70,8 @@ export default function Onboarding() {
 
   if (isLoadingAuth) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" />
+      <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA] dark:bg-neutral-950">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500 dark:border-neutral-700 dark:border-t-purple-400" />
       </div>
     );
   }
@@ -148,7 +148,7 @@ export default function Onboarding() {
     <button
       onClick={onClick}
       className={`w-full rounded-2xl border px-5 py-4 text-left text-base font-medium transition-all ${
-        selected ? "border-purple-500 bg-purple-50 text-purple-700" : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
+        selected ? "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300" : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
       }`}
     >
       <div className="flex items-center justify-between">
@@ -162,7 +162,7 @@ export default function Onboarding() {
     <button
       onClick={onClick}
       className={`rounded-full border px-4 py-2.5 text-sm font-medium transition-all ${
-        selected ? "border-purple-500 bg-purple-500 text-white" : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
+        selected ? "border-purple-500 bg-purple-500 text-white" : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
       }`}
     >
       {label}
@@ -178,13 +178,13 @@ export default function Onboarding() {
       <div
         onClick={onClick}
         className={`flex w-full cursor-pointer items-center gap-3 rounded-2xl border px-5 py-4 text-left transition-all ${
-          selected ? "border-purple-500 bg-purple-50" : "border-neutral-200 bg-white hover:border-neutral-300"
+          selected ? "border-purple-500 bg-purple-50 dark:bg-purple-900/30" : "border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900"
         }`}
       >
-        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${selected ? "bg-purple-500 text-white" : "bg-neutral-100 text-neutral-500"}`}>
+        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${selected ? "bg-purple-500 text-white" : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"}`}>
           <Icon size={18} />
         </div>
-        <span className="flex-1 text-base font-medium text-neutral-800">{labelFor("topics", topic.name)}</span>
+        <span className="flex-1 text-base font-medium text-neutral-800 dark:text-neutral-200">{labelFor("topics", topic.name)}</span>
         {recommended && (
           <span className="flex items-center gap-1 rounded-full bg-purple-100 px-2.5 py-1 text-[10px] font-semibold text-purple-600">
             <Sparkles size={10} /> Chosen for you
@@ -204,7 +204,7 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] px-5 py-8">
+    <div className="min-h-screen bg-[#FAFAFA] px-5 py-8 pt-[calc(2rem+env(safe-area-inset-top))] dark:bg-neutral-950">
       <div className="mx-auto max-w-md">
         {/* Progress bar */}
         <div className="mb-8 flex items-center gap-3">
@@ -230,15 +230,15 @@ export default function Onboarding() {
             <div className="mb-8 flex h-28 w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500">
               <Sparkles size={52} className="text-white" strokeWidth={1.5} />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-neutral-900">{t("onboarding.welcomeTitle")}</h1>
-            <p className="mt-2 text-base text-neutral-500">{t("onboarding.welcomeSubtitle")}</p>
-            <h2 className="mb-3 mt-8 text-lg font-semibold text-neutral-900">{t("onboarding.namePrompt")}</h2>
+            <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.welcomeTitle")}</h1>
+            <p className="mt-2 text-base text-neutral-500 dark:text-neutral-400">{t("onboarding.welcomeSubtitle")}</p>
+            <h2 className="mb-3 mt-8 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{t("onboarding.namePrompt")}</h2>
             <input
               type="text"
               value={prefs.display_name}
               onChange={(e) => setPrefs({ ...prefs, display_name: e.target.value })}
               placeholder={t("onboarding.namePlaceholder")}
-              className="w-full rounded-2xl border border-neutral-200 px-5 py-4 text-base text-neutral-900 outline-none focus:border-purple-400"
+              className="w-full rounded-2xl border border-neutral-200 px-5 py-4 text-base text-neutral-900 outline-none focus:border-purple-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100"
               autoFocus
             />
           </div>
@@ -247,8 +247,8 @@ export default function Onboarding() {
         {/* Step 2: Main Goal */}
         {step === "goal" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.goalTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500">{t("onboarding.goalSubtitle")}</p>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.goalTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.goalSubtitle")}</p>
             <div className="space-y-2.5">
               {MAIN_GOALS.map((goal) => (
                 <OptionTile
@@ -265,8 +265,8 @@ export default function Onboarding() {
         {/* Step 3: Struggles */}
         {step === "struggles" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.strugglesTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500">{t("onboarding.strugglesSubtitle")}</p>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.strugglesTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.strugglesSubtitle")}</p>
             <div className="flex flex-wrap gap-2.5">
               {STRUGGLES.map((s) => (
                 <Chip
@@ -283,8 +283,8 @@ export default function Onboarding() {
         {/* Step 4: Mood */}
         {step === "mood" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.moodTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500">{t("onboarding.moodSubtitle")}</p>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.moodTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.moodSubtitle")}</p>
             <div className="space-y-2.5">
               {MOODS.map((mood) => (
                 <OptionTile
@@ -301,8 +301,8 @@ export default function Onboarding() {
         {/* Step 5: Quote Style */}
         {step === "quote_style" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.styleTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500">{t("onboarding.styleSubtitle")}</p>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.styleTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.styleSubtitle")}</p>
             <div className="space-y-2.5">
               {QUOTE_STYLES.map((style) => (
                 <OptionTile
@@ -319,8 +319,8 @@ export default function Onboarding() {
         {/* Step 6: Interests */}
         {step === "interests" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.interestsTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500">{t("onboarding.interestsSubtitle")}</p>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.interestsTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.interestsSubtitle")}</p>
             <div className="flex flex-wrap gap-2.5">
               {topics.map((topic) => (
                 <Chip
@@ -337,8 +337,8 @@ export default function Onboarding() {
         {/* Step 7: Result */}
         {step === "result" && (
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">{t("onboarding.resultTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500">
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.resultTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">
               {t("onboarding.resultSubtitle")}
             </p>
 
@@ -356,7 +356,7 @@ export default function Onboarding() {
 
             {otherTopicObjects.length > 0 && (
               <>
-                <h2 className="mb-3 text-sm font-bold text-neutral-400">{t("onboarding.moreTopics")}</h2>
+                <h2 className="mb-3 text-sm font-bold text-neutral-400 dark:text-neutral-500">{t("onboarding.moreTopics")}</h2>
                 <div className="mb-6 space-y-2.5">
                   {otherTopicObjects.map((topic) => (
                     <TopicCard

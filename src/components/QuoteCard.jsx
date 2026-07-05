@@ -48,13 +48,13 @@ export default function QuoteCard({
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-8">
         <p
-          className="max-w-lg text-center text-2xl font-medium leading-relaxed text-white"
+          className="select-text max-w-lg text-center text-2xl font-medium leading-relaxed text-white"
           style={{ textShadow: "0 2px 8px rgba(0,0,0,0.3)" }}
         >
           {quote.text}
         </p>
         {quote.author && (
-          <p className="mt-5 text-sm font-light text-white/70">— {quote.author}</p>
+        <p className="select-text mt-5 text-sm font-light text-white/70">— {quote.author}</p>
         )}
       </div>
 

@@ -30,37 +30,46 @@ export default function SavedQuotes() {
   };
 
   const handleToggle = async (quoteId) => {
-    const updated = await toggleFavoriteQuote(user.id, quoteId);
-    setPrefs(updated);
+    // Optimistic UI: update local state immediately
+    const currentFavs = prefs?.favorite_quotes || [];
+    const isFav = currentFavs.includes(quoteId);
+    setPrefs({ ...prefs, favorite_quotes: isFav ? currentFavs.filter((id) => id !== quoteId) : [...currentFavs, quoteId] });
+    try {
+      const updated = await toggleFavoriteQuote(user.id, quoteId);
+      setPrefs(updated);
+    } catch (err) {
+      setPrefs(prefs);
+      console.error(err);
+    }
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
+    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500 dark:border-neutral-700 dark:border-t-purple-400" /></div>;
   }
 
   const favIds = new Set(prefs?.favorite_quotes || []);
   const favQuotes = quotes.filter((q) => favIds.has(q.id));
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-24 pt-6">
-      <button onClick={() => navigate("/profile")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700">
+    <div className="mx-auto max-w-2xl px-4 pb-24 pt-[calc(1.5rem+env(safe-area-inset-top))]">
+      <button onClick={() => navigate("/profile")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">
         <ArrowLeft size={16} /> Back
       </button>
-      <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">Saved Quotes</h1>
-      <p className="mb-6 text-sm text-neutral-500">Quotes you've favorited.</p>
+      <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Saved Quotes</h1>
+      <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">Quotes you've favorited.</p>
 
       {favQuotes.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-8 text-center">
-          <Heart size={28} className="mx-auto mb-3 text-neutral-300" />
-          <p className="text-sm text-neutral-400">Tap the heart on any quote to save it here.</p>
+        <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-8 text-center dark:border-neutral-800 dark:bg-neutral-900">
+          <Heart size={28} className="mx-auto mb-3 text-neutral-300 dark:text-neutral-600" />
+          <p className="text-sm text-neutral-400 dark:text-neutral-500">Tap the heart on any quote to save it here.</p>
         </div>
       ) : (
         <div className="space-y-3">
           {favQuotes.map((q) => (
-            <div key={q.id} className="rounded-2xl border border-neutral-200 bg-white p-5">
+            <div key={q.id} className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
               <div onClick={() => navigate(`/quote/${q.id}`)} className="cursor-pointer">
-                <p className="text-base leading-relaxed text-neutral-800">{q.text}</p>
-                {q.author && <p className="mt-3 text-xs text-neutral-400">— {q.author}</p>}
+                <p className="select-text text-base leading-relaxed text-neutral-800 dark:text-neutral-200">{q.text}</p>
+                {q.author && <p className="mt-3 text-xs text-neutral-400 dark:text-neutral-500">— {q.author}</p>}
               </div>
               <button
                 onClick={() => handleToggle(q.id)}

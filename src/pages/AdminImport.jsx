@@ -129,16 +129,16 @@ export default function AdminImport() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-24 pt-6">
-      <button onClick={() => navigate("/profile")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700">
+    <div className="mx-auto max-w-2xl px-4 pb-24 pt-[calc(1.5rem+env(safe-area-inset-top))]">
+      <button onClick={() => navigate("/profile")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">
         <ArrowLeft size={16} /> Back
       </button>
-      <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900">Import Data</h1>
-      <p className="mb-6 text-sm text-neutral-500">Upload a CSV file to bulk-add records.</p>
+      <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Import Data</h1>
+      <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">Upload a CSV file to bulk-add records.</p>
 
       {/* Entity selector */}
       <div className="mb-4">
-        <label className="mb-1.5 block text-sm font-medium text-neutral-700">Import into</label>
+        <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Import into</label>
         <div className="flex gap-2">
           {ENTITY_OPTIONS.map((opt) => (
             <button
@@ -146,8 +146,8 @@ export default function AdminImport() {
               onClick={() => { setEntity(opt); clearFile(); }}
               className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                 entity.value === opt.value
-                  ? "border-purple-500 bg-purple-50 text-purple-700"
-                  : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300"
+                  ? "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                  : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400"
               }`}
             >
               {opt.label}
@@ -157,26 +157,26 @@ export default function AdminImport() {
       </div>
 
       {/* Expected columns */}
-      <div className="mb-4 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
-        <p className="mb-1 text-xs font-semibold text-neutral-500">Expected CSV columns</p>
-        <p className="text-sm text-neutral-700">{entity.fields.join(", ")}</p>
-        <p className="mt-1 text-xs text-neutral-400">Required: {entity.required.join(", ")}</p>
+      <div className="mb-4 rounded-xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
+        <p className="mb-1 text-xs font-semibold text-neutral-500 dark:text-neutral-400">Expected CSV columns</p>
+        <p className="text-sm text-neutral-700 dark:text-neutral-300">{entity.fields.join(", ")}</p>
+        <p className="mt-1 text-xs text-neutral-400 dark:text-neutral-500">Required: {entity.required.join(", ")}</p>
       </div>
 
       {/* Upload area */}
       <div
         onClick={() => fileRef.current?.click()}
-        className="mb-4 flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-neutral-200 bg-white p-8 transition-colors hover:border-purple-300"
+        className="mb-4 flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-neutral-200 bg-white p-8 transition-colors hover:border-purple-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-purple-700"
       >
-        <Upload size={28} className="text-neutral-400" />
-        <span className="text-sm font-medium text-neutral-600">
+        <Upload size={28} className="text-neutral-400 dark:text-neutral-500" />
+        <span className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
           {fileName || "Click to select a CSV file"}
         </span>
         <input ref={fileRef} type="file" accept=".csv" onChange={handleFile} className="hidden" />
       </div>
 
       {fileName && !parsed && !error && (
-        <p className="mb-4 text-sm text-neutral-400">Parsing…</p>
+        <p className="mb-4 text-sm text-neutral-400 dark:text-neutral-500">Parsing…</p>
       )}
 
       {error && (
@@ -205,9 +205,9 @@ export default function AdminImport() {
               <Trash2 size={12} /> Clear
             </button>
           </div>
-          <div className="max-h-60 overflow-auto rounded-xl border border-neutral-200 bg-white">
+          <div className="max-h-60 overflow-auto rounded-xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 no-overscroll">
             <table className="w-full text-left text-xs">
-              <thead className="sticky top-0 bg-neutral-50">
+              <thead className="sticky top-0 bg-neutral-50 dark:bg-neutral-800">
                 <tr>
                   {parsed.headers.filter((h) => entity.fields.includes(h)).map((h) => (
                     <th key={h} className="whitespace-nowrap border-b border-neutral-100 px-3 py-2 font-semibold text-neutral-500">{h}</th>

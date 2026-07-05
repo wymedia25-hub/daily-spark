@@ -40,16 +40,16 @@ export default function Theme() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500" /></div>;
+    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500 dark:border-neutral-700 dark:border-t-purple-400" /></div>;
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-28 pt-6">
-      <button onClick={() => navigate("/")} className="mb-6 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700">
+    <div className="mx-auto max-w-2xl px-4 pb-28 pt-[calc(1.5rem+env(safe-area-inset-top))]">
+      <button onClick={() => navigate("/")} className="mb-6 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">
         <ArrowLeft size={16} /> Back
       </button>
-      <h1 className="text-3xl font-bold tracking-tight text-neutral-900">Choose your vibe</h1>
-      <p className="mb-7 mt-1.5 text-sm text-neutral-500">Pick a mood for your daily quote backgrounds.</p>
+      <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Choose your vibe</h1>
+      <p className="mb-7 mt-1.5 text-sm text-neutral-500 dark:text-neutral-400">Pick a mood for your daily quote backgrounds.</p>
 
       <div className="grid grid-cols-2 gap-3">
         {THEMES.map((theme) => (

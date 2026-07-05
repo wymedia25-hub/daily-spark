@@ -8,7 +8,7 @@ export default function ThemePreview({ themeName, coverUrl, selected, onSelect }
   return (
     <button
       onClick={onSelect}
-      className="group relative aspect-[3/4] w-full overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.98]"
+      className="group relative aspect-[3/4] w-full overflow-hidden rounded-2xl shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.98] select-none"
       style={{ background: getThemeGradient(themeName) }}
     >
       {!imgError && (
