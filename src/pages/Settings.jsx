@@ -10,14 +10,6 @@ const LANGUAGE_OPTIONS = [
   { value: "zh", label: "中文 (Chinese)" },
   { value: "ja", label: "日本語 (Japanese)" },
   { value: "es", label: "Español (Spanish)" },
-  { value: "fr", label: "Français (French)" },
-  { value: "de", label: "Deutsch (German)" },
-  { value: "pt", label: "Português (Portuguese)" },
-  { value: "ko", label: "한국어 (Korean)" },
-  { value: "it", label: "Italiano (Italian)" },
-  { value: "ru", label: "Русский (Russian)" },
-  { value: "ar", label: "العربية (Arabic)" },
-  { value: "hi", label: "हिन्दी (Hindi)" },
 ];
 
 export default function Settings() {
