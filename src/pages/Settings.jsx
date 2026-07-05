@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { ArrowLeft, User, Palette, Globe, LogOut, Share, Star, Heart, Languages, Bell, Mail, Check } from "lucide-react";
@@ -15,6 +16,7 @@ const LANGUAGE_OPTIONS = [
 
 export default function Settings() {
   const { user, isAuthenticated, isLoadingAuth, logout } = useAuth();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [prefs, setPrefs] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -56,6 +58,7 @@ export default function Settings() {
     try {
       const updated = await base44.entities.UserPreferences.update(prefs.id, { [editing.field]: editValue });
       setPrefs(updated);
+      if (editing.field === "language_code") i18n.changeLanguage(editValue);
       setEditing(null);
       setSavedFlash(true);
       setTimeout(() => setSavedFlash(false), 2000);
@@ -64,12 +67,12 @@ export default function Settings() {
   };
 
   const aboutYouFields = [
-    { field: "display_name", label: "Name" },
-    { field: "gender_identity", label: "Gender identity", options: GENDER_OPTIONS },
-    { field: "age_range", label: "Age", options: AGE_RANGES },
-    { field: "relationship_status", label: "Relationship status", options: RELATIONSHIP_OPTIONS },
-    { field: "beliefs", label: "Beliefs", options: BELIEF_OPTIONS },
-    { field: "main_goal", label: "Main goal", options: MAIN_GOALS },
+    { field: "display_name", label: t("settings.name") },
+    { field: "gender_identity", label: t("settings.genderIdentity"), options: GENDER_OPTIONS },
+    { field: "age_range", label: t("settings.age"), options: AGE_RANGES },
+    { field: "relationship_status", label: t("settings.relationshipStatus"), options: RELATIONSHIP_OPTIONS },
+    { field: "beliefs", label: t("settings.beliefs"), options: BELIEF_OPTIONS },
+    { field: "main_goal", label: t("settings.mainGoal"), options: MAIN_GOALS },
   ];
 
   const handleShare = async () => {
@@ -83,26 +86,26 @@ export default function Settings() {
   return (
     <div className="mx-auto max-w-2xl px-4 pb-24 pt-6">
       <button onClick={() => navigate("/profile")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700">
-        <ArrowLeft size={16} /> Back
+        <ArrowLeft size={16} /> {t("settings.back")}
       </button>
-      <h1 className="mb-6 text-2xl font-bold tracking-tight text-neutral-900">Settings</h1>
+      <h1 className="mb-6 text-2xl font-bold tracking-tight text-neutral-900">{t("settings.title")}</h1>
 
       <div className="mb-6">
         <div className="mb-3 flex items-center gap-2">
           <User size={18} className="text-neutral-400" />
-          <h2 className="text-sm font-bold text-neutral-900">About You</h2>
+          <h2 className="text-sm font-bold text-neutral-900">{t("settings.aboutYou")}</h2>
         </div>
         <div className="rounded-2xl border border-neutral-200 bg-white">
           {aboutYouFields.map((f, i) => (
             <button key={f.field} onClick={() => startEdit(f.field, f.label, f.options)} className={`flex w-full items-center justify-between px-5 py-4 text-left ${i > 0 ? "border-t border-neutral-100" : ""}`}>
               <span className="text-sm text-neutral-500">{f.label}</span>
-              <span className="text-sm font-medium text-neutral-900">{prefs?.[f.field] || "Not set"}</span>
+              <span className="text-sm font-medium text-neutral-900">{prefs?.[f.field] || t("settings.notSet")}</span>
             </button>
           ))}
           {savedFlash && (
             <div className="flex items-center gap-1.5 border-t border-neutral-100 px-5 py-3 text-green-600">
               <Check size={14} />
-              <span className="text-xs font-medium">Saved</span>
+              <span className="text-xs font-medium">{t("settings.saved")}</span>
             </div>
           )}
         </div>
@@ -111,13 +114,13 @@ export default function Settings() {
       <div className="mb-6">
         <div className="mb-3 flex items-center gap-2">
           <Palette size={18} className="text-neutral-400" />
-          <h2 className="text-sm font-bold text-neutral-900">Make It Yours</h2>
+          <h2 className="text-sm font-bold text-neutral-900">{t("settings.makeItYours")}</h2>
         </div>
         <div className="rounded-2xl border border-neutral-200 bg-white">
           <button onClick={() => startEdit("language_code", "Language", LANGUAGE_OPTIONS)} className="flex w-full items-center justify-between px-5 py-4 text-left">
             <div className="flex items-center gap-2">
               <Languages size={16} className="text-neutral-400" />
-              <span className="text-sm text-neutral-500">Language</span>
+              <span className="text-sm text-neutral-500">{t("settings.language")}</span>
             </div>
             <span className="text-sm font-medium text-neutral-900">{LANGUAGE_OPTIONS.find((o) => o.value === prefs?.language_code)?.label || "English"}</span>
           </button>
@@ -127,16 +130,16 @@ export default function Settings() {
       <div className="mb-6">
         <div className="mb-3 flex items-center gap-2">
           <Globe size={18} className="text-neutral-400" />
-          <h2 className="text-sm font-bold text-neutral-900">Account</h2>
+          <h2 className="text-sm font-bold text-neutral-900">{t("settings.account")}</h2>
         </div>
         <div className="rounded-2xl border border-neutral-200 bg-white">
           <div className="flex items-center justify-between px-5 py-4">
-            <span className="text-sm text-neutral-500">Signed in as</span>
+            <span className="text-sm text-neutral-500">{t("settings.signedInAs")}</span>
             <span className="text-sm font-medium text-neutral-900 truncate max-w-[180px]">{user?.email}</span>
           </div>
           <button onClick={() => logout()} className="flex w-full items-center gap-2 border-t border-neutral-100 px-5 py-4 text-left">
             <LogOut size={16} className="text-red-400" />
-            <span className="text-sm font-medium text-red-500">Sign out</span>
+            <span className="text-sm font-medium text-red-500">{t("settings.signOut")}</span>
           </button>
         </div>
       </div>
@@ -144,16 +147,16 @@ export default function Settings() {
       <div className="mb-6">
         <div className="mb-3 flex items-center gap-2">
           <Heart size={18} className="text-neutral-400" />
-          <h2 className="text-sm font-bold text-neutral-900">Support Us</h2>
+          <h2 className="text-sm font-bold text-neutral-900">{t("settings.supportUs")}</h2>
         </div>
         <div className="rounded-2xl border border-neutral-200 bg-white">
           <button onClick={handleShare} className="flex w-full items-center gap-3 border-b border-neutral-100 px-5 py-4 text-left">
             <Share size={18} className="text-neutral-400" />
-            <span className="text-sm text-neutral-700">Share Daily Spark</span>
+            <span className="text-sm text-neutral-700">{t("settings.shareApp")}</span>
           </button>
           <button onClick={() => window.open("mailto:hello@selfmade.app?subject=Review%20for%20Self%20Made", "_blank")} className="flex w-full items-center gap-3 px-5 py-4 text-left">
             <Star size={18} className="text-neutral-400" />
-            <span className="text-sm text-neutral-700">Leave a review</span>
+            <span className="text-sm text-neutral-700">{t("settings.leaveReview")}</span>
           </button>
         </div>
       </div>
@@ -175,8 +178,8 @@ export default function Settings() {
               <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-purple-400" />
             )}
             <div className="mt-4 flex gap-2">
-              <button onClick={saveEdit} disabled={saving} className="flex-1 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 py-3 text-sm font-semibold text-white disabled:opacity-40">{saving ? "Saving..." : "Save"}</button>
-              <button onClick={() => setEditing(null)} className="rounded-xl border border-neutral-200 px-5 py-3 text-sm font-medium text-neutral-600">Cancel</button>
+              <button onClick={saveEdit} disabled={saving} className="flex-1 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 py-3 text-sm font-semibold text-white disabled:opacity-40">{saving ? t("settings.saving") : t("settings.save")}</button>
+              <button onClick={() => setEditing(null)} className="rounded-xl border border-neutral-200 px-5 py-3 text-sm font-medium text-neutral-600">{t("settings.cancel")}</button>
             </div>
           </div>
         </div>

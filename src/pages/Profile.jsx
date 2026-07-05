@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StreakTracker from "@/components/StreakTracker";
@@ -7,6 +8,7 @@ import { Settings as SettingsIcon, LogOut, Bell, Crown, Heart, Upload } from "lu
 
 export default function Profile() {
   const { user, isAuthenticated, isLoadingAuth, logout, checkUserAuth } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activity, setActivity] = useState(null);
   const [prefs, setPrefs] = useState(null);
@@ -53,8 +55,8 @@ export default function Profile() {
   if (!isAuthenticated) {
     return (
       <div className="px-5 py-20 text-center">
-        <h1 className="mb-6 text-2xl font-bold tracking-tight text-neutral-900">Profile</h1>
-        <button onClick={() => base44.auth.redirectToLogin(window.location.href)} className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-semibold text-white">Sign in</button>
+        <h1 className="mb-6 text-2xl font-bold tracking-tight text-neutral-900">{t("profile.title")}</h1>
+        <button onClick={() => base44.auth.redirectToLogin(window.location.href)} className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-semibold text-white">{t("profile.signIn")}</button>
       </div>
     );
   }
@@ -62,10 +64,10 @@ export default function Profile() {
   const isAdmin = user?.role === "admin";
 
   const customizeItems = [
-    { label: "Saved Quotes", icon: Heart, action: () => navigate("/saved-quotes") },
-    { label: "Reminders", icon: Bell, action: () => navigate("/reminders") },
-    { label: "Settings", icon: SettingsIcon, action: () => navigate("/settings") },
-    ...(isAdmin ? [{ label: "Import Data", icon: Upload, action: () => navigate("/admin/import") }] : []),
+    { label: t("profile.savedQuotes"), icon: Heart, action: () => navigate("/saved-quotes") },
+    { label: t("profile.reminders"), icon: Bell, action: () => navigate("/reminders") },
+    { label: t("profile.settings"), icon: SettingsIcon, action: () => navigate("/settings") },
+    ...(isAdmin ? [{ label: t("profile.importData"), icon: Upload, action: () => navigate("/admin/import") }] : []),
   ];
 
   return (
@@ -75,7 +77,7 @@ export default function Profile() {
           {(prefs?.display_name || user?.email || "U")[0].toUpperCase()}
         </div>
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-neutral-900">{prefs?.display_name || "Daily Spark User"}</h1>
+          <h1 className="text-xl font-bold tracking-tight text-neutral-900">{prefs?.display_name || t("profile.defaultName")}</h1>
           <p className="text-sm text-neutral-400">{user?.email}</p>
         </div>
       </div>
@@ -86,7 +88,7 @@ export default function Profile() {
         </div>
       )}
 
-      <h2 className="mb-3 text-sm font-bold text-neutral-900">Customize the app</h2>
+      <h2 className="mb-3 text-sm font-bold text-neutral-900">{t("profile.customizeApp")}</h2>
       <div className="mb-5 space-y-2.5">
         {customizeItems.map((item) => (
           <button key={item.label} onClick={item.action} className="flex w-full items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition-colors hover:bg-neutral-50">
@@ -102,15 +104,15 @@ export default function Profile() {
         <button onClick={() => navigate("/paywall")} className="mb-5 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-pink-500 p-5 text-left text-white">
           <div className="flex items-center gap-2">
             <Crown size={20} />
-            <h3 className="font-bold">Self-Growth Bundle</h3>
+            <h3 className="font-bold">{t("profile.selfGrowthBundle")}</h3>
           </div>
-          <p className="mt-2 text-sm text-white/80">Unlock premium affirmation decks: "I am" affirmations, gratitude, self-love, and more.</p>
-          <span className="mt-3 inline-block rounded-lg bg-white px-4 py-2 text-sm font-bold text-purple-600">Unlock Premium</span>
+          <p className="mt-2 text-sm text-white/80">{t("profile.bundleDesc")}</p>
+          <span className="mt-3 inline-block rounded-lg bg-white px-4 py-2 text-sm font-bold text-purple-600">{t("profile.unlockPremium")}</span>
         </button>
       )}
 
       <button onClick={() => logout()} className="flex w-full items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white py-3.5 text-sm font-medium text-neutral-600 hover:bg-neutral-50">
-        <LogOut size={16} /> Sign out
+        <LogOut size={16} /> {t("profile.signOut")}
       </button>
 
     </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, Search, Bookmark, Clock, Plus, Sparkles, Lock, Check, CheckCircle2, Circle } from "lucide-react";
@@ -11,6 +12,7 @@ const STATIC_SECTIONS = ["Daily Mindset", "Inner Work", "Hustle & Wins", "Founde
 
 export default function Explore() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
   const [quotes, setQuotes] = useState([]);
@@ -64,7 +66,7 @@ export default function Explore() {
   }
 
   if (!isAuthenticated) {
-    return <div className="px-5 py-20 text-center"><p className="text-neutral-500">Please sign in to explore.</p></div>;
+    return <div className="px-5 py-20 text-center"><p className="text-neutral-500">{t("explore.pleaseSignIn")}</p></div>;
   }
 
   const likedIds = new Set(activity?.liked_quote_ids || []);
@@ -78,9 +80,9 @@ export default function Explore() {
   const getQuotesByIds = (ids) => quotes.filter((q) => ids.has(q.id));
 
   const shortcuts = [
-    { label: "Saved Quotes", icon: Heart, count: favQuoteIds.size, action: () => navigate("/saved-quotes") },
-    { label: "Your Quotes", icon: Plus, count: userQuotes.length, action: () => navigate("/my-quotes") },
-    { label: "History", icon: Clock, count: viewedIds.size, action: () => setView("history") },
+    { label: t("explore.savedQuotes"), icon: Heart, count: favQuoteIds.size, action: () => navigate("/saved-quotes") },
+    { label: t("explore.yourQuotes"), icon: Plus, count: userQuotes.length, action: () => navigate("/my-quotes") },
+    { label: t("explore.history"), icon: Clock, count: viewedIds.size, action: () => setView("history") },
   ];
 
   const openTopic = (topicName) => navigate(`/?topic=${encodeURIComponent(topicName)}`);
@@ -153,7 +155,7 @@ export default function Explore() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-24 pt-6">
-      <h1 className="mb-5 text-2xl font-bold tracking-tight text-neutral-900">Explore</h1>
+      <h1 className="mb-5 text-2xl font-bold tracking-tight text-neutral-900">{t("explore.title")}</h1>
 
       <div className="mb-6 grid grid-cols-3 gap-3">
         {shortcuts.map((s) => (
@@ -169,10 +171,10 @@ export default function Explore() {
 
       {view !== "topics" && (
         <div className="mb-6">
-          <button onClick={() => setView("topics")} className="mb-3 text-sm text-purple-600">← Back to topics</button>
-          <h2 className="mb-3 text-lg font-bold text-neutral-900">{view === "liked" ? "Liked Quotes" : view === "saved" ? "Saved Quotes" : "History"}</h2>
+          <button onClick={() => setView("topics")} className="mb-3 text-sm text-purple-600">{t("explore.backToTopics")}</button>
+          <h2 className="mb-3 text-lg font-bold text-neutral-900">{view === "liked" ? t("explore.likedQuotes") : view === "saved" ? t("explore.savedQuotes") : t("explore.history")}</h2>
           {displayQuotes.length === 0 ? (
-            <p className="py-8 text-center text-sm text-neutral-400">No quotes here yet</p>
+            <p className="py-8 text-center text-sm text-neutral-400">{t("explore.noQuotesYet")}</p>
           ) : (
             <div className="space-y-3">
               {displayQuotes.map((q) => (
@@ -190,13 +192,13 @@ export default function Explore() {
         <>
           <div className="relative mb-6">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
-            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search topics" className="w-full rounded-2xl border border-neutral-200 bg-white py-3 pl-12 pr-4 text-sm outline-none focus:border-purple-400" />
+            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("explore.searchTopics")} className="w-full rounded-2xl border border-neutral-200 bg-white py-3 pl-12 pr-4 text-sm outline-none focus:border-purple-400" />
           </div>
 
           {followingSet.size === 0 && !search && (
             <div className="mb-6 rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-6 text-center">
               <Circle size={24} className="mx-auto mb-2 text-neutral-300" />
-              <p className="text-sm text-neutral-400">Tap the circle on any topic to follow it.</p>
+              <p className="text-sm text-neutral-400">{t("explore.followHint")}</p>
             </div>
           )}
 
@@ -205,7 +207,7 @@ export default function Explore() {
               <div key={section.name}>
                 <h2 className="mb-3 text-lg font-bold tracking-tight text-neutral-900">{section.name}</h2>
                 {section.topics.length === 0 ? (
-                  <p className="py-4 text-center text-sm text-neutral-400">No topics here yet</p>
+                  <p className="py-4 text-center text-sm text-neutral-400">{t("explore.noTopicsYet")}</p>
                 ) : (
                   <div className="space-y-2.5">
                     {section.topics.map(renderTopicChip)}
