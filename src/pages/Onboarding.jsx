@@ -8,8 +8,15 @@ import { labelFor } from "@/lib/i18n";
 import { MAIN_GOALS, TOPIC_ICONS } from "@/lib/themes";
 import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, ArrowRight, ArrowLeft, Check, Sparkles, CheckCircle2, Circle } from "lucide-react";
 
+const STREAK_OPTIONS = [
+  { days: 7, badge: "Promising" },
+  { days: 14, badge: "Determined" },
+  { days: 30, badge: "Impressive" },
+  { days: 50, badge: "Unstoppable" },
+];
+
 const ICON_MAP = { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap };
-const STEPS = ["welcome", "goal", "struggles", "mood", "quote_style", "interests", "result"];
+const STEPS = ["welcome", "goal", "struggles", "mood", "quote_style", "interests", "streak_commitment", "result"];
 
 export default function Onboarding() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
@@ -24,6 +31,7 @@ export default function Onboarding() {
     mood: "",
     quote_style: "",
     interests: [],
+    streak_commitment: null,
     preferred_theme: "Calm nature",
     reminder_time: "09:00",
   });
@@ -85,6 +93,7 @@ export default function Onboarding() {
     if (step === "mood") return !!prefs.mood;
     if (step === "quote_style") return !!prefs.quote_style;
     if (step === "interests") return prefs.interests.length >= 1;
+    if (step === "streak_commitment") return !!prefs.streak_commitment;
     if (step === "result") return selectedTopics.length >= 1;
     return true;
   };
@@ -102,6 +111,7 @@ export default function Onboarding() {
     try {
       const data = {
         ...prefs,
+        streak_commitment: prefs.streak_commitment,
         recommended_topics: recommendedTopics,
         focus_areas: selectedTopics,
         following_topics: following,
@@ -334,7 +344,25 @@ export default function Onboarding() {
           </div>
         )}
 
-        {/* Step 7: Result */}
+        {/* Step 7: Streak Commitment */}
+        {step === "streak_commitment" && (
+          <div>
+            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.streakTitle")}</h1>
+            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.streakSubtitle")}</p>
+            <div className="space-y-2.5">
+              {STREAK_OPTIONS.map((option) => (
+                <OptionTile
+                  key={option.days}
+                  label={`${option.days} days · ${option.badge}`}
+                  selected={prefs.streak_commitment === option.days}
+                  onClick={() => setPrefs({ ...prefs, streak_commitment: option.days })}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step 8: Result */}
         {step === "result" && (
           <div>
             <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.resultTitle")}</h1>

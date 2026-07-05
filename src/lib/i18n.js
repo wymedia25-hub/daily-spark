@@ -94,6 +94,8 @@ const resources = {
         styleSubtitle: "We'll match the tone to what resonates.",
         interestsTitle: "Pick what speaks to you",
         interestsSubtitle: "Select topics that resonate with you.",
+        streakTitle: "Commit to a streak",
+        streakSubtitle: "Pick a streak goal to stay motivated and build a daily habit.",
         resultTitle: "Based on your answers",
         resultSubtitle: "Here's your personalized feed. Toggle any topic on or off.",
         moreTopics: "More topics",
