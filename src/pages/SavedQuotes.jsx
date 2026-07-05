@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { toggleFavoriteQuote } from "@/lib/userPrefs";
-import { ArrowLeft, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
+import StackHeader from "@/components/StackHeader";
 
 export default function SavedQuotes() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
@@ -51,11 +52,9 @@ export default function SavedQuotes() {
   const favQuotes = quotes.filter((q) => favIds.has(q.id));
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-24 pt-[calc(1.5rem+env(safe-area-inset-top))]">
-      <button onClick={() => navigate("/profile")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">
-        <ArrowLeft size={16} /> Back
-      </button>
-      <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Saved Quotes</h1>
+    <div className="pb-24">
+      <StackHeader title="Saved Quotes" />
+      <div className="mx-auto max-w-2xl px-4 pt-4">
       <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">Quotes you've favorited.</p>
 
       {favQuotes.length === 0 ? (
@@ -81,6 +80,7 @@ export default function SavedQuotes() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

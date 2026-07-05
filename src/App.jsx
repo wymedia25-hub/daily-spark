@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import ScrollToTop from './components/ScrollToTop';
 import LanguageProvider from './components/LanguageProvider';
 import { useDarkMode } from './lib/useDarkMode';
 import AppLayout from './components/AppLayout';
@@ -71,7 +70,6 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
-          <ScrollToTop />
           <LanguageProvider>
             <AuthenticatedApp />
           </LanguageProvider>

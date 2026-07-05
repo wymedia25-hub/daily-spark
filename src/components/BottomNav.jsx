@@ -1,6 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Home, Compass, User } from "lucide-react";
+import { setNavDirection, isTabRoot } from "@/lib/navigationState";
 
 const navItems = [
   { icon: Home, labelKey: "nav.home", path: "/" },
@@ -10,7 +11,17 @@ const navItems = [
 
 export default function BottomNav() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const handleTabPress = (path) => {
+    if (location.pathname === path) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    setNavDirection(isTabRoot(location.pathname) ? "none" : "pop");
+    navigate(path);
+  };
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-neutral-200 bg-white/90 backdrop-blur-lg dark:border-neutral-800 dark:bg-neutral-900/90">
@@ -18,9 +29,9 @@ export default function BottomNav() {
         {navItems.map(({ icon: Icon, labelKey, path }) => {
           const active = location.pathname === path;
           return (
-            <Link
+            <button
               key={path}
-              to={path}
+              onClick={() => handleTabPress(path)}
               className={`flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 transition-colors ${
                 active ? "text-purple-600 dark:text-purple-400" : "text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
               }`}
@@ -29,7 +40,7 @@ export default function BottomNav() {
               <span className={`text-[10px] font-medium tracking-wide ${active ? "font-semibold" : ""}`}>
                 {t(labelKey)}
               </span>
-            </Link>
+            </button>
           );
         })}
       </div>

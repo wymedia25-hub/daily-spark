@@ -6,6 +6,7 @@ import QuoteCard from "@/components/QuoteCard";
 import { getThemeBackground } from "@/lib/themes";
 import { toggleFavoriteQuote } from "@/lib/userPrefs";
 import { ChevronLeft } from "lucide-react";
+import { setNavDirection } from "@/lib/navigationState";
 
 export default function QuoteDetail() {
   const { id } = useParams();
@@ -55,7 +56,7 @@ export default function QuoteDetail() {
     return (
       <div className="flex h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center dark:bg-neutral-950">
         <p className="text-neutral-500 dark:text-neutral-400">Quote not found.</p>
-        <button onClick={() => navigate(isUserQuote ? "/my-quotes" : "/saved-quotes")} className="mt-4 text-sm text-purple-600">← Back</button>
+        <button onClick={() => { setNavDirection('pop'); navigate(-1); }} className="mt-4 text-sm text-purple-600">← Back</button>
       </div>
     );
   }
@@ -66,10 +67,10 @@ export default function QuoteDetail() {
     <div className="relative h-screen overflow-hidden">
       <div className="fixed top-0 left-0 right-0 z-40 flex items-center px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] bg-gradient-to-b from-black/50 to-transparent">
         <button
-          onClick={() => navigate(isUserQuote ? "/my-quotes" : "/saved-quotes")}
+          onClick={() => { setNavDirection('pop'); navigate(-1); }}
           className="flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-md px-3 py-2 text-sm font-medium text-white"
         >
-          <ChevronLeft size={16} /> {isUserQuote ? "Your Own Quotes" : "Saved Quotes"}
+          <ChevronLeft size={16} />
         </button>
       </div>
       <div className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide no-overscroll">

@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { labelFor } from "@/lib/i18n";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { getDarkMode, setDarkMode } from "@/lib/useDarkMode";
 import DrawerSelect from "@/components/DrawerSelect";
-import { ArrowLeft, User, Palette, Globe, LogOut, Share, Star, Heart, Languages, Check, Sun, Moon, Smartphone, Trash2, AlertTriangle } from "lucide-react";
+import StackHeader from "@/components/StackHeader";
+import { User, Palette, Globe, LogOut, Share, Star, Heart, Languages, Check, Sun, Moon, Smartphone, Trash2, AlertTriangle } from "lucide-react";
 import { MAIN_GOALS, GENDER_OPTIONS, AGE_RANGES, RELATIONSHIP_OPTIONS, BELIEF_OPTIONS } from "@/lib/themes";
 
 const LANGUAGE_OPTIONS = [
@@ -26,7 +26,6 @@ const APPEARANCE_OPTIONS = [
 export default function Settings() {
   const { user, isAuthenticated, isLoadingAuth, logout } = useAuth();
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const [prefs, setPrefs] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
@@ -137,11 +136,9 @@ export default function Settings() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-24 pt-[calc(1.5rem+env(safe-area-inset-top))]">
-      <button onClick={() => navigate("/profile")} className="mb-5 flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200">
-        <ArrowLeft size={16} /> {t("settings.back")}
-      </button>
-      <h1 className="mb-6 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("settings.title")}</h1>
+    <div className="pb-24">
+      <StackHeader title={t("settings.title")} />
+      <div className="mx-auto max-w-2xl px-4 pt-2">
 
       <div className="mb-6">
         <div className="mb-3 flex items-center gap-2">
@@ -237,6 +234,7 @@ export default function Settings() {
             </div>
           </button>
         </div>
+      </div>
       </div>
 
       <DrawerSelect
