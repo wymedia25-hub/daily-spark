@@ -8,6 +8,7 @@ import { MAIN_GOALS, GENDER_OPTIONS, AGE_RANGES, RELATIONSHIP_OPTIONS, BELIEF_OP
 const LANGUAGE_OPTIONS = [
   { value: "en", label: "English" },
   { value: "zh", label: "中文 (Chinese)" },
+  { value: "zh-CN", label: "简体中文 (Simplified Chinese)" },
   { value: "ja", label: "日本語 (Japanese)" },
   { value: "es", label: "Español (Spanish)" },
 ];
