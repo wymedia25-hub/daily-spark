@@ -44,7 +44,7 @@ export default function Explore() {
 
   const loadData = async () => {
     try {
-      const [t, uq, a, p] = await Promise.all([
+      const [topicsData, uq, a, p] = await Promise.all([
         base44.entities.Topic.list(50),
         base44.entities.UserQuote.filter({ created_by_id: user.id }, "-created_date", 200),
         base44.entities.UserActivity.filter({ created_by_id: user.id }, "-created_date", 1),
@@ -52,7 +52,7 @@ export default function Explore() {
       ]);
       const userLang = p[0]?.language_code || "en";
       const q = await base44.entities.Quote.filter({ language_code: userLang }, "-created_date", 500);
-      setTopics(t.sort((a, b) => (a.order || 0) - (b.order || 0)));
+      setTopics(topicsData.sort((a, b) => (a.order || 0) - (b.order || 0)));
       setQuotes(q);
       setUserQuotes(uq);
       if (a[0]) setActivity(a[0]);
@@ -112,7 +112,7 @@ export default function Explore() {
             <span className="font-semibold text-neutral-900">{topic.name}</span>
             {topic.is_premium && (
               <span className="flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-600">
-                {locked ? <><Lock size={9} /> Premium</> : <Crown size={10} />}
+                {locked ? <><Lock size={9} /> {t("common.premium")}</> : <Crown size={10} />}
               </span>
             )}
           </div>
@@ -131,19 +131,27 @@ export default function Explore() {
   };
 
   // Build section groups
+  const SECTION_LABEL_KEYS = {
+    "Daily Mindset": "explore.sections.dailyMindset",
+    "Inner Work": "explore.sections.innerWork",
+    "Hustle & Wins": "explore.sections.hustleWins",
+    "Founders & Business": "explore.sections.foundersBusiness",
+    "Heart & Relationships": "explore.sections.heartRelationships",
+  };
+
   const followingTopicObjects = (prefs?.following_topics || [])
-    .map((name) => topics.find((t) => t.name === name))
+    .map((name) => topics.find((tp) => tp.name === name))
     .filter(Boolean);
 
   const sectionsList = [];
   if (followingTopicObjects.length > 0) {
-    sectionsList.push({ name: "Following", topics: followingTopicObjects });
+    sectionsList.push({ name: t("explore.following"), topics: followingTopicObjects });
   }
   for (const sectionName of STATIC_SECTIONS) {
     const sectionTopics = topics
-      .filter((t) => (t.sections || []).includes(sectionName))
+      .filter((tp) => (tp.sections || []).includes(sectionName))
       .sort((a, b) => (a.order || 0) - (b.order || 0));
-    sectionsList.push({ name: sectionName, topics: sectionTopics });
+    sectionsList.push({ name: SECTION_LABEL_KEYS[sectionName] ? t(SECTION_LABEL_KEYS[sectionName]) : sectionName, topics: sectionTopics });
   }
 
   const filteredSections = sectionsList.map((section) => ({

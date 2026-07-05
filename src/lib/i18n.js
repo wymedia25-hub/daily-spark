@@ -55,6 +55,14 @@ const resources = {
         followHint: "Tap the circle on any topic to follow it.",
         noTopicsYet: "No topics here yet",
         pleaseSignIn: "Please sign in to explore.",
+        following: "Following",
+        sections: {
+          dailyMindset: "Daily Mindset",
+          innerWork: "Inner Work",
+          hustleWins: "Hustle & Wins",
+          foundersBusiness: "Founders & Business",
+          heartRelationships: "Heart & Relationships",
+        },
       },
       common: {
         premium: "Premium",
@@ -116,6 +124,14 @@ const resources = {
         followHint: "點擊任意主題的圓圈來關注它。",
         noTopicsYet: "這裡還沒有主題",
         pleaseSignIn: "請登入以探索。",
+        following: "已關注",
+        sections: {
+          dailyMindset: "每日心態",
+          innerWork: "內在修煉",
+          hustleWins: "奮鬥與勝利",
+          foundersBusiness: "創業者與商業",
+          heartRelationships: "情感與關係",
+        },
       },
       common: {
         premium: "高級",
@@ -177,6 +193,14 @@ const resources = {
         followHint: "点击任意主题的圆圈来关注它。",
         noTopicsYet: "这里还没有主题",
         pleaseSignIn: "请登录以探索。",
+        following: "已关注",
+        sections: {
+          dailyMindset: "每日心态",
+          innerWork: "内在修炼",
+          hustleWins: "奋斗与胜利",
+          foundersBusiness: "创业者与商业",
+          heartRelationships: "情感与关系",
+        },
       },
       common: {
         premium: "高级",
@@ -238,6 +262,14 @@ const resources = {
         followHint: "トピックの丸をタップしてフォロー。",
         noTopicsYet: "まだトピックがありません",
         pleaseSignIn: "探索するにはサインインしてください。",
+        following: "フォロー中",
+        sections: {
+          dailyMindset: "デイリーマインドセット",
+          innerWork: "インナーワーク",
+          hustleWins: "ハッスル＆ウィン",
+          foundersBusiness: "創業者＆ビジネス",
+          heartRelationships: "ハート＆リレーション",
+        },
       },
       common: {
         premium: "プレミアム",
@@ -299,6 +331,14 @@ const resources = {
         followHint: "Toca el círculo en cualquier tema para seguirlo.",
         noTopicsYet: "Aún no hay temas aquí",
         pleaseSignIn: "Inicia sesión para explorar.",
+        following: "Siguiendo",
+        sections: {
+          dailyMindset: "Mentalidad diaria",
+          innerWork: "Trabajo interior",
+          hustleWins: "Esfuerzo y victorias",
+          foundersBusiness: "Fundadores y negocios",
+          heartRelationships: "Corazón y relaciones",
+        },
       },
       common: {
         premium: "Premium",
