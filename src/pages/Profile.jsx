@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StreakTracker from "@/components/StreakTracker";
-import { Settings as SettingsIcon, LogOut, Bell, Crown, Heart, Upload } from "lucide-react";
+import { Settings as SettingsIcon, LogOut, Bell, Crown, Heart, Upload, PenSquare } from "lucide-react";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoadingAuth, logout, checkUserAuth } = useAuth();
@@ -65,6 +65,7 @@ export default function Profile() {
 
   const customizeItems = [
     { label: t("profile.savedQuotes"), icon: Heart, action: () => navigate("/saved-quotes") },
+    { label: t("profile.myQuotes"), icon: PenSquare, action: () => navigate("/my-quotes") },
     { label: t("profile.reminders"), icon: Bell, action: () => navigate("/reminders") },
     { label: t("profile.settings"), icon: SettingsIcon, action: () => navigate("/settings") },
     ...(isAdmin ? [{ label: t("profile.importData"), icon: Upload, action: () => navigate("/admin/import") }] : []),

@@ -43,6 +43,7 @@ const resources = {
         signIn: "Sign in",
         customizeApp: "Customize the app",
         savedQuotes: "Saved Quotes",
+        myQuotes: "My Quotes",
         reminders: "Reminders",
         settings: "Settings",
         importData: "Import Data",
