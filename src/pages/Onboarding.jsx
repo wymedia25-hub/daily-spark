@@ -15,13 +15,21 @@ const STREAK_OPTIONS = [
   { days: 50, badge: "Unstoppable" },
 ];
 
+const LANGUAGES = [
+  { code: "en", label: "English" },
+  { code: "zh", label: "繁體中文" },
+  { code: "zh-CN", label: "简体中文" },
+  { code: "ja", label: "日本語" },
+  { code: "es", label: "Español" },
+];
+
 const ICON_MAP = { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap };
 const STEPS = ["welcome", "goal", "struggles", "mood", "quote_style", "interests", "streak_commitment", "result"];
 
 export default function Onboarding() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [stepIdx, setStepIdx] = useState(0);
   const [topics, setTopics] = useState([]);
   const [prefs, setPrefs] = useState({
@@ -34,6 +42,7 @@ export default function Onboarding() {
     streak_commitment: null,
     preferred_theme: "Calm nature",
     reminder_time: "09:00",
+    language_code: i18n.language || "en",
   });
   const [recommendedTopics, setRecommendedTopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
@@ -251,6 +260,26 @@ export default function Onboarding() {
               className="w-full rounded-2xl border border-neutral-200 px-5 py-4 text-base text-neutral-900 outline-none focus:border-purple-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100"
               autoFocus
             />
+
+            <h2 className="mb-3 mt-6 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{t("onboarding.languagePrompt")}</h2>
+            <div className="flex flex-wrap gap-2.5">
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    i18n.changeLanguage(lang.code);
+                    setPrefs({ ...prefs, language_code: lang.code });
+                  }}
+                  className={`rounded-full border px-4 py-2.5 text-sm font-medium transition-all ${
+                    prefs.language_code === lang.code
+                      ? "border-purple-500 bg-purple-500 text-white"
+                      : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
+                  }`}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
