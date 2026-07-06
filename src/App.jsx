@@ -21,6 +21,10 @@ import MyQuotes from './pages/MyQuotes';
 import Paywall from './pages/Paywall';
 import Reminders from './pages/Reminders';
 import AdminImport from './pages/AdminImport';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 
 const AuthenticatedApp = () => {
@@ -60,6 +64,10 @@ const AuthenticatedApp = () => {
         <Route path="/admin/import" element={<AdminImport />} />
 
       </Route>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
