@@ -497,7 +497,7 @@ const resources = {
       },
       onboarding: {
         welcomeTitle: "Bienvenido a Daily Spark",
-        welcomeSubtitle: "Combustible para la libertad financiera",
+        welcomeSubtitle: "Combustible para los libres financieramente",
         namePrompt: "¿Cómo te llamamos?",
         namePlaceholder: "Tu nombre",
         languagePrompt: "Idioma",
