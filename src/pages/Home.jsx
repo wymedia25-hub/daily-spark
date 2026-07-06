@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import QuoteCard from "@/components/QuoteCard";
@@ -7,7 +7,7 @@ import PullToRefresh from "@/components/PullToRefresh";
 import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
 import { calculateStreakUpdate } from "@/lib/streakUtils";
 import { toggleFavoriteQuote } from "@/lib/userPrefs";
-import { LogIn, Sparkles, ChevronLeft, Plus, Check, Paintbrush } from "lucide-react";
+import { LogIn, Sparkles, ChevronLeft, Plus, Check, Paintbrush, Frown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { labelFor } from "@/lib/i18n";
 
@@ -15,6 +15,7 @@ export default function Home() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [prefs, setPrefs] = useState(null);
   const [activity, setActivity] = useState(null);
   const [feed, setFeed] = useState([]);
@@ -27,6 +28,7 @@ export default function Home() {
   const containerRef = useRef(null);
   const viewedSet = useRef(new Set());
   const poolRef = useRef([]);
+  const topicKeyRef = useRef(null);
 
   const shuffleArray = (arr) => {
     const a = [...arr];
@@ -37,22 +39,28 @@ export default function Home() {
     return a;
   };
 
+  const topicParam = new URLSearchParams(location.search).get("topic");
+
   useEffect(() => {
     if (isLoadingAuth) return;
     if (!isAuthenticated) { setLoading(false); return; }
     loadAll();
-  }, [isLoadingAuth, isAuthenticated]);
+  }, [isLoadingAuth, isAuthenticated, topicParam]);
 
   useEffect(() => {
+    if (topicParam === null) return;
     const params = new URLSearchParams(window.location.search);
     if (params.get("success")) {
       window.history.replaceState({}, "", "/");
       if (prefs) setPrefs({ ...prefs, is_premium: true });
     }
-  }, [prefs]);
+  }, [prefs, topicParam]);
 
   const loadAll = async () => {
     try {
+      if (topicKeyRef.current === topicParam && feed.length > 0) return;
+      topicKeyRef.current = topicParam;
+      setLoading(true);
       const userPrefs = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
       if (userPrefs.length === 0 || !userPrefs[0].onboarding_complete) {
         navigate("/onboarding");
@@ -68,7 +76,7 @@ export default function Home() {
         act = await base44.entities.UserActivity.create({
           liked_quote_ids: [], saved_quote_ids: [], viewed_quote_ids: [],
           current_streak: 0, longest_streak: 0, streak_days: [],
-          last_seen_date: "", viewed_today_count: 0, viewed_today_date: "",
+          last_seen_date: "",
         });
       }
 
@@ -88,15 +96,12 @@ export default function Home() {
       const userLang = p.language_code || "en";
       const [quotes, topics] = await Promise.all([
         base44.entities.Quote.filter({ language_code: userLang }, "-created_date", 500),
-        base44.entities.Topic.list(50),
+        base44.entities.Topic.list(100),
       ]);
       setAllQuotes(quotes);
       setAllTopics(topics);
-      const params = new URLSearchParams(window.location.search);
-      const topicParam = params.get("topic");
       setActiveTopic(topicParam || null);
       buildFeed(quotes, topics, p, topicParam);
-      if (topicParam) window.history.replaceState({}, "", "/");
     } catch (err) {
       console.error(err);
     } finally {
@@ -262,6 +267,37 @@ export default function Home() {
         <p className="mt-3 max-w-xs text-white/80">Daily motivation for the self-made</p>
         <button onClick={() => base44.auth.redirectToLogin(window.location.href)} className="mt-8 flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-purple-600">
           <LogIn size={16} /> Get Started
+        </button>
+      </div>
+    );
+  }
+
+  if (feed.length === 0) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center dark:bg-neutral-950">
+        {activeTopic && (
+          <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
+            <button
+              onClick={() => navigate("/explore")}
+              className="flex items-center gap-1 rounded-full bg-neutral-200 px-3 py-2 text-sm font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+            >
+              <ChevronLeft size={16} className="shrink-0" />
+              <span className="truncate">{labelFor("topics", activeTopic)}</span>
+            </button>
+          </div>
+        )}
+        <Frown size={40} className="mb-4 text-neutral-300 dark:text-neutral-600" />
+        <p className="text-base font-semibold text-neutral-700 dark:text-neutral-200">
+          {activeTopic ? t("home.noQuotesInTopic") : t("home.noQuotesAvailable")}
+        </p>
+        <p className="mt-2 text-sm text-neutral-400 dark:text-neutral-500">
+          {t("home.tryAnotherTopic")}
+        </p>
+        <button
+          onClick={() => navigate("/explore")}
+          className="mt-6 rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-semibold text-white"
+        >
+          {t("common.explore")}
         </button>
       </div>
     );

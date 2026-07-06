@@ -5,6 +5,8 @@ const resources = {
   en: {
     translation: {
       nav: { home: "Home", explore: "Explore", profile: "Profile" },
+      home: { noQuotesInTopic: "No quotes found in this topic yet", noQuotesAvailable: "No quotes available right now", tryAnotherTopic: "Try exploring another topic" },
+      common: { explore: "Browse Topics" },
       settings: {
         title: "Settings",
         back: "Back",
@@ -108,6 +110,8 @@ const resources = {
   zh: {
     translation: {
       nav: { home: "首頁", explore: "探索", profile: "個人" },
+      home: { noQuotesInTopic: "此主題暫無語錄", noQuotesAvailable: "暫無可用語錄", tryAnotherTopic: "試試探索其他主題" },
+      common: { explore: "瀏覽主題" },
       settings: {
         title: "設定",
         back: "返回",
@@ -208,6 +212,8 @@ const resources = {
   "zh-CN": {
     translation: {
       nav: { home: "首页", explore: "探索", profile: "个人" },
+      home: { noQuotesInTopic: "此主题暂无语录", noQuotesAvailable: "暂无可用语录", tryAnotherTopic: "试试探索其他主题" },
+      common: { explore: "浏览主题" },
       settings: {
         title: "设置",
         back: "返回",
@@ -308,6 +314,8 @@ const resources = {
   ja: {
     translation: {
       nav: { home: "ホーム", explore: "探索", profile: "プロフィール" },
+      home: { noQuotesInTopic: "このトピックにはまだ名言がありません", noQuotesAvailable: "現在利用可能な名言がありません", tryAnotherTopic: "別のトピックを探索してみてください" },
+      common: { explore: "トピックを見る" },
       settings: {
         title: "設定",
         back: "戻る",
@@ -408,6 +416,8 @@ const resources = {
   es: {
     translation: {
       nav: { home: "Inicio", explore: "Explorar", profile: "Perfil" },
+      home: { noQuotesInTopic: "Aún no hay citas en este tema", noQuotesAvailable: "No hay citas disponibles ahora", tryAnotherTopic: "Prueba explorando otro tema" },
+      common: { explore: "Explorar temas" },
       settings: {
         title: "Ajustes",
         back: "Atrás",
