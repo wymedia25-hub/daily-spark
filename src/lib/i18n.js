@@ -188,7 +188,7 @@ const resources = {
       },
       onboarding: {
         welcomeTitle: "歡迎使用 Daily Spark",
-        welcomeSubtitle: "財務自由者的燃料",
+        welcomeSubtitle: "通往財富自由的每日動力",
         namePrompt: "我們該怎麼稱呼你？",
         namePlaceholder: "你的名字",
         languagePrompt: "語言",
@@ -291,7 +291,7 @@ const resources = {
       },
       onboarding: {
         welcomeTitle: "欢迎使用 Daily Spark",
-        welcomeSubtitle: "财务自由者的燃料",
+        welcomeSubtitle: "通往财富自由的每日动力",
         namePrompt: "我们该怎么称呼你？",
         namePlaceholder: "你的名字",
         languagePrompt: "语言",
