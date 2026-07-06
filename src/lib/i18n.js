@@ -394,7 +394,7 @@ const resources = {
       },
       onboarding: {
         welcomeTitle: "Daily Spark へようこそ",
-        welcomeSubtitle: "経済的自由を手にするあなたへ、燃料を",
+        welcomeSubtitle: "経済的自由を、今日から",
         namePrompt: "あなたのことを何とお呼びすればいいですか？",
         namePlaceholder: "お名前",
         languagePrompt: "言語",
