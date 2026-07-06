@@ -11,18 +11,6 @@ const ENTITY_OPTIONS = [
     fields: ["text", "author", "topic", "background_image_url", "set_number", "is_premium", "language_code"],
     required: ["text", "topic"],
   },
-  {
-    label: "Content Sources",
-    value: "ContentSource",
-    fields: ["title", "author", "type", "topic", "cover_image", "source_url", "status", "summary", "total_cards"],
-    required: ["title", "type", "topic"],
-  },
-  {
-    label: "Cards",
-    value: "Card",
-    fields: ["source_id", "source_title", "source_author", "source_type", "topic", "card_number", "headline", "body", "language_code"],
-    required: ["source_id", "source_title", "headline", "body", "topic", "source_type"],
-  },
 ];
 
 function parseCSV(text) {
