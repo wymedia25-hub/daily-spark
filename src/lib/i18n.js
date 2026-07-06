@@ -83,7 +83,7 @@ const resources = {
       },
       onboarding: {
         welcomeTitle: "Welcome to Daily Spark",
-        welcomeSubtitle: "Daily motivation for the self-made",
+        welcomeSubtitle: "Fuel for the financially free",
         namePrompt: "What should we call you?",
         namePlaceholder: "Your name",
         languagePrompt: "Language",
@@ -188,7 +188,7 @@ const resources = {
       },
       onboarding: {
         welcomeTitle: "歡迎使用 Daily Spark",
-        welcomeSubtitle: "為白手起家的你，每日一份動力",
+        welcomeSubtitle: "財務自由者的燃料",
         namePrompt: "我們該怎麼稱呼你？",
         namePlaceholder: "你的名字",
         languagePrompt: "語言",
@@ -291,7 +291,7 @@ const resources = {
       },
       onboarding: {
         welcomeTitle: "欢迎使用 Daily Spark",
-        welcomeSubtitle: "为白手起家的你，每日一份动力",
+        welcomeSubtitle: "财务自由者的燃料",
         namePrompt: "我们该怎么称呼你？",
         namePlaceholder: "你的名字",
         languagePrompt: "语言",
@@ -394,7 +394,7 @@ const resources = {
       },
       onboarding: {
         welcomeTitle: "Daily Spark へようこそ",
-        welcomeSubtitle: "自らの力で道を切り開くあなたへ、毎日のモチベーションを",
+        welcomeSubtitle: "経済的自由を手にするあなたへ、燃料を",
         namePrompt: "あなたのことを何とお呼びすればいいですか？",
         namePlaceholder: "お名前",
         languagePrompt: "言語",
@@ -497,7 +497,7 @@ const resources = {
       },
       onboarding: {
         welcomeTitle: "Bienvenido a Daily Spark",
-        welcomeSubtitle: "Motivación diaria para quienes se hacen a sí mismos",
+        welcomeSubtitle: "Combustible para la libertad financiera",
         namePrompt: "¿Cómo te llamamos?",
         namePlaceholder: "Tu nombre",
         languagePrompt: "Idioma",
