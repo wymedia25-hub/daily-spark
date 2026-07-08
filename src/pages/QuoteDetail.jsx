@@ -3,9 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import QuoteCard from "@/components/QuoteCard";
+import ShareModal from "@/components/ShareModal";
 import { getThemeBackground } from "@/lib/themes";
 import { toggleFavoriteQuote } from "@/lib/userPrefs";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Share2 } from "lucide-react";
 import { setNavDirection } from "@/lib/navigationState";
 
 export default function QuoteDetail() {
@@ -16,6 +17,7 @@ export default function QuoteDetail() {
   const [isUserQuote, setIsUserQuote] = useState(false);
   const [prefs, setPrefs] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showShare, setShowShare] = useState(false);
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -65,12 +67,18 @@ export default function QuoteDetail() {
 
   return (
     <div className="relative h-screen overflow-hidden">
-      <div className="fixed top-0 left-0 right-0 z-40 flex items-center px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] bg-gradient-to-b from-black/50 to-transparent">
+      <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] bg-gradient-to-b from-black/50 to-transparent">
         <button
           onClick={() => { setNavDirection('pop'); navigate(-1); }}
           className="flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-md px-3 py-2 text-sm font-medium text-white"
         >
           <ChevronLeft size={16} />
+        </button>
+        <button
+          onClick={() => setShowShare(true)}
+          className="flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-md px-3 py-2 text-sm font-medium text-white"
+        >
+          <Share2 size={16} />
         </button>
       </div>
       <div className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide no-overscroll">
@@ -86,6 +94,12 @@ export default function QuoteDetail() {
           />
         </div>
       </div>
+      <ShareModal
+        quote={quote}
+        backgroundUrl={getThemeBackground(prefs?.preferred_theme || "Calm nature", 0)}
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+      />
     </div>
   );
 }
