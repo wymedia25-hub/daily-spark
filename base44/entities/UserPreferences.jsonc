@@ -22,7 +22,11 @@
         "Build confidence",
         "Stay motivated",
         "Heal & grow",
-        "Improve relationships"
+        "Improve relationships",
+        "Financial freedom / FIRE",
+        "Build better habits",
+        "Stay disciplined",
+        "Grow my business"
       ],
       "description": "User's primary goal"
     },
@@ -49,7 +53,10 @@
           "Lack of motivation",
           "Toxic relationship",
           "Loneliness",
-          "Work & business stress"
+          "Work & business stress",
+          "Inconsistent",
+          "Distracted",
+          "Not sure where to start"
         ]
       },
       "default": [],

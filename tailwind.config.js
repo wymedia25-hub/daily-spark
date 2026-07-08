@@ -59,13 +59,20 @@ module.exports = {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			onboarding: {
+  				bg: 'hsl(var(--onboarding-bg))',
+  				gold: 'hsl(var(--onboarding-gold))',
+  				cream: 'hsl(var(--onboarding-cream))',
+  				'cream-dim': 'hsl(var(--onboarding-cream-dim))'
   			}
   		},
   		fontFamily: {
   			heading: ['var(--font-heading)'],
   			body: ['var(--font-body)'],
   			display: ['var(--font-display)'],
-  			mono: ['var(--font-mono)']
+  			mono: ['var(--font-mono)'],
+  			'display-serif': ['var(--font-display-serif)']
   		},
   		keyframes: {
   			'accordion-down': {

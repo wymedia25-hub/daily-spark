@@ -2,453 +2,169 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { calculateRecommendations, STRUGGLES, MOODS, QUOTE_STYLES } from "@/lib/recommendationEngine";
-import { useTranslation } from "react-i18next";
-import { labelFor } from "@/lib/i18n";
-import { MAIN_GOALS, TOPIC_ICONS } from "@/lib/themes";
-import { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap, ArrowRight, ArrowLeft, Check, Sparkles, CheckCircle2, Circle } from "lucide-react";
+import { calculateRecommendations } from "@/lib/recommendationEngine";
+import {
+  saveOnboardingData as persistOnboarding,
+  clearOnboardingData,
+  mapPainToStruggle,
+} from "@/lib/onboardingStorage";
+import { ArrowLeft } from "lucide-react";
+import ProgressBar from "@/components/onboarding/ProgressBar";
+import ScreenHook from "@/components/onboarding/ScreenHook";
+import ScreenGoal from "@/components/onboarding/ScreenGoal";
+import ScreenPain from "@/components/onboarding/ScreenPain";
+import ScreenTime from "@/components/onboarding/ScreenTime";
+import ScreenPlan from "@/components/onboarding/ScreenPlan";
 
-const STREAK_OPTIONS = [
-  { days: 7, badge: "Promising" },
-  { days: 14, badge: "Determined" },
-  { days: 30, badge: "Impressive" },
-  { days: 50, badge: "Unstoppable" },
-];
-
-const LANGUAGES = [
-  { code: "en", label: "English" },
-  { code: "zh", label: "繁體中文" },
-  { code: "zh-CN", label: "简体中文" },
-  { code: "ja", label: "日本語" },
-  { code: "es", label: "Español" },
-];
-
-const ICON_MAP = { Sun, Heart, Rocket, Crown, Shield, Leaf, Mountain, Zap };
-const STEPS = ["welcome", "goal", "struggles", "mood", "quote_style", "interests", "streak_commitment", "result"];
+const STEPS = ["hook", "goal", "pain", "time", "plan"];
 
 export default function Onboarding() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
   const [stepIdx, setStepIdx] = useState(0);
-  const [topics, setTopics] = useState([]);
-  const [prefs, setPrefs] = useState({
-    display_name: "",
-    main_goal: "",
-    struggles: [],
-    mood: "",
-    quote_style: "",
-    interests: [],
-    streak_commitment: null,
-    preferred_theme: "Calm nature",
-    reminder_time: "09:00",
-    language_code: i18n.language || "en",
+  const [answers, setAnswers] = useState({
+    goal: "",
+    pain: "",
+    reminder_time: "06:00",
   });
-  const [recommendedTopics, setRecommendedTopics] = useState([]);
-  const [selectedTopics, setSelectedTopics] = useState([]);
-  const [computed, setComputed] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [following, setFollowing] = useState([]);
+  const [topics, setTopics] = useState([]);
 
   useEffect(() => {
-    if (isLoadingAuth) return;
-    if (!isAuthenticated) {
-      base44.auth.redirectToLogin(window.location.href);
-      return;
-    }
-    loadTopics();
-  }, [isLoadingAuth, isAuthenticated]);
+    base44.entities.Topic.list(50).then(setTopics).catch(console.error);
+  }, []);
 
-  const loadTopics = async () => {
-    try {
-      const t = await base44.entities.Topic.list(50);
-      setTopics(t.sort((a, b) => (a.order || 0) - (b.order || 0)));
-    } catch (err) {
-      console.error(err);
+  const handleSaveData = async () => {
+    const data = {
+      main_goal: answers.goal,
+      struggles: [mapPainToStruggle(answers.pain)],
+      reminder_time: answers.reminder_time,
+      language_code: "en",
+      onboarding_complete: true,
+    };
+
+    persistOnboarding(data);
+
+    if (isAuthenticated && user) {
+      setSaving(true);
+      try {
+        const recommended = calculateRecommendations(
+          { main_goal: answers.goal, struggles: [mapPainToStruggle(answers.pain)] },
+          topics
+        );
+        const prefsData = {
+          ...data,
+          recommended_topics: recommended,
+          focus_areas: recommended,
+          following_topics: recommended,
+        };
+        const existing = await base44.entities.UserPreferences.filter(
+          { created_by_id: user.id },
+          "-created_date",
+          1
+        );
+        if (existing.length > 0) {
+          await base44.entities.UserPreferences.update(existing[0].id, prefsData);
+        } else {
+          await base44.entities.UserPreferences.create(prefsData);
+        }
+        clearOnboardingData();
+      } catch (err) {
+        console.error(err);
+      }
+      setSaving(false);
     }
   };
 
   useEffect(() => {
-    if (STEPS[stepIdx] === "result" && !computed && topics.length > 0) {
-      const recommended = calculateRecommendations({
-        main_goal: prefs.main_goal,
-        struggles: prefs.struggles,
-        mood: prefs.mood,
-        quote_style: prefs.quote_style,
-        interests: prefs.interests,
-        focus_areas: prefs.focus_areas || [],
-        relationship_status: prefs.relationship_status || "",
-      }, topics);
-      setRecommendedTopics(recommended);
-      setSelectedTopics(recommended);
-      setComputed(true);
+    if (STEPS[stepIdx] === "plan") {
+      handleSaveData();
     }
-  }, [stepIdx, computed, topics]);
+  }, [stepIdx]);
 
-  if (isLoadingAuth) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA] dark:bg-neutral-950">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-purple-500 dark:border-neutral-700 dark:border-t-purple-400" />
-      </div>
-    );
-  }
+  const handleBack = () => {
+    if (stepIdx > 0) setStepIdx(stepIdx - 1);
+  };
+
+  const handleCreateAccount = () => {
+    navigate("/register");
+  };
+
+  const handleEnterApp = () => {
+    navigate("/");
+  };
 
   const step = STEPS[stepIdx];
 
-  const canProceed = () => {
-    if (step === "welcome") return !!prefs.display_name.trim();
-    if (step === "goal") return !!prefs.main_goal;
-    if (step === "struggles") return prefs.struggles.length >= 1;
-    if (step === "mood") return !!prefs.mood;
-    if (step === "quote_style") return !!prefs.quote_style;
-    if (step === "interests") return prefs.interests.length >= 1;
-    if (step === "streak_commitment") return !!prefs.streak_commitment;
-    if (step === "result") return selectedTopics.length >= 1;
-    return true;
-  };
-
-  const handleNext = () => {
-    if (stepIdx < STEPS.length - 1) {
-      setStepIdx(stepIdx + 1);
-    } else {
-      handleSave();
-    }
-  };
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const data = {
-        ...prefs,
-        streak_commitment: prefs.streak_commitment,
-        recommended_topics: recommendedTopics,
-        focus_areas: selectedTopics,
-        following_topics: following,
-        onboarding_complete: true,
-      };
-      const existing = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
-      if (existing.length > 0) {
-        await base44.entities.UserPreferences.update(existing[0].id, data);
-      } else {
-        await base44.entities.UserPreferences.create(data);
-      }
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-    }
-    setSaving(false);
-  };
-
-  const toggleArrayItem = (field, value) => {
-    setPrefs((p) => ({
-      ...p,
-      [field]: p[field].includes(value) ? p[field].filter((v) => v !== value) : [...p[field], value],
-    }));
-  };
-
-  const toggleTopic = (name) => {
-    setSelectedTopics((prev) =>
-      prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name]
-    );
-  };
-
-  const toggleFollowing = (name, e) => {
-    e.stopPropagation();
-    setFollowing((prev) => prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name]);
-  };
-
-  const recommendedSet = new Set(recommendedTopics);
-  const recommendedTopicObjects = recommendedTopics
-    .map((name) => topics.find((t) => t.name === name))
-    .filter(Boolean);
-  const otherTopicObjects = topics.filter((t) => !recommendedSet.has(t.name));
-
-  const OptionTile = ({ label, selected, onClick }) => (
-    <button
-      onClick={onClick}
-      className={`w-full rounded-2xl border px-5 py-4 text-left text-base font-medium transition-all ${
-        selected ? "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300" : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
-      }`}
-    >
-      <div className="flex items-center justify-between">
-        {label}
-        {selected && <Check size={18} className="text-purple-500" />}
-      </div>
-    </button>
-  );
-
-  const Chip = ({ label, selected, onClick }) => (
-    <button
-      onClick={onClick}
-      className={`rounded-full border px-4 py-2.5 text-sm font-medium transition-all ${
-        selected ? "border-purple-500 bg-purple-500 text-white" : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
-      }`}
-    >
-      {label}
-    </button>
-  );
-
-  const followingSet = new Set(following);
-
-  const TopicCard = ({ topic, selected, recommended, onClick }) => {
-    const Icon = ICON_MAP[TOPIC_ICONS[topic.name]] || Sparkles;
-    const isFollowing = followingSet.has(topic.name);
-    return (
-      <div
-        onClick={onClick}
-        className={`flex w-full cursor-pointer items-center gap-3 rounded-2xl border px-5 py-4 text-left transition-all ${
-          selected ? "border-purple-500 bg-purple-50 dark:bg-purple-900/30" : "border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900"
-        }`}
-      >
-        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${selected ? "bg-purple-500 text-white" : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"}`}>
-          <Icon size={18} />
-        </div>
-        <span className="flex-1 text-base font-medium text-neutral-800 dark:text-neutral-200">{labelFor("topics", topic.name)}</span>
-        {recommended && (
-          <span className="flex items-center gap-1 rounded-full bg-purple-100 px-2.5 py-1 text-[10px] font-semibold text-purple-600">
-            <Sparkles size={10} /> Chosen for you
-          </span>
-        )}
-        {!recommended && selected && <Check size={18} className="text-purple-500" />}
-        <button
-          onClick={(e) => toggleFollowing(topic.name, e)}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
-        >
-          {isFollowing
-            ? <CheckCircle2 size={20} className="text-purple-500" />
-            : <Circle size={20} className="text-neutral-300" />}
-        </button>
-      </div>
-    );
-  };
-
   return (
-    <div className="min-h-screen bg-[#FAFAFA] px-5 py-8 pt-[calc(2rem+env(safe-area-inset-top))] dark:bg-neutral-950">
+    <div className="min-h-screen bg-onboarding-bg px-5 py-8 pt-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))]">
       <div className="mx-auto max-w-md">
-        {/* Progress bar */}
-        <div className="mb-8 flex items-center gap-3">
-          {stepIdx > 0 && (
-            <button
-              onClick={() => setStepIdx(stepIdx - 1)}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full hover:bg-neutral-100"
-            >
-              <ArrowLeft size={18} className="text-neutral-600" />
-            </button>
-          )}
-          <div className="h-1 flex-1 rounded-full bg-neutral-200">
-            <div
-              className="h-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300"
-              style={{ width: `${((stepIdx + 1) / STEPS.length) * 100}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Step 1: Welcome + Name */}
-        {step === "welcome" && (
-          <div className="flex flex-col pt-8">
-            <div className="mb-8 flex h-28 w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500">
-              <Sparkles size={52} className="text-white" strokeWidth={1.5} />
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.welcomeTitle")}</h1>
-            <p className="mt-2 text-base text-neutral-500 dark:text-neutral-400">{t("onboarding.welcomeSubtitle")}</p>
-            <h2 className="mb-3 mt-8 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{t("onboarding.namePrompt")}</h2>
-            <input
-              type="text"
-              value={prefs.display_name}
-              onChange={(e) => setPrefs({ ...prefs, display_name: e.target.value })}
-              placeholder={t("onboarding.namePlaceholder")}
-              className="w-full rounded-2xl border border-neutral-200 px-5 py-4 text-base text-neutral-900 outline-none focus:border-purple-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100"
-              autoFocus
-            />
-
-            <h2 className="mb-3 mt-6 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{t("onboarding.languagePrompt")}</h2>
-            <div className="flex flex-wrap gap-2.5">
-              {LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => {
-                    i18n.changeLanguage(lang.code);
-                    setPrefs({ ...prefs, language_code: lang.code });
-                  }}
-                  className={`rounded-full border px-4 py-2.5 text-sm font-medium transition-all ${
-                    prefs.language_code === lang.code
-                      ? "border-purple-500 bg-purple-500 text-white"
-                      : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
-                  }`}
-                >
-                  {lang.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 2: Main Goal */}
-        {step === "goal" && (
-          <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.goalTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.goalSubtitle")}</p>
-            <div className="space-y-2.5">
-              {MAIN_GOALS.map((goal) => (
-                <OptionTile
-                  key={goal}
-                  label={labelFor("mainGoal", goal)}
-                  selected={prefs.main_goal === goal}
-                  onClick={() => setPrefs({ ...prefs, main_goal: goal })}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: Struggles */}
-        {step === "struggles" && (
-          <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.strugglesTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.strugglesSubtitle")}</p>
-            <div className="flex flex-wrap gap-2.5">
-              {STRUGGLES.map((s) => (
-                <Chip
-                  key={s}
-                  label={labelFor("struggles", s)}
-                  selected={prefs.struggles.includes(s)}
-                  onClick={() => toggleArrayItem("struggles", s)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 4: Mood */}
-        {step === "mood" && (
-          <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.moodTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.moodSubtitle")}</p>
-            <div className="space-y-2.5">
-              {MOODS.map((mood) => (
-                <OptionTile
-                  key={mood}
-                  label={labelFor("moods", mood)}
-                  selected={prefs.mood === mood}
-                  onClick={() => setPrefs({ ...prefs, mood })}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 5: Quote Style */}
-        {step === "quote_style" && (
-          <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.styleTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.styleSubtitle")}</p>
-            <div className="space-y-2.5">
-              {QUOTE_STYLES.map((style) => (
-                <OptionTile
-                  key={style}
-                  label={labelFor("quoteStyle", style)}
-                  selected={prefs.quote_style === style}
-                  onClick={() => setPrefs({ ...prefs, quote_style: style })}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 6: Interests */}
-        {step === "interests" && (
-          <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.interestsTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.interestsSubtitle")}</p>
-            <div className="flex flex-wrap gap-2.5">
-              {topics.map((topic) => (
-                <Chip
-                  key={topic.id}
-                  label={labelFor("topics", topic.name)}
-                  selected={prefs.interests.includes(topic.name)}
-                  onClick={() => toggleArrayItem("interests", topic.name)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 7: Streak Commitment */}
-        {step === "streak_commitment" && (
-          <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.streakTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">{t("onboarding.streakSubtitle")}</p>
-            <div className="space-y-2.5">
-              {STREAK_OPTIONS.map((option) => (
-                <OptionTile
-                  key={option.days}
-                  label={`${option.days} days · ${option.badge}`}
-                  selected={prefs.streak_commitment === option.days}
-                  onClick={() => setPrefs({ ...prefs, streak_commitment: option.days })}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Step 8: Result */}
-        {step === "result" && (
-          <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">{t("onboarding.resultTitle")}</h1>
-            <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">
-              {t("onboarding.resultSubtitle")}
-            </p>
-
-            <div className="mb-6 space-y-2.5">
-              {recommendedTopicObjects.map((topic) => (
-                <TopicCard
-                  key={topic.id}
-                  topic={topic}
-                  selected={selectedTopics.includes(topic.name)}
-                  recommended={true}
-                  onClick={() => toggleTopic(topic.name)}
-                />
-              ))}
-            </div>
-
-            {otherTopicObjects.length > 0 && (
-              <>
-                <h2 className="mb-3 text-sm font-bold text-neutral-400 dark:text-neutral-500">{t("onboarding.moreTopics")}</h2>
-                <div className="mb-6 space-y-2.5">
-                  {otherTopicObjects.map((topic) => (
-                    <TopicCard
-                      key={topic.id}
-                      topic={topic}
-                      selected={selectedTopics.includes(topic.name)}
-                      recommended={false}
-                      onClick={() => toggleTopic(topic.name)}
-                    />
-                  ))}
-                </div>
-              </>
+        {stepIdx > 0 && (
+          <div className="mb-8 flex items-center gap-3">
+            {step !== "plan" && (
+              <button
+                onClick={handleBack}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full hover:bg-onboarding-cream/10"
+              >
+                <ArrowLeft size={18} className="text-onboarding-cream-dim" />
+              </button>
             )}
-
-            <button
-              onClick={handleNext}
-              disabled={!canProceed() || saving}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 py-4 text-base font-semibold text-white transition-all disabled:opacity-40"
-            >
-              {saving ? t("onboarding.settingUp") : t("onboarding.startBtn")}
-              {!saving && <ArrowRight size={18} />}
-            </button>
+            <ProgressBar current={stepIdx} total={STEPS.length} />
           </div>
         )}
 
-        {/* Continue button (hidden on result step which has its own Start button) */}
-        {step !== "result" && (
-          <button
-            onClick={handleNext}
-            disabled={!canProceed() || saving}
-            className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 py-4 text-base font-semibold text-white transition-all disabled:opacity-40"
-          >
-            {t("onboarding.continueBtn")}
-            {!saving && <ArrowRight size={18} />}
-          </button>
+        {step === "hook" && <ScreenHook onNext={() => setStepIdx(1)} />}
+
+        {step === "goal" && (
+          <ScreenGoal
+            value={answers.goal}
+            onSelect={(g) => {
+              setAnswers({ ...answers, goal: g });
+              setTimeout(() => setStepIdx(2), 250);
+            }}
+          />
+        )}
+
+        {step === "pain" && (
+          <>
+            <ScreenPain
+              value={answers.pain}
+              onSelect={(p) => setAnswers({ ...answers, pain: p })}
+            />
+            {answers.pain && (
+              <button
+                onClick={() => setStepIdx(3)}
+                className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95"
+              >
+                Continue
+              </button>
+            )}
+          </>
+        )}
+
+        {step === "time" && (
+          <>
+            <ScreenTime
+              value={answers.reminder_time}
+              onChange={(t) => setAnswers({ ...answers, reminder_time: t })}
+            />
+            <button
+              onClick={() => setStepIdx(4)}
+              className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95"
+            >
+              Continue
+            </button>
+          </>
+        )}
+
+        {step === "plan" && (
+          <ScreenPlan
+            answers={answers}
+            isAuthenticated={isAuthenticated}
+            saving={saving}
+            onCreateAccount={handleCreateAccount}
+            onEnterApp={handleEnterApp}
+          />
         )}
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import QuoteCard from "@/components/QuoteCard";
@@ -7,9 +7,12 @@ import PullToRefresh from "@/components/PullToRefresh";
 import { getThemeBackground, FREE_DAILY_SETS, QUOTES_PER_SET } from "@/lib/themes";
 import { calculateStreakUpdate } from "@/lib/streakUtils";
 import { toggleFavoriteQuote } from "@/lib/userPrefs";
-import { LogIn, Sparkles, ChevronLeft, Plus, Check, Paintbrush, Frown } from "lucide-react";
+import { ChevronLeft, Plus, Check, Paintbrush, Frown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { labelFor } from "@/lib/i18n";
+import { calculateRecommendations } from "@/lib/recommendationEngine";
+import { getOnboardingData, clearOnboardingData } from "@/lib/onboardingStorage";
+import GuestFeed from "@/components/GuestFeed";
 
 export default function Home() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
@@ -56,11 +59,41 @@ export default function Home() {
     }
   }, [prefs, topicParam]);
 
+  const syncOnboardingFromStorage = async () => {
+    const stored = getOnboardingData();
+    if (!stored) return;
+    try {
+      const topicsList = await base44.entities.Topic.list(100);
+      const recommended = calculateRecommendations(
+        { main_goal: stored.main_goal, struggles: stored.struggles || [] },
+        topicsList
+      );
+      const prefsData = {
+        ...stored,
+        recommended_topics: recommended,
+        focus_areas: recommended,
+        following_topics: recommended,
+        onboarding_complete: true,
+      };
+      const existing = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
+      if (existing.length > 0) {
+        await base44.entities.UserPreferences.update(existing[0].id, prefsData);
+      } else {
+        await base44.entities.UserPreferences.create(prefsData);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      clearOnboardingData();
+    }
+  };
+
   const loadAll = async () => {
     try {
       if (topicKeyRef.current === topicParam && feed.length > 0) return;
       topicKeyRef.current = topicParam;
       setLoading(true);
+      await syncOnboardingFromStorage();
       const userPrefs = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
       if (userPrefs.length === 0 || !userPrefs[0].onboarding_complete) {
         navigate("/onboarding");
@@ -260,16 +293,10 @@ export default function Home() {
   }
 
   if (!isAuthenticated) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 px-6 text-center text-white">
-        <Sparkles size={48} className="mb-6" />
-        <h1 className="text-3xl font-bold">Daily Spark</h1>
-        <p className="mt-3 max-w-xs text-white/80">Daily motivation for the self-made</p>
-        <button onClick={() => base44.auth.redirectToLogin(window.location.href)} className="mt-8 flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-purple-600">
-          <LogIn size={16} /> Get Started
-        </button>
-      </div>
-    );
+    if (getOnboardingData()) {
+      return <GuestFeed />;
+    }
+    return <Navigate to="/onboarding" replace />;
   }
 
   if (feed.length === 0) {
