@@ -9,7 +9,7 @@ const GOALS = [
 
 export default function ScreenGoal({ value, onSelect }) {
   return (
-    <div className="flex min-h-screen flex-col justify-center px-7">
+    <div>
       <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">
         What are you working toward?
       </h1>

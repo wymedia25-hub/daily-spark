@@ -17,6 +17,7 @@ Deno.serve(async (req) => {
     params.append("line_items[0][price]", priceId);
     params.append("line_items[0][quantity]", "1");
     params.append("mode", "subscription");
+    params.append("subscription_data[trial_period_days]", "7");
     params.append("success_url", `${origin}/?success=true`);
     params.append("cancel_url", `${origin}/?canceled=true`);
     params.append("metadata[base44_app_id]", Deno.env.get("BASE44_APP_ID") || "");

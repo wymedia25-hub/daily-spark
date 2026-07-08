@@ -2,7 +2,7 @@ import { Bell } from "lucide-react";
 
 export default function ScreenTime({ value, onChange }) {
   return (
-    <div className="flex min-h-screen flex-col justify-center px-7">
+    <div>
       <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">
         When do you want your daily spark?
       </h1>

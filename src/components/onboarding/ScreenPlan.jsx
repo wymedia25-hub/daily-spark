@@ -1,4 +1,4 @@
-import { Check, ArrowRight, UserPlus } from "lucide-react";
+import { Check } from "lucide-react";
 
 function formatTime(time) {
   if (!time) return "6:00 AM";
@@ -9,7 +9,7 @@ function formatTime(time) {
   return `${displayHour}:${m} ${ampm}`;
 }
 
-export default function ScreenPlan({ answers, isAuthenticated, saving, onCreateAccount, onEnterApp }) {
+export default function ScreenPlan({ answers }) {
   const planItems = [
     `Daily quotes tailored to: ${answers.goal}`,
     `Morning spark at ${formatTime(answers.reminder_time)}`,
@@ -18,7 +18,7 @@ export default function ScreenPlan({ answers, isAuthenticated, saving, onCreateA
   ];
 
   return (
-    <div className="flex min-h-screen flex-col justify-center px-7">
+    <div>
       <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">
         Here's your 30-day plan
       </h1>
@@ -32,31 +32,6 @@ export default function ScreenPlan({ answers, isAuthenticated, saving, onCreateA
           </div>
         ))}
       </div>
-
-      {isAuthenticated ? (
-        <button
-          onClick={onEnterApp}
-          disabled={saving}
-          className="mt-10 flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95 disabled:opacity-50"
-        >
-          {saving ? "Saving..." : "Enter the app"} <ArrowRight size={18} />
-        </button>
-      ) : (
-        <>
-          <button
-            onClick={onCreateAccount}
-            className="mt-10 flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95"
-          >
-            <UserPlus size={18} /> Create account to save your plan
-          </button>
-          <button
-            onClick={onEnterApp}
-            className="mt-3 w-full py-3 text-sm font-medium text-onboarding-cream-dim underline-offset-4 hover:underline"
-          >
-            Maybe later
-          </button>
-        </>
-      )}
     </div>
   );
 }
