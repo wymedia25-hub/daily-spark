@@ -1,16 +1,33 @@
-import { Gift } from "lucide-react";
+import { useState } from "react";
+import { Gift, Check } from "lucide-react";
 
 export default function InviteFriends() {
-  const handleInvite = () => {
+  const [copied, setCopied] = useState(false);
+
+  const handleInvite = async () => {
     const url = window.location.origin;
-    if (navigator.share) {
-      navigator.share({
-        title: "Join Knowi",
-        text: "Learn something new every day with bite-sized summaries!",
-        url,
-      });
-    } else {
-      navigator.clipboard.writeText(url);
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(url);
+      ok = true;
+    } catch {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = url;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        ok = true;
+      } catch {
+        ok = false;
+      }
+    }
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -20,7 +37,7 @@ export default function InviteFriends() {
         <div className="flex-1">
           <h3 className="text-sm font-bold text-neutral-900">Grow together</h3>
           <p className="mt-1 text-xs text-neutral-400 leading-relaxed">
-            Share Knowi with your friends and learn together
+            Share Daily Spark with your friends and stay motivated together
           </p>
         </div>
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#FF6B35]/10">
@@ -31,8 +48,14 @@ export default function InviteFriends() {
         onClick={handleInvite}
         className="mt-4 w-full rounded-xl bg-[#FF6B35] py-2.5 text-sm font-semibold text-white hover:bg-[#e85a28] transition-colors"
       >
-        Invite friends
+        {copied ? "Link copied!" : "Invite friends"}
       </button>
+      {copied && (
+        <div className="mt-2 flex items-center justify-center gap-1.5 text-xs text-green-600">
+          <Check size={12} />
+          Share the link with your friends
+        </div>
+      )}
     </div>
   );
 }

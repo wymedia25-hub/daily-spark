@@ -36,6 +36,7 @@ export default function Settings() {
   const [appearance, setAppearance] = useState(getDarkMode());
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -124,10 +125,29 @@ export default function Settings() {
 
   const handleShare = async () => {
     const url = window.location.origin;
+    let ok = false;
     try {
-      if (navigator.share) await navigator.share({ title: "Daily Spark", text: "Get daily motivation!", url });
-      else await navigator.clipboard.writeText(url);
-    } catch (e) {}
+      await navigator.clipboard.writeText(url);
+      ok = true;
+    } catch {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = url;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        ok = true;
+      } catch {
+        ok = false;
+      }
+    }
+    if (ok) {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }
   };
 
   const renderDrawerLabel = (val) => {
@@ -213,9 +233,16 @@ export default function Settings() {
           <h2 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">{t("settings.supportUs")}</h2>
         </div>
         <div className="rounded-2xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
-          <button onClick={handleShare} className="flex w-full items-center gap-3 border-b border-neutral-100 dark:border-neutral-800 px-5 py-4 text-left">
-            <Share size={18} className="text-neutral-400 dark:text-neutral-500" />
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">{t("settings.shareApp")}</span>
+          <button onClick={handleShare} className="flex w-full items-center justify-between gap-3 border-b border-neutral-100 dark:border-neutral-800 px-5 py-4 text-left">
+            <div className="flex items-center gap-3">
+              <Share size={18} className="text-neutral-400 dark:text-neutral-500" />
+              <span className="text-sm text-neutral-700 dark:text-neutral-300">{t("settings.shareApp")}</span>
+            </div>
+            {shareCopied && (
+              <span className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
+                <Check size={12} /> Copied!
+              </span>
+            )}
           </button>
           <button onClick={() => window.open("mailto:hello@selfmade.app?subject=Review%20for%20Self%20Made", "_blank")} className="flex w-full items-center gap-3 px-5 py-4 text-left">
             <Star size={18} className="text-neutral-400 dark:text-neutral-500" />
