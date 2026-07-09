@@ -153,6 +153,12 @@ const resources = {
         redirecting: "Redirecting...",
         maybeLater: "Maybe later",
       },
+      theme: {
+        back: "Back",
+        title: "Choose your vibe",
+        subtitle: "Pick a mood for your daily quote backgrounds.",
+        business: "Business",
+      },
       paywall: {
         title: "Daily Spark Premium",
         subtitle: "Unlock unlimited motivation and self-growth",
@@ -320,6 +326,12 @@ const resources = {
         startTrial: "開始免費試用",
         redirecting: "重新導向中...",
         maybeLater: "稍後再說",
+      },
+      theme: {
+        back: "返回",
+        title: "選擇你的風格",
+        subtitle: "為每日語錄背景挑選一個氛圍。",
+        business: "商業",
       },
       paywall: {
         title: "Daily Spark 高級版",
@@ -489,6 +501,12 @@ const resources = {
         redirecting: "重定向中...",
         maybeLater: "稍后再说",
       },
+      theme: {
+        back: "返回",
+        title: "选择你的风格",
+        subtitle: "为每日语录背景挑选一个氛围。",
+        business: "商业",
+      },
       paywall: {
         title: "Daily Spark 高级版",
         subtitle: "解锁无限动力与自我成长",
@@ -656,6 +674,12 @@ const resources = {
         startTrial: "無料体験を始める",
         redirecting: "リダイレクト中...",
         maybeLater: "後で",
+      },
+      theme: {
+        back: "戻る",
+        title: "雰囲気を選ぶ",
+        subtitle: "毎日の名言背景のムードを選んでください。",
+        business: "ビジネス",
       },
       paywall: {
         title: "Daily Spark プレミアム",
@@ -825,6 +849,12 @@ const resources = {
         redirecting: "Redirigiendo...",
         maybeLater: "Quizás después",
       },
+      theme: {
+        back: "Atrás",
+        title: "Elige tu ambiente",
+        subtitle: "Elige un ambiente para los fondos de tus citas diarias.",
+        business: "Negocios",
+      },
       paywall: {
         title: "Daily Spark Premium",
         subtitle: "Desbloquea motivación ilimitada y crecimiento personal",
@@ -865,6 +895,7 @@ export const UI_LABELS = {
     struggles: { "Heartbreak": "心碎", "Anxiety & overthinking": "焦慮與過度思考", "Depression & sadness": "憂鬱與悲傷", "Low confidence": "缺乏自信", "Lack of motivation": "缺乏動力", "Toxic relationship": "有毒關係", "Loneliness": "孤獨", "Work & business stress": "工作與事業壓力" },
     moods: { "Sad": "難過", "Anxious": "焦慮", "Unmotivated": "沒動力", "Okay": "還好", "Hopeful": "充滿希望" },
     quoteStyle: { "Short & punchy": "簡短有力", "Deep & reflective": "深刻反思", "Tough love": "嚴厲的愛", "Gentle & soft": "溫柔和緩" },
+    themes: { "Calm nature": "寧靜自然", "Ocean": "海洋", "Sunset": "日落", "Forest": "森林", "Mountains": "山脈", "Galaxy": "星河", "Golden hour": "黃金時刻", "City Skyline": "城市天際線", "Boardroom": "會議室", "Coffee Shop": "咖啡店", "Minimal Desk": "極簡辦公桌", "Stock Market": "股市" },
   },
   "zh-CN": {
     topics: { "Being Single": "单身生活", "Discipline & Focus": "自律与专注", "Finance & Investing": "理财与投资", "Financial Freedom": "财务自由", "Global Magnates": "全球巨头", "Gratitude": "感恩", "Healing": "疗愈", "Hustle": "拼搏进取", "Iconic Founders": "传奇创办人", "Industry Titans": "产业巨头", "Internet & Media": "网络与媒体", "Love & Relationships": "爱与关系", "Money & Wealth": "金钱与财富", "Positive Thinking": "积极思考", "Retail & Brands": "零售与品牌", "Self-Esteem": "自尊", "Self-Love": "自爱", "Short Quotes": "短语录", "Social Anxiety": "社交焦虑", "Software Pioneers": "软件先驱", "Strength": "力量", "Tech & Hardware": "科技与硬件" },
@@ -877,6 +908,7 @@ export const UI_LABELS = {
     struggles: { "Heartbreak": "心碎", "Anxiety & overthinking": "焦虑与过度思考", "Depression & sadness": "忧郁与悲伤", "Low confidence": "缺乏自信", "Lack of motivation": "缺乏动力", "Toxic relationship": "有毒关系", "Loneliness": "孤独", "Work & business stress": "工作与事业压力" },
     moods: { "Sad": "难过", "Anxious": "焦虑", "Unmotivated": "没动力", "Okay": "还好", "Hopeful": "充满希望" },
     quoteStyle: { "Short & punchy": "简短有力", "Deep & reflective": "深刻反思", "Tough love": "严厉的爱", "Gentle & soft": "温柔和缓" },
+    themes: { "Calm nature": "宁静自然", "Ocean": "海洋", "Sunset": "日落", "Forest": "森林", "Mountains": "山脉", "Galaxy": "星河", "Golden hour": "黄金时刻", "City Skyline": "城市天际线", "Boardroom": "会议室", "Coffee Shop": "咖啡店", "Minimal Desk": "极简办公桌", "Stock Market": "股市" },
   },
   "ja": {
     topics: { "Being Single": "シングルライフ", "Discipline & Focus": "規律と集中", "Finance & Investing": "金融と投資", "Financial Freedom": "経済的自由", "Global Magnates": "世界の実業家", "Gratitude": "感謝", "Healing": "癒し", "Hustle": "努力と行動", "Iconic Founders": "伝説の創業者", "Industry Titans": "業界の巨人", "Internet & Media": "インターネットとメディア", "Love & Relationships": "愛と人間関係", "Money & Wealth": "お金と富", "Positive Thinking": "ポジティブ思考", "Retail & Brands": "小売とブランド", "Self-Esteem": "自尊心", "Self-Love": "自己愛", "Short Quotes": "短い名言", "Social Anxiety": "社交不安", "Software Pioneers": "ソフトウェアの先駆者", "Strength": "強さ", "Tech & Hardware": "テクノロジーとハードウェア" },
@@ -889,6 +921,7 @@ export const UI_LABELS = {
     struggles: { "Heartbreak": "失恋", "Anxiety & overthinking": "不安と考えすぎ", "Depression & sadness": "憂うつと悲しみ", "Low confidence": "自信のなさ", "Lack of motivation": "やる気のなさ", "Toxic relationship": "有害な関係", "Loneliness": "孤独", "Work & business stress": "仕事とビジネスのストレス" },
     moods: { "Sad": "悲しい", "Anxious": "不安", "Unmotivated": "やる気がない", "Okay": "まあまあ", "Hopeful": "希望を感じる" },
     quoteStyle: { "Short & punchy": "短くて力強い", "Deep & reflective": "深く内省的", "Tough love": "厳しくも愛のある", "Gentle & soft": "優しく穏やか" },
+    themes: { "Calm nature": "穏やかな自然", "Ocean": "海", "Sunset": "夕日", "Forest": "森", "Mountains": "山々", "Galaxy": "銀河", "Golden hour": "ゴールデンアワー", "City Skyline": "街のスカイライン", "Boardroom": "会議室", "Coffee Shop": "カフェ", "Minimal Desk": "ミニマルデスク", "Stock Market": "株式市場" },
   },
   "es": {
     topics: { "Being Single": "Vida de soltero", "Discipline & Focus": "Disciplina y enfoque", "Finance & Investing": "Finanzas e inversión", "Financial Freedom": "Libertad financiera", "Global Magnates": "Magnates globales", "Gratitude": "Gratitud", "Healing": "Sanación", "Hustle": "Esfuerzo", "Iconic Founders": "Fundadores icónicos", "Industry Titans": "Titanes de la industria", "Internet & Media": "Internet y medios", "Love & Relationships": "Amor y relaciones", "Money & Wealth": "Dinero y riqueza", "Positive Thinking": "Pensamiento positivo", "Retail & Brands": "Comercio y marcas", "Self-Esteem": "Autoestima", "Self-Love": "Amor propio", "Short Quotes": "Frases breves", "Social Anxiety": "Ansiedad social", "Software Pioneers": "Pioneros del software", "Strength": "Fortaleza", "Tech & Hardware": "Tecnología y hardware" },
@@ -901,6 +934,7 @@ export const UI_LABELS = {
     struggles: { "Heartbreak": "Desamor", "Anxiety & overthinking": "Ansiedad y pensar demasiado", "Depression & sadness": "Depresión y tristeza", "Low confidence": "Falta de confianza", "Lack of motivation": "Falta de motivación", "Toxic relationship": "Relación tóxica", "Loneliness": "Soledad", "Work & business stress": "Estrés laboral y de negocios" },
     moods: { "Sad": "Triste", "Anxious": "Ansioso/a", "Unmotivated": "Desmotivado/a", "Okay": "Bien", "Hopeful": "Esperanzado/a" },
     quoteStyle: { "Short & punchy": "Breve y directo", "Deep & reflective": "Profundo y reflexivo", "Tough love": "Amor firme", "Gentle & soft": "Suave y amable" },
+    themes: { "Calm nature": "Naturaleza serena", "Ocean": "Océano", "Sunset": "Atardecer", "Forest": "Bosque", "Mountains": "Montañas", "Galaxy": "Galaxia", "Golden hour": "Hora dorada", "City Skyline": "Horizonte urbano", "Boardroom": "Sala de juntas", "Coffee Shop": "Cafetería", "Minimal Desk": "Escritorio minimalista", "Stock Market": "Mercado de valores" },
   },
 };
 

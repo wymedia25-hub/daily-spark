@@ -70,6 +70,61 @@ export const THEMES = [
       "https://images.unsplash.com/photo-1419242902214-272adf3c1da4?w=800&q=80&auto=format&fit=crop",
     ],
   },
+  {
+    name: "City Skyline",
+    is_premium: true,
+    cover: "https://images.unsplash.com/photo-1444723121867-7a241cacace1?w=800&q=80&auto=format&fit=crop",
+    backgrounds: [
+      "https://images.unsplash.com/photo-1444723121867-7a241cacace1?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1460317442991-0ec209397354?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80&auto=format&fit=crop",
+    ],
+  },
+  {
+    name: "Boardroom",
+    is_premium: true,
+    cover: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80&auto=format&fit=crop",
+    backgrounds: [
+      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1497215842964-222b430dc094?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=800&q=80&auto=format&fit=crop",
+    ],
+  },
+  {
+    name: "Coffee Shop",
+    is_premium: true,
+    cover: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80&auto=format&fit=crop",
+    backgrounds: [
+      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=800&q=80&auto=format&fit=crop",
+    ],
+  },
+  {
+    name: "Minimal Desk",
+    is_premium: true,
+    cover: "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=800&q=80&auto=format&fit=crop",
+    backgrounds: [
+      "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1517842645767-c639042777db?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800&q=80&auto=format&fit=crop",
+    ],
+  },
+  {
+    name: "Stock Market",
+    is_premium: true,
+    cover: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80&auto=format&fit=crop",
+    backgrounds: [
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1590283603385-17ffb3a7d29f?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&q=80&auto=format&fit=crop",
+    ],
+  },
 ];
 
 export const THEME_NAMES = THEMES.map(t => t.name);

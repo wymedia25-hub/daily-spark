@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Crown } from "lucide-react";
 import { getThemeGradient } from "@/lib/themeGradients";
+import { labelFor } from "@/lib/i18n";
 
-export default function ThemePreview({ themeName, coverUrl, selected, onSelect }) {
+export default function ThemePreview({ themeName, coverUrl, selected, onSelect, isPremium }) {
   const [imgError, setImgError] = useState(false);
 
   return (
@@ -22,8 +23,13 @@ export default function ThemePreview({ themeName, coverUrl, selected, onSelect }
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
       <span className="absolute bottom-3 left-0 right-0 px-3 text-center text-sm font-semibold text-white drop-shadow-md">
-        {themeName}
+        {labelFor("themes", themeName)}
       </span>
+      {isPremium && !selected && (
+        <div className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-amber-500 shadow-lg ring-2 ring-white">
+          <Crown size={14} className="text-white" />
+        </div>
+      )}
       {selected && (
         <>
           <div className="absolute inset-0 rounded-2xl border-4 border-purple-500" />

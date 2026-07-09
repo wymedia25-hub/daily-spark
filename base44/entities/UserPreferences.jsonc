@@ -116,7 +116,12 @@
         "Forest",
         "Mountains",
         "Galaxy",
-        "Golden hour"
+        "Golden hour",
+        "City Skyline",
+        "Boardroom",
+        "Coffee Shop",
+        "Minimal Desk",
+        "Stock Market"
       ],
       "description": "Preferred visual theme for quote backgrounds"
     },
