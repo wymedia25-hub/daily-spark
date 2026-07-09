@@ -6,28 +6,47 @@ import { calculateRecommendations } from "@/lib/recommendationEngine";
 import {
   saveOnboardingData as persistOnboarding,
   clearOnboardingData,
-  mapPainToStruggle,
 } from "@/lib/onboardingStorage";
 import { PLANS } from "@/lib/stripe-config";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import ProgressBar from "@/components/onboarding/ProgressBar";
 import ScreenHook from "@/components/onboarding/ScreenHook";
+import ScreenName from "@/components/onboarding/ScreenName";
 import ScreenGoal from "@/components/onboarding/ScreenGoal";
-import ScreenPain from "@/components/onboarding/ScreenPain";
+import ScreenMood from "@/components/onboarding/ScreenMood";
+import ScreenStruggles from "@/components/onboarding/ScreenStruggles";
+import ScreenQuoteStyle from "@/components/onboarding/ScreenQuoteStyle";
+import ScreenInterests from "@/components/onboarding/ScreenInterests";
 import ScreenTime from "@/components/onboarding/ScreenTime";
 import ScreenStreak from "@/components/onboarding/ScreenStreak";
 import ScreenPlan from "@/components/onboarding/ScreenPlan";
 import ScreenPaywall from "@/components/onboarding/ScreenPaywall";
 
-const STEPS = ["hook", "goal", "pain", "time", "streak", "plan", "paywall"];
+const STEPS = [
+  "hook",
+  "name",
+  "goal",
+  "mood",
+  "struggles",
+  "quote_style",
+  "interests",
+  "time",
+  "streak",
+  "plan",
+  "paywall",
+];
 
 export default function Onboarding() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
   const navigate = useNavigate();
   const [stepIdx, setStepIdx] = useState(0);
   const [answers, setAnswers] = useState({
+    display_name: "",
     goal: "",
-    pain: "",
+    mood: "",
+    struggles: [],
+    quote_style: "",
+    interests: [],
     reminder_time: "06:00",
     streak_days: null,
   });
@@ -41,8 +60,12 @@ export default function Onboarding() {
 
   const handleSaveData = async () => {
     const data = {
+      display_name: answers.display_name,
       main_goal: answers.goal,
-      struggles: [mapPainToStruggle(answers.pain)],
+      mood: answers.mood,
+      struggles: answers.struggles,
+      quote_style: answers.quote_style,
+      interests: answers.interests,
       reminder_time: answers.reminder_time,
       streak_goal: answers.streak_days,
       language_code: "en",
@@ -55,7 +78,7 @@ export default function Onboarding() {
       setSaving(true);
       try {
         const recommended = calculateRecommendations(
-          { main_goal: answers.goal, struggles: [mapPainToStruggle(answers.pain)] },
+          { main_goal: answers.goal, struggles: answers.struggles },
           topics
         );
         const prefsData = {
@@ -120,6 +143,18 @@ export default function Onboarding() {
 
   const step = STEPS[stepIdx];
   const showHeader = stepIdx > 0 && step !== "paywall";
+  const goNext = () => setStepIdx(stepIdx + 1);
+
+  const canContinue =
+    (step === "name" && answers.display_name.trim().length > 0) ||
+    (step === "goal" && answers.goal) ||
+    (step === "mood" && answers.mood) ||
+    (step === "struggles" && answers.struggles.length > 0) ||
+    (step === "quote_style" && answers.quote_style) ||
+    (step === "interests" && answers.interests.length >= 3) ||
+    step === "time" ||
+    (step === "streak" && answers.streak_days) ||
+    step === "plan";
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-onboarding-bg px-7 pt-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))]">
@@ -141,20 +176,45 @@ export default function Onboarding() {
         <div className="flex flex-1 flex-col justify-center overflow-y-auto">
           {step === "hook" && <ScreenHook />}
 
-          {step === "goal" && (
-            <ScreenGoal
-              value={answers.goal}
-              onSelect={(g) => {
-                setAnswers({ ...answers, goal: g });
-                setTimeout(() => setStepIdx(2), 250);
-              }}
+          {step === "name" && (
+            <ScreenName
+              value={answers.display_name}
+              onChange={(n) => setAnswers({ ...answers, display_name: n })}
             />
           )}
 
-          {step === "pain" && (
-            <ScreenPain
-              value={answers.pain}
-              onSelect={(p) => setAnswers({ ...answers, pain: p })}
+          {step === "goal" && (
+            <ScreenGoal
+              value={answers.goal}
+              onSelect={(g) => setAnswers({ ...answers, goal: g })}
+            />
+          )}
+
+          {step === "mood" && (
+            <ScreenMood
+              value={answers.mood}
+              onSelect={(m) => setAnswers({ ...answers, mood: m })}
+            />
+          )}
+
+          {step === "struggles" && (
+            <ScreenStruggles
+              values={answers.struggles}
+              onToggle={(s) => setAnswers({ ...answers, struggles: s })}
+            />
+          )}
+
+          {step === "quote_style" && (
+            <ScreenQuoteStyle
+              value={answers.quote_style}
+              onSelect={(qs) => setAnswers({ ...answers, quote_style: qs })}
+            />
+          )}
+
+          {step === "interests" && (
+            <ScreenInterests
+              values={answers.interests}
+              onToggle={(i) => setAnswers({ ...answers, interests: i })}
             />
           )}
 
@@ -180,44 +240,17 @@ export default function Onboarding() {
         <div className="shrink-0">
           {step === "hook" && (
             <button
-              onClick={() => setStepIdx(1)}
+              onClick={goNext}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95"
             >
               Continue <ArrowRight size={18} />
             </button>
           )}
 
-          {step === "pain" && answers.pain && (
+          {step !== "hook" && step !== "paywall" && (
             <button
-              onClick={() => setStepIdx(3)}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95"
-            >
-              Continue <ArrowRight size={18} />
-            </button>
-          )}
-
-          {step === "time" && (
-            <button
-              onClick={() => setStepIdx(4)}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95"
-            >
-              Continue <ArrowRight size={18} />
-            </button>
-          )}
-
-          {step === "streak" && answers.streak_days && (
-            <button
-              onClick={() => setStepIdx(5)}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95"
-            >
-              Continue <ArrowRight size={18} />
-            </button>
-          )}
-
-          {step === "plan" && (
-            <button
-              onClick={() => setStepIdx(6)}
-              disabled={saving}
+              onClick={goNext}
+              disabled={!canContinue || saving}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95 disabled:opacity-50"
             >
               {saving ? "Saving..." : "Continue"} <ArrowRight size={18} />

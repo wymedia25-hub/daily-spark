@@ -10,17 +10,20 @@ function formatTime(time) {
 }
 
 export default function ScreenPlan({ answers }) {
+  const streakDays = answers.streak_days || 30;
   const planItems = [
-    `Daily quotes tailored to: ${answers.goal}`,
+    `Daily quotes tailored to: ${answers.goal || "your goals"}`,
     `Morning spark at ${formatTime(answers.reminder_time)}`,
-    "Topics chosen for your journey",
-    `${answers.streak_days || 30}-day streak to build the habit`,
+    answers.interests.length > 0
+      ? `Topics: ${answers.interests.slice(0, 3).join(", ")}${answers.interests.length > 3 ? "…" : ""}`
+      : "Topics chosen for your journey",
+    `${streakDays}-day streak to build the habit`,
   ];
 
   return (
     <div>
       <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">
-        Here's your {answers.streak_days || 30}-day plan
+        {answers.display_name ? `${answers.display_name}, here's your ${streakDays}-day plan` : `Here's your ${streakDays}-day plan`}
       </h1>
       <div className="mt-7 space-y-4">
         {planItems.map((item, i) => (
