@@ -14,7 +14,7 @@ export default function Profile() {
   const [prefs, setPrefs] = useState(null);
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [portalLoading, setPortalLoading] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false); // moved before early returns to respect hooks rules
 
   useEffect(() => {
     if (isLoadingAuth) return;
