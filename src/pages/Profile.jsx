@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import StreakTracker from "@/components/StreakTracker";
-import { Settings as SettingsIcon, LogOut, Bell, Crown, Heart, Upload, PenSquare } from "lucide-react";
+import { Settings as SettingsIcon, LogOut, Bell, Crown, Heart, Upload, PenSquare, CreditCard } from "lucide-react";
 
 export default function Profile() {
   const { user, isAuthenticated, isLoadingAuth, logout, checkUserAuth } = useAuth();
@@ -14,6 +14,7 @@ export default function Profile() {
   const [prefs, setPrefs] = useState(null);
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     if (isLoadingAuth) return;
@@ -63,6 +64,27 @@ export default function Profile() {
 
   const isAdmin = user?.role === "admin";
 
+  const handleManageSubscription = async () => {
+    if (window.self !== window.top) {
+      alert("Subscription management works only from a published app. Please open the app in a new tab.");
+      return;
+    }
+    setPortalLoading(true);
+    try {
+      const result = await base44.functions.invoke("createPortalSession", {});
+      const portalUrl = result?.url ?? result?.data?.url;
+      if (portalUrl) {
+        window.location.href = portalUrl;
+      } else {
+        alert("Could not open subscription management. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Please try again.");
+    }
+    setPortalLoading(false);
+  };
+
   const customizeItems = [
     { label: t("profile.savedQuotes"), icon: Heart, action: () => navigate("/saved-quotes") },
     { label: t("profile.myQuotes"), icon: PenSquare, action: () => navigate("/my-quotes") },
@@ -100,6 +122,24 @@ export default function Profile() {
           </button>
         ))}
       </div>
+
+      {prefs?.is_premium && (
+        <button
+          onClick={handleManageSubscription}
+          disabled={portalLoading}
+          className="mb-5 flex w-full items-center gap-3 rounded-2xl border border-purple-200 bg-purple-50 p-4 text-left transition-colors hover:bg-purple-100 dark:border-purple-900 dark:bg-purple-950 dark:hover:bg-purple-900"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900">
+            <CreditCard size={18} className="text-purple-600" />
+          </div>
+          <div className="flex-1">
+            <span className="block text-sm font-medium text-neutral-800 dark:text-neutral-200">
+              {portalLoading ? "Loading..." : "Manage Subscription"}
+            </span>
+            <span className="block text-xs text-neutral-400">Cancel or update your plan</span>
+          </div>
+        </button>
+      )}
 
       {!prefs?.is_premium && (
         <button onClick={() => navigate("/paywall")} className="mb-5 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-pink-500 p-5 text-left text-white">
