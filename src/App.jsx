@@ -21,6 +21,8 @@ import MyQuotes from './pages/MyQuotes';
 import Paywall from './pages/Paywall';
 import Reminders from './pages/Reminders';
 import AdminImport from './pages/AdminImport';
+import About from './pages/About';
+import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -62,6 +64,8 @@ const AuthenticatedApp = () => {
         <Route path="/paywall" element={<Paywall />} />
         <Route path="/reminders" element={<Reminders />} />
         <Route path="/admin/import" element={<AdminImport />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
 
       </Route>
       <Route path="/login" element={<Login />} />

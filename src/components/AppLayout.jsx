@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import BottomNav from "./BottomNav";
+import Footer from "./Footer";
 import { getNavDirection, setNavDirection, isTabRoot } from "@/lib/navigationState";
 
 const getEffectiveDirection = (explicit, fromPath, toPath) => {
@@ -75,6 +76,7 @@ export default function AppLayout() {
           className="min-h-screen"
         >
           <Outlet />
+          <Footer />
         </motion.div>
       </AnimatePresence>
       <BottomNav />
