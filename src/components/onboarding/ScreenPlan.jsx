@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 function formatTime(time) {
   if (!time) return "6:00 AM";
@@ -10,20 +11,31 @@ function formatTime(time) {
 }
 
 export default function ScreenPlan({ answers }) {
+  const { t } = useTranslation();
   const streakDays = answers.streak_days || 30;
+  const goalLabel = answers.goal
+    ? t(`onboarding.goals.${answers.goal}`, { defaultValue: answers.goal })
+    : null;
+  const interestLabels = answers.interests
+    .slice(0, 3)
+    .map(i => t(`onboarding.interests.${i}`, { defaultValue: i }));
   const planItems = [
-    `Daily quotes tailored to: ${answers.goal || "your goals"}`,
-    `Morning spark at ${formatTime(answers.reminder_time)}`,
+    goalLabel
+      ? t("onboarding.planDailyQuotes", { goal: goalLabel })
+      : t("onboarding.planDailyQuotesDefault"),
+    t("onboarding.planMorningSpark", { time: formatTime(answers.reminder_time) }),
     answers.interests.length > 0
-      ? `Topics: ${answers.interests.slice(0, 3).join(", ")}${answers.interests.length > 3 ? "…" : ""}`
-      : "Topics chosen for your journey",
-    `${streakDays}-day streak to build the habit`,
+      ? t("onboarding.planTopics", { topics: interestLabels.join(", ") + (answers.interests.length > 3 ? "…" : "") })
+      : t("onboarding.planTopicsDefault"),
+    t("onboarding.planStreak", { days: streakDays }),
   ];
 
   return (
     <div>
       <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">
-        {answers.display_name ? `${answers.display_name}, here's your ${streakDays}-day plan` : `Here's your ${streakDays}-day plan`}
+        {answers.display_name
+          ? t("onboarding.planTitleWithName", { name: answers.display_name, days: streakDays })
+          : t("onboarding.planTitle", { days: streakDays })}
       </h1>
       <div className="mt-7 space-y-4">
         {planItems.map((item, i) => (

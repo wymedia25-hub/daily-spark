@@ -1,4 +1,6 @@
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { labelFor } from "@/lib/i18n";
 
 const STRUGGLES = [
   "Anxiety & overthinking",
@@ -15,6 +17,7 @@ const STRUGGLES = [
 ];
 
 export default function ScreenStruggles({ values, onToggle }) {
+  const { t } = useTranslation();
   const toggle = (s) => {
     if (values.includes(s)) {
       onToggle(values.filter((v) => v !== s));
@@ -26,10 +29,10 @@ export default function ScreenStruggles({ values, onToggle }) {
   return (
     <div>
       <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">
-        What's getting in your way?
+        {t("onboarding.strugglesTitle")}
       </h1>
       <p className="mt-3 text-sm leading-relaxed text-onboarding-cream-dim">
-        Select all that apply — we'll tailor your feed accordingly.
+        {t("onboarding.strugglesSubtitle")}
       </p>
       <div className="mt-7 flex flex-wrap gap-2.5">
         {STRUGGLES.map((s) => {
@@ -45,7 +48,7 @@ export default function ScreenStruggles({ values, onToggle }) {
               }`}
             >
               {active && <Check size={14} className="text-onboarding-gold" />}
-              {s}
+              {labelFor("struggles", s)}
             </button>
           );
         })}

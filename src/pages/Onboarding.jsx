@@ -9,6 +9,7 @@ import {
 } from "@/lib/onboardingStorage";
 import { PLANS } from "@/lib/stripe-config";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import ProgressBar from "@/components/onboarding/ProgressBar";
 import ScreenHook from "@/components/onboarding/ScreenHook";
 import ScreenName from "@/components/onboarding/ScreenName";
@@ -38,6 +39,7 @@ const STEPS = [
 
 export default function Onboarding() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [stepIdx, setStepIdx] = useState(0);
   const [answers, setAnswers] = useState({
@@ -259,7 +261,7 @@ export default function Onboarding() {
               disabled={!canContinue || saving}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95 disabled:opacity-50"
             >
-              {saving ? "Saving..." : "Continue"} <ArrowRight size={18} />
+              {saving ? t("onboarding.saving") : t("onboarding.continueBtn")} <ArrowRight size={18} />
             </button>
           )}
 
@@ -272,17 +274,17 @@ export default function Onboarding() {
               >
                 {checkoutLoading ? (
                   <>
-                    <Loader2 size={18} className="animate-spin" /> Redirecting...
+                    <Loader2 size={18} className="animate-spin" /> {t("onboarding.redirecting")}
                   </>
                 ) : (
-                  "Start Free Trial"
+                  t("onboarding.startTrial")
                 )}
               </button>
               <button
                 onClick={handleEnterApp}
                 className="mt-3 w-full py-3 text-sm font-medium text-onboarding-cream-dim underline-offset-4 hover:underline"
               >
-                Maybe later
+                {t("onboarding.maybeLater")}
               </button>
             </div>
           )}

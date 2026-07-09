@@ -10,10 +10,11 @@ const LANGUAGES = [
 ];
 
 export default function ScreenHook({ value, onSelect }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const handleSelect = (val) => {
     i18n.changeLanguage(val);
+    if (typeof localStorage !== "undefined") localStorage.setItem("app_language", val);
     if (onSelect) onSelect(val);
   };
 
@@ -23,16 +24,16 @@ export default function ScreenHook({ value, onSelect }) {
         <Sparkles size={40} className="text-onboarding-gold" strokeWidth={1.5} />
       </div>
       <h1 className="font-display-serif text-4xl font-bold leading-tight text-onboarding-cream">
-        One spark of motivation every morning to build your FIRE life.
+        {t("onboarding.hookTitle")}
       </h1>
       <p className="mt-5 max-w-sm text-base leading-relaxed text-onboarding-cream-dim">
-        Daily quotes to fuel your financial independence, discipline, and drive.
+        {t("onboarding.hookSubtitle")}
       </p>
 
       <div className="mt-8 w-full max-w-xs">
         <div className="mb-3 flex items-center justify-center gap-1.5 text-onboarding-cream-dim">
           <Globe size={14} />
-          <span className="text-xs font-medium uppercase tracking-wide">Language</span>
+          <span className="text-xs font-medium uppercase tracking-wide">{t("onboarding.languagePrompt")}</span>
         </div>
         <div className="flex flex-wrap justify-center gap-2">
           {LANGUAGES.map((lang) => (

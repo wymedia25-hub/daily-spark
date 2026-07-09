@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const GOALS = [
   "Financial freedom / FIRE",
@@ -8,10 +9,11 @@ const GOALS = [
 ];
 
 export default function ScreenGoal({ value, onSelect }) {
+  const { t } = useTranslation();
   return (
     <div>
       <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">
-        What are you working toward?
+        {t("onboarding.goalTitle")}
       </h1>
       <div className="mt-7 space-y-3">
         {GOALS.map((goal) => (
@@ -24,7 +26,7 @@ export default function ScreenGoal({ value, onSelect }) {
                 : "border-onboarding-cream/15 text-onboarding-cream-dim hover:border-onboarding-cream/30"
             }`}
           >
-            {goal}
+            {t(`onboarding.goals.${goal}`, { defaultValue: goal })}
             {value === goal && <Check size={18} className="text-onboarding-gold" />}
           </button>
         ))}

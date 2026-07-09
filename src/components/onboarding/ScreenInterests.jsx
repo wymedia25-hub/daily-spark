@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const INTERESTS = [
   "Money & Wealth",
@@ -16,6 +17,7 @@ const INTERESTS = [
 ];
 
 export default function ScreenInterests({ values, onToggle }) {
+  const { t } = useTranslation();
   const toggle = (i) => {
     if (values.includes(i)) {
       onToggle(values.filter((v) => v !== i));
@@ -27,10 +29,10 @@ export default function ScreenInterests({ values, onToggle }) {
   return (
     <div>
       <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">
-        Pick your interests
+        {t("onboarding.interestsTitle")}
       </h1>
       <p className="mt-3 text-sm leading-relaxed text-onboarding-cream-dim">
-        Choose at least 3 to personalize your feed.
+        {t("onboarding.interestsSubtitle")}
       </p>
       <div className="mt-7 flex flex-wrap gap-2.5">
         {INTERESTS.map((i) => {
@@ -46,7 +48,7 @@ export default function ScreenInterests({ values, onToggle }) {
               }`}
             >
               {active && <Check size={14} className="text-onboarding-gold" />}
-              {i}
+              {t(`onboarding.interests.${i}`, { defaultValue: i })}
             </button>
           );
         })}

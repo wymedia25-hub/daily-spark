@@ -1,4 +1,6 @@
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { labelFor } from "@/lib/i18n";
 
 const STYLES = [
   { value: "Short & punchy", desc: "Quick, bold one-liners" },
@@ -8,13 +10,14 @@ const STYLES = [
 ];
 
 export default function ScreenQuoteStyle({ value, onSelect }) {
+  const { t } = useTranslation();
   return (
     <div>
       <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">
-        What quote style resonates?
+        {t("onboarding.styleTitle")}
       </h1>
       <p className="mt-3 text-sm leading-relaxed text-onboarding-cream-dim">
-        We'll match the voice of your daily sparks.
+        {t("onboarding.styleSubtitle")}
       </p>
       <div className="mt-7 space-y-3">
         {STYLES.map((s) => (
@@ -29,9 +32,11 @@ export default function ScreenQuoteStyle({ value, onSelect }) {
           >
             <div>
               <span className={`text-base font-medium ${value === s.value ? "text-onboarding-cream" : "text-onboarding-cream-dim"}`}>
-                {s.value}
+                {labelFor("quoteStyle", s.value)}
               </span>
-              <p className="mt-0.5 text-xs text-onboarding-cream-dim">{s.desc}</p>
+              <p className="mt-0.5 text-xs text-onboarding-cream-dim">
+                {t(`onboarding.styleDescs.${s.value}`, { defaultValue: s.desc })}
+              </p>
             </div>
             {value === s.value && <Check size={18} className="text-onboarding-gold" />}
           </button>
