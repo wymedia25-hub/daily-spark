@@ -21,12 +21,13 @@ Deno.serve(async (req) => {
 
     const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
     const ALLOWED_ORIGINS = [
+      "https://dailysparkforfire.base44.app",
       "https://dailyspark.app",
       "http://localhost:5173",
       "http://localhost:3000",
     ];
     const rawOrigin = req.headers.get("origin") || "";
-    const origin = ALLOWED_ORIGINS.includes(rawOrigin) ? rawOrigin : "https://dailyspark.app";
+    const origin = ALLOWED_ORIGINS.includes(rawOrigin) ? rawOrigin : "https://dailysparkforfire.base44.app";
 
     // Derive identity from the authenticated session — never trust client-sent email/user_id
     const userEmail = user.email || "";

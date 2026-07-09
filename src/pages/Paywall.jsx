@@ -48,8 +48,9 @@ export default function Paywall() {
       const result = await base44.functions.invoke("createCheckout", {
         priceId: plan.priceId,
       });
-      if (result.data?.url) {
-        window.location.href = result.data.url;
+      const checkoutUrl = result?.url ?? result?.data?.url;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
       }
     } catch (err) {
       console.error(err);
