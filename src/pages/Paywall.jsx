@@ -62,26 +62,26 @@ export default function Paywall() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 px-5 py-8">
+    <div className="min-h-screen bg-onboarding-bg px-5 py-8">
       <div className="mx-auto max-w-md">
-        <button onClick={() => navigate(-1)} className="mb-6 flex items-center gap-1 text-sm text-white/80 hover:text-white">
+        <button onClick={() => navigate(-1)} className="mb-6 flex items-center gap-1 text-sm text-onboarding-cream-dim hover:text-onboarding-cream">
           <ArrowLeft size={16} /> Back
         </button>
 
-        <div className="mb-8 text-center text-white">
-          <div className="mb-4 flex h-20 w-20 mx-auto items-center justify-center rounded-3xl bg-white/20 backdrop-blur-md">
-            <Crown size={40} className="text-white" />
+        <div className="mb-8 text-center">
+          <div className="mb-4 flex h-20 w-20 mx-auto items-center justify-center rounded-3xl bg-onboarding-gold/15">
+            <Crown size={40} className="text-onboarding-gold" />
           </div>
-          <h1 className="text-3xl font-bold">Daily Spark Premium</h1>
-          <p className="mt-2 text-white/80">Unlock unlimited motivation and self-growth</p>
+          <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">Daily Spark Premium</h1>
+          <p className="mt-2 text-onboarding-cream-dim">Unlock unlimited motivation and self-growth</p>
         </div>
 
-        <div className="mb-8 rounded-2xl bg-white/10 p-5 backdrop-blur-md">
+        <div className="mb-8 rounded-2xl border border-onboarding-cream/10 bg-onboarding-cream/5 p-5">
           <div className="space-y-3">
             {features.map((f) => (
-              <div key={f} className="flex items-center gap-3 text-white">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-                  <Check size={14} className="text-white" />
+              <div key={f} className="flex items-center gap-3 text-onboarding-cream">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-onboarding-gold/20">
+                  <Check size={14} className="text-onboarding-gold" />
                 </div>
                 <span className="text-sm font-medium">{f}</span>
               </div>
@@ -95,10 +95,10 @@ export default function Paywall() {
               key={plan.id}
               onClick={() => handleSubscribe(plan)}
               disabled={checkoutLoading !== null}
-              className={`relative w-full overflow-hidden rounded-2xl p-5 text-left transition-all ${plan.highlighted ? "bg-white text-purple-700 ring-2 ring-white" : "bg-white/15 text-white backdrop-blur-md"}`}
+              className={`relative w-full overflow-hidden rounded-2xl p-5 text-left transition-all ${plan.highlighted ? "bg-onboarding-gold text-onboarding-bg ring-2 ring-onboarding-gold" : "border border-onboarding-cream/15 bg-onboarding-cream/5 text-onboarding-cream"}`}
             >
               {plan.highlighted && (
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-[10px] font-bold text-white">
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-onboarding-bg px-3 py-1 text-[10px] font-bold text-onboarding-gold">
                   BEST VALUE
                 </span>
               )}
@@ -112,7 +112,7 @@ export default function Paywall() {
           ))}
         </div>
 
-        <p className="mt-6 text-center text-xs text-white/60">
+        <p className="mt-6 text-center text-xs text-onboarding-cream-dim">
           7-day free trial, then $49.99/year. Cancel anytime.
         </p>
       </div>
