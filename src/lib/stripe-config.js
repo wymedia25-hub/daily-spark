@@ -1,6 +1,6 @@
 export const STRIPE_PRICES = {
   monthly: "price_1TofZMDfkQwONAzfPns0Ydo4",
-  annual: "price_1Tr6iIDfkQwONAzfwFxPZL17",
+  annual: "price_1TrA2EDfkQwONAzfejgtNZsj",
 };
 
 export const PLANS = [
