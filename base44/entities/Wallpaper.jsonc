@@ -19,6 +19,11 @@
       "type": "boolean",
       "default": false,
       "description": "Whether this wallpaper is premium-only"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description of the wallpaper (up to 1000 characters)"
     }
   },
   "required": [

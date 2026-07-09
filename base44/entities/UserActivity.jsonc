@@ -48,6 +48,11 @@
       },
       "default": [],
       "description": "Array of ISO dates representing active days"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes for the user's activity (up to 1000 characters)"
     }
   },
   "required": [],

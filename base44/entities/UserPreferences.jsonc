@@ -171,6 +171,11 @@
       "type": "string",
       "description": "Preferred content language (ISO code: 'en', 'zh', 'ja', 'es')",
       "default": "en"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes for the user's preferences (up to 1000 characters)"
     }
   },
   "required": [],
