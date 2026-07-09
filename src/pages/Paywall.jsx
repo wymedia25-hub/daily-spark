@@ -101,7 +101,7 @@ export default function Paywall() {
                 <span className="text-2xl font-bold">{plan.price}</span>
                 <span className="text-sm opacity-70">{plan.period}</span>
               </div>
-              <p className="mt-1 text-sm opacity-80">{plan.name}{plan.savings ? ` · ${plan.savings}` : ""}</p>
+              <p className="mt-1 text-sm opacity-80">{plan.id === "monthly" ? t("paywall.planMonthly") : t("paywall.planAnnual")}{plan.savings ? ` · ${t("paywall.planSavingsTrial")}` : ""}</p>
               {checkoutLoading === plan.id && <p className="mt-2 text-xs opacity-60">Redirecting to checkout...</p>}
             </button>
           ))}
