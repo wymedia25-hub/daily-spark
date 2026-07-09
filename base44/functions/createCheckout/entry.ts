@@ -2,8 +2,14 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 Deno.serve(async (req) => {
   try {
+    const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    if (!user) {
+      return Response.json({ error: "Authentication required" }, { status: 401 });
+    }
+
     const body = await req.json();
-    const { priceId, email, user_preferences_id } = body;
+    const { priceId } = body;
 
     const ALLOWED_PRICE_IDS = [
       "price_1TofZMDfkQwONAzfPns0Ydo4",
@@ -22,6 +28,23 @@ Deno.serve(async (req) => {
     const rawOrigin = req.headers.get("origin") || "";
     const origin = ALLOWED_ORIGINS.includes(rawOrigin) ? rawOrigin : "https://dailyspark.app";
 
+    // Derive identity from the authenticated session — never trust client-sent email/user_id
+    const userEmail = user.email || "";
+    const userId = user.id || "";
+
+    // Look up the user's UserPreferences server-side
+    let prefsId = "";
+    try {
+      const prefs = await base44.asServiceRole.entities.UserPreferences.filter(
+        { created_by_id: userId },
+        "-created_date",
+        1
+      );
+      if (prefs.length > 0) prefsId = prefs[0].id;
+    } catch (e) {
+      console.error("Failed to lookup user preferences:", e.message);
+    }
+
     const params = new URLSearchParams();
     params.append("payment_method_types[]", "card");
     params.append("line_items[0][price]", priceId);
@@ -31,13 +54,21 @@ Deno.serve(async (req) => {
     params.append("success_url", `${origin}/?success=true`);
     params.append("cancel_url", `${origin}/?canceled=true`);
     params.append("metadata[base44_app_id]", Deno.env.get("BASE44_APP_ID") || "");
-
-    if (email) {
-      params.append("customer_email", email);
-      params.append("metadata[user_email]", email);
+    params.append("metadata[user_id]", userId);
+    if (userEmail) {
+      params.append("customer_email", userEmail);
+      params.append("metadata[user_email]", userEmail);
     }
-    if (user_preferences_id) {
-      params.append("metadata[user_preferences_id]", user_preferences_id);
+    if (prefsId) {
+      params.append("metadata[user_preferences_id]", prefsId);
+    }
+    // Mirror onto subscription so subscription-based webhook events carry verified identity
+    params.append("subscription_data[metadata][user_id]", userId);
+    if (userEmail) {
+      params.append("subscription_data[metadata][user_email]", userEmail);
+    }
+    if (prefsId) {
+      params.append("subscription_data[metadata][user_preferences_id]", prefsId);
     }
 
     const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
@@ -56,7 +87,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: session.error.message }, { status: 400 });
     }
 
-    console.log("Checkout session created for:", email || "guest");
+    console.log("Checkout session created for user:", userId);
     return Response.json({ url: session.url });
   } catch (error) {
     console.error("Checkout error:", error);

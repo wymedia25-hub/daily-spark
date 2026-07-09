@@ -39,12 +39,14 @@ export default function Paywall() {
       alert("Checkout works only from a published app. Please open the app in a new tab.");
       return;
     }
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     setCheckoutLoading(plan.id);
     try {
       const result = await base44.functions.invoke("createCheckout", {
         priceId: plan.priceId,
-        email: user?.email,
-        user_preferences_id: prefs?.id,
       });
       if (result.data?.url) {
         window.location.href = result.data.url;

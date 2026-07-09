@@ -128,12 +128,15 @@ export default function Onboarding() {
       alert("Checkout works only from a published app. Please open the app in a new tab.");
       return;
     }
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     setCheckoutLoading(true);
     try {
       const plan = PLANS.find((p) => p.id === selectedPlanId) || PLANS[0];
       const result = await base44.functions.invoke("createCheckout", {
         priceId: plan.priceId,
-        email: user?.email,
       });
       if (result.data?.url) {
         window.location.href = result.data.url;

@@ -23,12 +23,23 @@ Deno.serve(async (req) => {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
+        const userId = session.metadata?.user_id;
         const prefsId = session.metadata?.user_preferences_id;
         const email = session.metadata?.user_email || session.customer_email;
 
         if (prefsId) {
           await base44.asServiceRole.entities.UserPreferences.update(prefsId, { is_premium: true });
-          console.log(`Premium activated for preferences ${prefsId} (${email})`);
+          console.log(`Premium activated for preferences ${prefsId} (user ${userId}, ${email})`);
+        } else if (userId) {
+          const userPrefs = await base44.asServiceRole.entities.UserPreferences.filter(
+            { created_by_id: userId },
+            "-created_date",
+            1
+          );
+          if (userPrefs.length > 0) {
+            await base44.asServiceRole.entities.UserPreferences.update(userPrefs[0].id, { is_premium: true });
+            console.log(`Premium activated for user ${userId} (${email})`);
+          }
         } else if (email) {
           const allPrefs = await base44.asServiceRole.entities.UserPreferences.list(500);
           for (const p of allPrefs) {
@@ -49,9 +60,20 @@ Deno.serve(async (req) => {
       case "customer.subscription.deleted": {
         const subscription = event.data.object;
         const prefsId = subscription.metadata?.user_preferences_id;
+        const userId = subscription.metadata?.user_id;
         if (prefsId) {
           await base44.asServiceRole.entities.UserPreferences.update(prefsId, { is_premium: false });
           console.log(`Premium deactivated for preferences ${prefsId}`);
+        } else if (userId) {
+          const userPrefs = await base44.asServiceRole.entities.UserPreferences.filter(
+            { created_by_id: userId },
+            "-created_date",
+            1
+          );
+          if (userPrefs.length > 0) {
+            await base44.asServiceRole.entities.UserPreferences.update(userPrefs[0].id, { is_premium: false });
+            console.log(`Premium deactivated for user ${userId}`);
+          }
         }
         break;
       }
