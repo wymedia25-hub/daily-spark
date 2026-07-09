@@ -49,6 +49,7 @@ export default function Onboarding() {
     interests: [],
     reminder_time: "06:00",
     streak_days: null,
+    language_code: "en",
   });
   const [saving, setSaving] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -68,7 +69,7 @@ export default function Onboarding() {
       interests: answers.interests,
       reminder_time: answers.reminder_time,
       streak_goal: answers.streak_days,
-      language_code: "en",
+      language_code: answers.language_code || "en",
       onboarding_complete: true,
     };
 
@@ -174,7 +175,12 @@ export default function Onboarding() {
         )}
 
         <div className="flex flex-1 flex-col justify-center overflow-y-auto">
-          {step === "hook" && <ScreenHook />}
+          {step === "hook" && (
+            <ScreenHook
+              value={answers.language_code}
+              onSelect={(code) => setAnswers({ ...answers, language_code: code })}
+            />
+          )}
 
           {step === "name" && (
             <ScreenName
