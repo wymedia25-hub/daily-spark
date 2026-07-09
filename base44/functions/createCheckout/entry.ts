@@ -5,8 +5,12 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { priceId, email, user_preferences_id } = body;
 
-    if (!priceId) {
-      return Response.json({ error: "Missing priceId" }, { status: 400 });
+    const ALLOWED_PRICE_IDS = [
+      "price_1TofZMDfkQwONAzfPns0Ydo4",
+      "price_1TrA2EDfkQwONAzfejgtNZsj",
+    ];
+    if (!priceId || !ALLOWED_PRICE_IDS.includes(priceId)) {
+      return Response.json({ error: "Invalid priceId" }, { status: 400 });
     }
 
     const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
