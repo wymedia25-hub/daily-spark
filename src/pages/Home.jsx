@@ -157,8 +157,8 @@ export default function Home() {
         filtered = [{
           _locked: true,
           id: "paywall",
-          paywallTitle: `Unlock ${topic}, chosen for you`,
-          paywallSubtitle: "Upgrade to access all quotes in this topic, plus wallpapers & more.",
+          paywallTitle: t("paywall.unlockTopic", { topic: labelFor("topics", topic) }),
+          paywallSubtitle: t("paywall.unlockTopicDesc"),
         }];
       }
     } else {
@@ -171,19 +171,20 @@ export default function Home() {
 
       if (!p.is_premium) {
         const premiumRecTopics = (p.recommended_topics || []).filter((name) => {
-          const t = topics.find((t) => t.name === name);
-          return t && t.is_premium;
+          const topicObj = topics.find((t) => t.name === name);
+          return topicObj && topicObj.is_premium;
         });
 
+        const topicNames = premiumRecTopics.slice(0, 2).map((name) => labelFor("topics", name)).join(" & ");
         const paywallTitle = premiumRecTopics.length > 0
-          ? `Unlock ${premiumRecTopics.slice(0, 2).join(" & ")}${premiumRecTopics.length > 2 ? " & more" : ""}, chosen for you`
-          : "You've reached your daily limit";
+          ? t("paywall.unlockTopics", { topics: topicNames })
+          : t("paywall.dailyLimit");
 
         const paywallCard = {
           _locked: true,
           id: "paywall",
           paywallTitle,
-          paywallSubtitle: "Unlock all premium topics, unlimited quotes, wallpapers & more",
+          paywallSubtitle: t("paywall.unlockAllDesc"),
         };
 
         const freeQuotes = shuffleArray(filtered.filter((q) => !q.is_premium))

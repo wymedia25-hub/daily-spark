@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Heart, Share2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { getThemeGradient } from "@/lib/themeGradients";
 import ShareModal from "@/components/ShareModal";
 
@@ -17,22 +18,23 @@ export default function QuoteCard({
 }) {
   const [showShare, setShowShare] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const { t } = useTranslation();
 
   if (isLocked) {
     return (
-      <div className="relative flex h-screen w-full shrink-0 snap-start snap-always items-center justify-center overflow-hidden bg-gradient-to-br from-purple-600 to-pink-500 px-8">
-        <div className="text-center text-white">
-          <p className="text-2xl font-bold leading-tight">
-            {paywallTitle || "You've reached your daily limit"}
+      <div className="relative flex h-screen w-full shrink-0 snap-start snap-always items-center justify-center overflow-hidden bg-onboarding-bg px-8">
+        <div className="text-center">
+          <p className="font-display-serif text-2xl font-bold leading-tight text-onboarding-cream">
+            {paywallTitle || t("paywall.dailyLimit")}
           </p>
-          <p className="mt-3 text-white/80">
-            {paywallSubtitle || "Unlock unlimited quotes, all topics, wallpapers & more"}
+          <p className="mt-3 text-onboarding-cream-dim">
+            {paywallSubtitle || t("paywall.unlockAllDesc")}
           </p>
           <a
             href="/paywall"
-            className="mt-8 inline-block rounded-xl bg-white px-8 py-3 text-sm font-bold text-purple-600"
+            className="mt-8 inline-block rounded-xl bg-onboarding-gold px-8 py-3 text-sm font-bold text-onboarding-bg"
           >
-            Unlock Premium
+            {t("paywall.unlockBtn")}
           </a>
         </div>
       </div>
