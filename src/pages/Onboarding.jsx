@@ -55,6 +55,7 @@ export default function Onboarding() {
   });
   const [saving, setSaving] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState("annual");
   const [topics, setTopics] = useState([]);
 
   useEffect(() => {
@@ -129,9 +130,9 @@ export default function Onboarding() {
     }
     setCheckoutLoading(true);
     try {
-      const monthly = PLANS.find((p) => p.id === "monthly") || PLANS[0];
+      const plan = PLANS.find((p) => p.id === selectedPlanId) || PLANS[0];
       const result = await base44.functions.invoke("createCheckout", {
-        priceId: monthly.priceId,
+        priceId: plan.priceId,
         email: user?.email,
       });
       if (result.data?.url) {
@@ -242,7 +243,12 @@ export default function Onboarding() {
 
           {step === "plan" && <ScreenPlan answers={answers} />}
 
-          {step === "paywall" && <ScreenPaywall />}
+          {step === "paywall" && (
+            <ScreenPaywall
+              selectedPlanId={selectedPlanId}
+              onSelectPlan={setSelectedPlanId}
+            />
+          )}
         </div>
 
         <div className="shrink-0">
