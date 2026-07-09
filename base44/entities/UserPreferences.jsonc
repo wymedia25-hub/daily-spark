@@ -153,6 +153,10 @@
       "type": "string",
       "description": "Preferred daily reminder time (HH:MM)"
     },
+    "streak_goal": {
+      "type": "number",
+      "description": "Streak commitment chosen during onboarding (7, 14, 30, or 50 days)"
+    },
     "onboarding_complete": {
       "type": "boolean",
       "default": false,

@@ -15,10 +15,11 @@ import ScreenHook from "@/components/onboarding/ScreenHook";
 import ScreenGoal from "@/components/onboarding/ScreenGoal";
 import ScreenPain from "@/components/onboarding/ScreenPain";
 import ScreenTime from "@/components/onboarding/ScreenTime";
+import ScreenStreak from "@/components/onboarding/ScreenStreak";
 import ScreenPlan from "@/components/onboarding/ScreenPlan";
 import ScreenPaywall from "@/components/onboarding/ScreenPaywall";
 
-const STEPS = ["hook", "goal", "pain", "time", "plan", "paywall"];
+const STEPS = ["hook", "goal", "pain", "time", "streak", "plan", "paywall"];
 
 export default function Onboarding() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
@@ -28,6 +29,7 @@ export default function Onboarding() {
     goal: "",
     pain: "",
     reminder_time: "06:00",
+    streak_days: null,
   });
   const [saving, setSaving] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -42,6 +44,7 @@ export default function Onboarding() {
       main_goal: answers.goal,
       struggles: [mapPainToStruggle(answers.pain)],
       reminder_time: answers.reminder_time,
+      streak_goal: answers.streak_days,
       language_code: "en",
       onboarding_complete: true,
     };
@@ -162,6 +165,13 @@ export default function Onboarding() {
             />
           )}
 
+          {step === "streak" && (
+            <ScreenStreak
+              value={answers.streak_days}
+              onSelect={(d) => setAnswers({ ...answers, streak_days: d })}
+            />
+          )}
+
           {step === "plan" && <ScreenPlan answers={answers} />}
 
           {step === "paywall" && <ScreenPaywall />}
@@ -195,9 +205,18 @@ export default function Onboarding() {
             </button>
           )}
 
-          {step === "plan" && (
+          {step === "streak" && answers.streak_days && (
             <button
               onClick={() => setStepIdx(5)}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95"
+            >
+              Continue <ArrowRight size={18} />
+            </button>
+          )}
+
+          {step === "plan" && (
+            <button
+              onClick={() => setStepIdx(6)}
               disabled={saving}
               className="flex w-full items-center justify-center gap-2 rounded-2xl bg-onboarding-gold py-4 text-base font-semibold text-onboarding-bg transition-transform active:scale-95 disabled:opacity-50"
             >

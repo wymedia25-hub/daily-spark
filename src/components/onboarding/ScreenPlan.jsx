@@ -14,13 +14,13 @@ export default function ScreenPlan({ answers }) {
     `Daily quotes tailored to: ${answers.goal}`,
     `Morning spark at ${formatTime(answers.reminder_time)}`,
     "Topics chosen for your journey",
-    "30-day streak to build the habit",
+    `${answers.streak_days || 30}-day streak to build the habit`,
   ];
 
   return (
     <div>
       <h1 className="font-display-serif text-3xl font-bold text-onboarding-cream">
-        Here's your 30-day plan
+        Here's your {answers.streak_days || 30}-day plan
       </h1>
       <div className="mt-7 space-y-4">
         {planItems.map((item, i) => (
