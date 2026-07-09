@@ -95,7 +95,16 @@ export default function Home() {
       setLoading(true);
       await syncOnboardingFromStorage();
       const userPrefs = await base44.entities.UserPreferences.filter({ created_by_id: user.id }, "-created_date", 1);
-      if (userPrefs.length === 0 || !userPrefs[0].onboarding_complete) {
+      const p0 = userPrefs[0];
+      const isOnboardingComplete = p0 && p0.onboarding_complete
+        && p0.display_name
+        && p0.main_goal
+        && p0.mood
+        && (p0.struggles || []).length > 0
+        && p0.quote_style
+        && (p0.interests || []).length >= 3
+        && p0.streak_goal;
+      if (!isOnboardingComplete) {
         navigate("/onboarding");
         return;
       }
