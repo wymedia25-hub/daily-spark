@@ -1,6 +1,6 @@
 export const STRIPE_PRICES = {
   monthly: "price_1TofZMDfkQwONAzfPns0Ydo4",
-  annual: "price_1TofZLDfkQwONAzfHjHxqsRo",
+  annual: "price_1Tr6iIDfkQwONAzfwFxPZL17",
 };
 
 export const PLANS = [
@@ -15,10 +15,10 @@ export const PLANS = [
   {
     id: "annual",
     name: "Annual",
-    price: "$80",
+    price: "$49.99",
     period: "/year",
     priceId: STRIPE_PRICES.annual,
     highlighted: true,
-    savings: "Save 17%",
+    savings: "7-day free trial",
   },
 ];

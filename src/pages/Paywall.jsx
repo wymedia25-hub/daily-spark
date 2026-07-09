@@ -113,7 +113,7 @@ export default function Paywall() {
         </div>
 
         <p className="mt-6 text-center text-xs text-white/60">
-          Cancel anytime. Your subscription helps us keep inspiring you every day.
+          7-day free trial, then $49.99/year. Cancel anytime.
         </p>
       </div>
     </div>
