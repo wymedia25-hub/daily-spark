@@ -2,20 +2,6 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 Deno.serve(async (req) => {
   try {
-    const secret = Deno.env.get("REMINDER_API_SECRET");
-    if (!secret) {
-      return Response.json({ error: "Server not configured" }, { status: 500 });
-    }
-    const headerSecret = req.headers.get("x-reminder-secret");
-    let bodySecret = null;
-    try {
-      const body = await req.json();
-      bodySecret = body?._reminder_secret || null;
-    } catch { /* empty body is fine */ }
-    if (headerSecret !== secret && bodySecret !== secret) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const base44 = createClientFromRequest(req);
 
     const now = new Date();
