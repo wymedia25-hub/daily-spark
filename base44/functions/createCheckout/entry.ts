@@ -10,7 +10,13 @@ Deno.serve(async (req) => {
     }
 
     const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
-    const origin = req.headers.get("origin") || "https://dailyspark.app";
+    const ALLOWED_ORIGINS = [
+      "https://dailyspark.app",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ];
+    const rawOrigin = req.headers.get("origin") || "";
+    const origin = ALLOWED_ORIGINS.includes(rawOrigin) ? rawOrigin : "https://dailyspark.app";
 
     const params = new URLSearchParams();
     params.append("payment_method_types[]", "card");
